@@ -149,6 +149,11 @@
                                placeholder="Nhập tên môn học...">
                     </div>
                     <div class="form-group m-10">
+                        <label for="" class="form-label">Mã Môn</label>
+                        <input type="text" name="namebasis" id="code_subject" class="form-control"
+                               placeholder="Mã Môn">
+                    </div>
+                    <div class="form-group m-10">
                     <select class="form-select" name="status" id="status_add">
                         <option selected value="">Trạng thái</option>
                         <option value="1">Kích hoạt</option>
@@ -260,10 +265,12 @@
             e.preventDefault();
             var url = $('#form-submit').attr("action");
             var name = $('#namebasis').val();
+            var code_subject = $('#code_subject').val();
             var status = $('#status_add').val();
             var dataAll = {
                 '_token' : _token,
                 'namebasis' : name,
+                'code_subject' : code_subject,
                 'status' : status,
                 'start_time' : start_time,
                 'end_time' : end_time
@@ -276,6 +283,8 @@
                     console.log(response)
                     $('#form-submit')[0].reset();
                     notify(response.message);
+                    // <td>${ response.data.start_time.replace(/\//g, '-').replace("PM", "")}</td>
+                    // <td>${response.data.end_time.replace(/\//g, '-').replace("PM", "")}</td>
                     var newRow = `          <tr>
                                 <td>
                                     ${response.data.namebasis}
@@ -285,8 +294,7 @@
                             <input class="form-check-input" data-id="${response.data.id}" type="checkbox" ${response.data.status == 1 ? 'checked' : ''} role="switch" id="flexSwitchCheckDefault">
                                     </div>
                                 </td>
-                                <td>${ response.data.start_time.replace(/\//g, '-').replace("PM", "")}</td>
-                                <td>${response.data.end_time.replace(/\//g, '-').replace("PM", "")}</td>
+
                                 <td>
                                   <button  class="btn btn-info" onclick="location.href='admin/subject/exam/${response.data.id}'"   type="button">
                                         Chi tiết
@@ -382,8 +390,8 @@
                         elembtn[1].innerText = response.data.namebasis;
                         const output = response.data.status == 1 ? true : false;
                         elembtn[3].childNodes[1].childNodes[1].checked= output
-                        elembtn[5].innerText = response.data.start_time.replace(/\//g, '-').replace(" PM", "");
-                        elembtn[7].innerText = response.data.end_time.replace(/\//g, '-').replace(" PM", "");
+                        // elembtn[5].innerText = response.data.start_time.replace(/\//g, '-').replace(" PM", "");
+                        // elembtn[7].innerText = response.data.end_time.replace(/\//g, '-').replace(" PM", "");
 
                         btnEdit = document.querySelectorAll('.btn-edit');
                         update(btnEdit)

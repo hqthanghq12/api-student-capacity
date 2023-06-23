@@ -100,11 +100,14 @@ class subjectController extends Controller
             $request->all(),
             [
                 'namebasis' => 'required|min:3|unique:subject,name',
+                'code_subject' => 'required|unique:subject,code_subject',
                 'status' => 'required'
             ],
             [
-                'namebasis.unique' => 'Trường dữ liệu đã tồn tại',
+                'namebasis.unique' => 'Tên Môn Đã tồn tại',
                 'namebasis.required' => 'Không để trống tên Môn !',
+                'code_subject.required' => 'Không để trống mã môn !',
+                'code_subject.unique' => 'Mã Môn đã tồn tại',
                 'namebasis.min' => 'Tối thiếu 3 ký tự',
                 'status.required' => 'Vui lòng chọn trạng thái'
             ]
@@ -112,7 +115,7 @@ class subjectController extends Controller
 
         if($validator->fails() == 1){
             $errors = $validator->errors();
-            $fields = ['namebasis', 'status'];
+            $fields = ['namebasis','code_subject','status'];
             foreach ($fields as $field) {
                 $fieldErrors = $errors->get($field);
 
@@ -127,6 +130,7 @@ class subjectController extends Controller
         $data = [
             'name' => $request->namebasis,
             'status' => $request->status,
+            'code_subject' => $request->code_subject,
             'created_at' => now(),
             'updated_at' => now()
         ];
