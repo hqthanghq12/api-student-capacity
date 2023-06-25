@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Services\Modules\MSemeter\Semeter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Campus;
 class SemeterController extends Controller
 {
     use TUploadImage, TResponse;
@@ -20,7 +21,8 @@ class SemeterController extends Controller
 
     public function index(){
         $data = $this->semeter->GetSemeter();
-        return view('pages.semeter.index',['setemer' => $data]);
+        $campusList = Campus::all();
+        return view('pages.semeter.index',['setemer' => $data,'campusList' => $campusList]);
     }
 
     public function ListSemeter($id_semeter){
@@ -48,6 +50,7 @@ class SemeterController extends Controller
             $request->all(),
             [
                 'namebasis' => 'required|min:3|unique:semester,name',
+                'campus_id' => 'required',
                 'status' => 'required',
                 'start_time_semeter' => 'nullable',
                 'end_time_semeter' => 'nullable|date|after:start_time_semeter'
@@ -55,6 +58,7 @@ class SemeterController extends Controller
             [
                 'namebasis.unique' => 'Tên kỳ học đã tồn tại',
                 'namebasis.required' => 'Không để trống tên Môn !',
+                'campus_id.required' => 'Vui lòng chọn cơ sở',
                 'namebasis.min' => 'Tối thiếu 3 ký tự',
                 'status.required' => 'Vui lòng chọn trạng thái',
                 'start_time_semeter.nullable' => 'Vui lòng chọn thời gian bắt đầu',
@@ -65,7 +69,7 @@ class SemeterController extends Controller
 
         if($validator->fails() == 1){
             $errors = $validator->errors();
-            $fields = ['namebasis', 'status','start_time_semeter','end_time_semeter'];
+            $fields = ['namebasis','campus_id','status','start_time_semeter','end_time_semeter'];
             foreach ($fields as $field) {
                 $fieldErrors = $errors->get($field);
 
@@ -79,6 +83,7 @@ class SemeterController extends Controller
         }
         $data = [
             'name' => $request->namebasis,
+            'id_campus' => $request->campus_id,
             'status' => $request->status,
             'start_time' => $request->start_time_semeter,
             'end_time' => $request->end_time_semeter,
@@ -106,14 +111,16 @@ class SemeterController extends Controller
             $request->all(),
             [
                 'namebasis' => 'required|min:3',
+                'campus_id_update' => 'required',
                 'status' => 'required',
                 'start_time_semeter' => 'nullable|date',
                 'end_time_semeter' => 'nullable|date|after:start_time_semeter'
             ],
             [
-                'namebasis.required' => 'Không để trống tên cơ sở !',
+                'namebasis.required' => 'Không để trống tên kỳ học !',
+                'campus_id_update.required' => 'Không để trống tên cơ sở !',
                 'namebasis.min' => 'Tối thiếu 3 ký tự',
-                'status.required' => 'Không để trống mã cơ sở',
+                'status.required' => 'Vui lòng chọn trạng thái',
                 'start_time_semeter.nullable' => 'Vui lòng chọn thời gian bắt đầu',
                 'end_time_semeter.nullable' => 'Vui lòng chọn thời gian kết thúc',
                 'end_time_semeter.after' => 'Thời gian kết thúc phải lớn hơn thời gian bắt đầu',
@@ -121,7 +128,7 @@ class SemeterController extends Controller
         );
         if($validator->fails() == 1){
             $errors = $validator->errors();
-            $fields = ['namebasis', 'status','start_time_semeter','end_time_semeter'];
+            $fields = ['namebasis','campus_id_update','status','start_time_semeter','end_time_semeter'];
             foreach ($fields as $field) {
                 $fieldErrors = $errors->get($field);
 
@@ -138,6 +145,7 @@ class SemeterController extends Controller
             return response()->json(['message' => 'Không tìm thấy'], 404);
         }
         $semeter->name = $request->namebasis;
+        $semeter->id_campus = $request->campus_id_update;
         $semeter->status = $request->status;
         $semeter->start_time = $request->start_time_semeter;
         $semeter->end_time = $request->end_time_semeter;

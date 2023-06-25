@@ -18,6 +18,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Models\block;
+use App\Models\blockSubject;
 class subjectController extends Controller
 {
     use TUploadImage, TResponse, TTeamContest, TStatus;
@@ -52,11 +54,12 @@ class subjectController extends Controller
         $this->checkTypeContest();
         if (!($data = $this->subject->getItemSubjectSetemer($id))) return abort(404);
         if (!($listSubject = $this->subject->List($id))) return abort(404);
-
+        $listBlock = block::where('id_semeter',$id)->get();
         return view('pages.semeter.subject.index', [
             'subjects' => $data,
             'listSubject' => $listSubject,
-            'id_semeter' => $id
+            'id_semeter' => $id,
+            'listBlock' => $listBlock
         ]);
     }
     public function getsemeter($id){
@@ -146,17 +149,19 @@ class subjectController extends Controller
             $request->all(),
             [
                 'subject_id' => 'required',
-                'semeter_id' => 'required',
+                'id_semeter' => 'required',
+                'block_id' => 'required',
             ],
             [
                 'subject_id.required' => 'Vui lòng chọn môn học !',
-                'semeter_id.required' => 'Vui lòng chọn kỳ học !',
+                'id_semeter.required' => 'Vui lòng chọn kỳ học !',
+                'block_id.required' => 'Vui lòng chọn blocks !',
             ]
         );
 
         if($validator->fails() == 1){
             $errors = $validator->errors();
-            $fields = ['subject_id' ];
+            $fields = ['subject_id','id_semeter','block_id' ];
             foreach ($fields as $field) {
                 $fieldErrors = $errors->get($field);
 
@@ -169,7 +174,12 @@ class subjectController extends Controller
 
         }
 
-
+        blockSubject::insert(
+            [
+                'id_subject' => $request->subject_id,
+                'id_block' =>  $request->block_id
+            ]
+        );
         $data = $this->subject->getItemSubject($request->subject_id);
         $this->subject->createSubjectSemater($request->subject_id,$request->id_semeter);
 

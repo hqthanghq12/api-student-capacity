@@ -86,18 +86,22 @@ class PoetryController extends Controller
 
     public function ListPoetryResponedetailChart(Request $request)
     {
-        $dataResult = $this->poetry->ListPoetryDetailChart($request->semeter, $request->block, $request->subject);
-        $dataWithStudents = [];
-        foreach ($dataResult as $value) {
-            $studentsDetail = $this->PoetryStudent->GetStudentsDetail($value['id_poetry']);
-            $dataWithStudents['namePoetry'][] = $value['name'];
-            $dataWithStudents['student']['total'][] = $studentsDetail->count();
-            $dataWithStudents['student']['tookExam'][] = $studentsDetail->whereNotNull('scores')->count();
-            $dataWithStudents['student']['notExam'][] = $studentsDetail->whereNull('scores')->count();
-        }
+
+        $dataResult = $this->poetry->ListPoetryDetailChart($request->idcampus, $request->idsemeter, $request->idblock);
+//        $dataWithStudents = [];
+
+//        $poetryIds = array_column($dataResult, 'id_poetry');
+//        return response()->json(['data' => $dataResult], 200);
+//        foreach ($dataResult as $value) {
+//            $studentsDetail = $this->PoetryStudent->GetStudentsDetail($value['id_poetry']);
+//            $dataWithStudents['namePoetry'][] = $value['name'];
+//            $dataWithStudents['student']['total'][] = $studentsDetail->count();
+//            $dataWithStudents['student']['tookExam'][] = $studentsDetail->whereNotNull('scores')->count();
+//            $dataWithStudents['student']['notExam'][] = $studentsDetail->whereNull('scores')->count();
+//        }
 
 
-        return response()->json(['data' => $dataWithStudents], 200);
+        return response()->json(['data' => $dataResult], 200);
     }
 
     public function indexApi($id, $id_user)

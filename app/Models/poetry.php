@@ -56,6 +56,10 @@ class poetry extends Model
         return $this->belongsTo(blockSubject::class, 'id_block_subject', 'id');
     }
 
+    public function student_poetry(){
+        return $this->hasMany(studentPoetry::class, 'id_poetry', 'id');
+    }
+
     public function examination()
     {
         return $this->hasOne(examination::class, 'id', 'id_examination');

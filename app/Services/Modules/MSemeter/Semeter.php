@@ -43,4 +43,13 @@ class Semeter implements MSemeterInterface
             return false;
         }
     }
+
+    public function getListByCampus($id_campus){
+        try {
+            return $this->modelSemeter->where('id_campus',$id_campus)->get();
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
 }

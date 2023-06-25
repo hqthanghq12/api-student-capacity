@@ -21,6 +21,6 @@ class studentPoetry extends Model
     }
 
     public function playtopic(){
-        return $this->hasMany(playtopic::class,'id_user','id_student');
+        return $this->hasMany(playtopic::class,'student_poetry_id','id');
     }
 }

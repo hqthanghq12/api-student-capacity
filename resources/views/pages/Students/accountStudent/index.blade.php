@@ -1,6 +1,6 @@
 @extends('layouts.main')
-@section('title', 'Quản lý tài khoản ')
-@section('page-title', 'Quản lý tài khoản ')
+@section('title', 'Quản lý sinh viên ')
+@section('page-title', 'Quản lý sinh viên ')
 @section('content')
     <!-- CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css"/>

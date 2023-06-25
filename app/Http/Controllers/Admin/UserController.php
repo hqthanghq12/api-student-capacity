@@ -121,7 +121,7 @@ class UserController extends Controller
         $subjectIdToSubjectName = collect($subjectIdToSubjectInfo)->pluck('name', 'id')->toArray();
         $subjectIdToSubjectCode = collect($subjectIdToSubjectInfo)->pluck('code_subject', 'id')->toArray();
 
-        $campusCodeToCampusName = DB::table('campuses')->select('code', 'name')->pluck('name', 'code')->toArray();
+        $campusCodeToCampusName = DB::table('campuses')->select('id', 'name')->pluck('name', 'id')->toArray();
         $examinationIdToExaminationName = DB::table('examination')->select('id', 'name')->pluck('name', 'id')->toArray();
         $classIdToClassName = DB::table('class')->select('id', 'name')->pluck('name', 'id')->toArray();
         $semesterIdToSemesterName = DB::table('semester')->select('id', 'name')->pluck('name', 'id')->toArray();
@@ -130,9 +130,9 @@ class UserController extends Controller
             ->query()
             ->select([
                 'playtopic.exam_name',
-                'poetry.id_subject',
+                'block_subject.id_subject',
                 'poetry.id_semeter',
-                'poetry.id_examination',
+                'playtopic.exam_time',
                 'poetry.id_class',
                 'result_capacity.scores',
                 'result_capacity.created_at',
@@ -140,14 +140,16 @@ class UserController extends Controller
             ])
             ->join('student_poetry', 'student_poetry.id', '=', 'playtopic.student_poetry_id')
             ->join('poetry', 'poetry.id', '=', 'student_poetry.id_poetry')
+            ->join('block_subject', 'block_subject.id', '=', 'poetry.id_block_subject')
             ->join('result_capacity', 'result_capacity.playtopic_id', '=', 'playtopic.id')
             ->where('student_poetry.id_student', $id)
             ->get();
+//        dd($campusCodeToCampusName);
         foreach ($point as $item) {
             $item->semester_name = $semesterIdToSemesterName[$item->id_semeter];
-            $item->campus_name = $campusIdToCampusName[$user->campus_id];
+            $item->campus_name = $campusCodeToCampusName[$user->campus_id];
             $item->class_name = $classIdToClassName[$item->id_class];
-            $item->examination_name = $examinationIdToExaminationName[$item->id_examination];
+            $item->examination_name = $item->exam_time;
             $item->subject_name = $subjectIdToSubjectName[$item->id_subject];
             $item->subject_code = $subjectIdToSubjectCode[$item->id_subject];
         }
@@ -164,7 +166,7 @@ class UserController extends Controller
         $subjectIdToSubjectName = collect($subjectIdToSubjectInfo)->pluck('name', 'id')->toArray();
         $subjectIdToSubjectCode = collect($subjectIdToSubjectInfo)->pluck('code_subject', 'id')->toArray();
 
-        $campusIdToCampusName = DB::table('campuses')->select('id', 'name')->pluck('name', 'id')->toArray();
+        $campusCodeToCampusName = DB::table('campuses')->select('id', 'name')->pluck('name', 'id')->toArray();
         $examinationIdToExaminationName = DB::table('examination')->select('id', 'name')->pluck('name', 'id')->toArray();
         $classIdToClassName = DB::table('class')->select('id', 'name')->pluck('name', 'id')->toArray();
         $semesterIdToSemesterName = DB::table('semester')->select('id', 'name')->pluck('name', 'id')->toArray();
@@ -173,9 +175,9 @@ class UserController extends Controller
             ->query()
             ->select([
                 'playtopic.exam_name',
-                'poetry.id_subject',
+                'block_subject.id_subject',
                 'poetry.id_semeter',
-                'poetry.id_examination',
+                'playtopic.exam_time',
                 'poetry.id_class',
                 'result_capacity.scores',
                 'result_capacity.created_at',
@@ -183,6 +185,7 @@ class UserController extends Controller
             ])
             ->join('student_poetry', 'student_poetry.id', '=', 'playtopic.student_poetry_id')
             ->join('poetry', 'poetry.id', '=', 'student_poetry.id_poetry')
+            ->join('block_subject', 'block_subject.id', '=', 'poetry.id_block_subject')
             ->join('result_capacity', 'result_capacity.playtopic_id', '=', 'playtopic.id')
             ->where('student_poetry.id_student', $id_user)
             ->get();
@@ -197,7 +200,6 @@ class UserController extends Controller
                     $key + 1,
                     $subjectIdToSubjectCode[$value->id_subject],
                     $semesterIdToSemesterName[$value->id_semeter],
-                    $campusIdToCampusName[$user->campus_id],
                     $classIdToClassName[$value->id_class],
                     $value->scores,
                     1,

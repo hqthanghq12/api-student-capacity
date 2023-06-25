@@ -169,6 +169,14 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="form-group m-10">
+                        <select class="form-select" name="subject" id="block_id">
+                            <option selected value="">Block</option>
+                            @foreach($listBlock as $value)
+                                <option value="{{ $value->id }}">{{ $value->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" id="upload-basis" class=" btn btn-primary">Thêm </button>
                     </div>
@@ -301,10 +309,12 @@
             var url = $('#form-submit').attr("action");
             var subject_id = $('#subject_id').val();
             const id_semeter = $('#id_semeter').val();
+            const block_id = $('#block_id').val();
             var dataAll = {
                 '_token' : _token,
                 'subject_id' : subject_id,
                 'id_semeter' : id_semeter,
+                'block_id' : block_id,
                 'start_time' : start_time,
                 'end_time' : end_time
             }

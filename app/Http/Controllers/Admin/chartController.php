@@ -9,33 +9,37 @@ use App\Services\Traits\TUploadImage;
 use Illuminate\Http\Request;
 use App\Services\Modules\MSemeter\Semeter;
 use App\Models\block;
-use App\Models\poetry;
-
+use App\Models\Campus;
+use App\Services\Modules\poetry\poetry;
 class chartController extends Controller
 {
     use TUploadImage, TCheckUserDrugTeam, TResponse;
     public function __construct(
+        private poetry        $poetry,
         private Semeter           $interfaceSemeter,
 
     )
     {
     }
     public function index(){
-        $listSemeter = $this->interfaceSemeter->GetSemeter();
-        $blockTotal = block::all();
-//        $blockTotal->load(['semeterOne' => function($q){
-//            return $q->select('id','name');
-//        }]);
-        $dataChart = [];
-        foreach ($blockTotal as $block) {
-            $dataChart['nameBlock'][] = $block->semeterOne == null ? $block->name . '-' . 'không xác đinh' : $block->name . '-'. $block->semeterOne->name;
-            $dataChart['total_poetry'][] = poetry::where('id_semeter', $block->id_semeter)->count();
-        }
+        $listCampus = Campus::all();
 
-        return view('pages.chart.index',['semeters' => $listSemeter,'dataChart' => $dataChart]);
+        $dataResult = $this->poetry->ListPoetryChart();
+        return view('pages.chart.index',['listcampus' => $listCampus,'data' => $dataResult]);
     }
 
     public function detail(){
         return view('pages.chart.chart');
+    }
+
+    public function semeter($id_campus){
+        $listSemeter = $this->interfaceSemeter->getListByCampus($id_campus);
+
+        return response()->json(['data' => $listSemeter],200);
+    }
+
+    public function block($id_semeter){
+        $listBlock = block::where('id_semeter',$id_semeter)->get();
+        return response()->json(['data' => $listBlock],200);
     }
 }

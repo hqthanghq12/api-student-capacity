@@ -36,6 +36,6 @@ class playtopic extends Model
 
     public function resultCapacity()
     {
-        return $this->hasMany(ResultCapacity::class, 'user_id','id_user');
+        return $this->hasMany(ResultCapacity::class, 'playtopic_id','id');
     }
 }

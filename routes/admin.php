@@ -216,6 +216,8 @@ Route::prefix('accountStudent')->group(function () {
 
 Route::prefix('chart')->group(function(){
     Route::get('',[chartController::class, 'index'])->name('admin.chart');
+    Route::get('getsemeter/{id_campus}',[chartController::class, 'semeter'])->name('admin.getsemter');
+    Route::get('getBlock/{id_semeter}',[chartController::class, 'block'])->name('admin.getsemter');
     Route::post('GetPoetryDetail', [PoetryController::class, 'ListPoetryResponedetailChart'])->name('manage.semeter.list');
     Route::get('detail',[chartController::class, 'detail'])->name('admin.chart.detail');
 });
