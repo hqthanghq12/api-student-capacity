@@ -54,7 +54,7 @@ class subjectController extends Controller
     public function setemer($id){
         $this->checkTypeContest();
         if (!($data = $this->subject->getItemSubjectSetemer($id))) return abort(404);
-        dd($data);
+//        dd($data);
         if (!($listSubject = $this->subject->List($id))) return abort(404);
         $listBlock = block::where('id_semeter',$id)->get();
         return view('pages.semeter.subject.index', [
