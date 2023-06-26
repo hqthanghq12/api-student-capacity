@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Rules\UniqueSubjectAndBlock;
 use App\Services\Modules\MContest\MContestInterface;
 use App\Services\Modules\MContestUser\MContestUserInterface;
 use App\Services\Modules\MSubjects\Subject;
@@ -53,6 +54,7 @@ class subjectController extends Controller
     public function setemer($id){
         $this->checkTypeContest();
         if (!($data = $this->subject->getItemSubjectSetemer($id))) return abort(404);
+        dd($data);
         if (!($listSubject = $this->subject->List($id))) return abort(404);
         $listBlock = block::where('id_semeter',$id)->get();
         return view('pages.semeter.subject.index', [
@@ -148,9 +150,9 @@ class subjectController extends Controller
         $validator =  Validator::make(
             $request->all(),
             [
-                'subject_id' => 'required',
+                'subject_id' => ['required', new UniqueSubjectAndBlock($request->subject_id, $request->block_id)],
                 'id_semeter' => 'required',
-                'block_id' => 'required',
+                'block_id' => ['required', new UniqueSubjectAndBlock($request->subject_id, $request->block_id)],
             ],
             [
                 'subject_id.required' => 'Vui lòng chọn môn học !',

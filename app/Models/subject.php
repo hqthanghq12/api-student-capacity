@@ -14,10 +14,10 @@ class subject extends Model
     {
         return $this->belongsToMany(semeter::class, 'semester_subject', 'id_subject', 'id_semeter');
     }
-    public function block()
-    {
-        return $this->hasOne(block::class, 'id', 'id_block');
-    }
+//    public function block()
+//    {
+//        return $this->hasOne(block::class, 'id', 'id_block');
+//    }
 
     public function block_subject()
     {

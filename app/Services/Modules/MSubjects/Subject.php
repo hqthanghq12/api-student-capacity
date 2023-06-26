@@ -20,16 +20,17 @@ class Subject
     public function List($id)
     {
         try {
-            $existingSubjectIds = $this->mSubject::whereHas('semester_subject', function ($query) use ($id) {
-                $query->where('id_semeter', $id);
-            })
-                ->pluck('id')
-                ->toArray();
+//            $existingSubjectIds = $this->mSubject::whereHas('semester_subject', function ($query) use ($id) {
+//                $query->where('id_semeter', $id);
+//            })
+//                ->with(['semester_subject'])
+//                ->pluck('id')
+//                ->toArray();
 
-            $subjects = $this->mSubject::whereNotIn('id', $existingSubjectIds)
-                ->get();
-
-            return $subjects;
+//            $subjects = $this->mSubject::whereNotIn('id', $existingSubjectIds)
+//                ->get();
+            $existingSubjectIds = $this->mSubject::all();
+            return $existingSubjectIds;
         } catch (\Exception $e) {
             return false;
         }

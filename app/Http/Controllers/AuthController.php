@@ -110,7 +110,13 @@ class AuthController extends Controller
         // ]);
 
         $user = User::with(['roles', 'campus'])->where('email', $googleUser->email)->first();
-        if ($user && $user->campus_id === $request->campus_id) {
+//        return response()->json(
+//            [
+//                'status' => false,
+//                'payload' => $user->status,
+//            ]
+//        );
+        if ($user && $user->campus_id == $request->campus_code) {
             if ($user->status == 0) return response()->json(
                 [
                     'status' => false,
@@ -131,8 +137,8 @@ class AuthController extends Controller
         $flagRoleAdmin = false;
         $MSSV = null;
         if (strlen($googleUser->email) < 8) $flagRoleAdmin = true;
-        $campus_code = Campus::find($request->campus_id)->code;
-        $campus_id = $request->campus_id;
+        $campus_code = Campus::find($request->campus_code)->code;
+        $campus_id = $request->campus_code;
         if (!$flagRoleAdmin) foreach (config('util.MS_SV') as $ks) {
             $MSSV = \Str::lower($campus_code) . \Str::afterLast(
                     \Str::of($googleUser->email)
@@ -170,7 +176,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'payload' => "Xác thực thất bại",
+                'payload' => $e,
             ]);
         }
     }

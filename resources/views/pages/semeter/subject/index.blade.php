@@ -53,6 +53,7 @@
                                     <!--end::Svg Icon-->
                             </span>
                             </th>
+{{--                            <th scope="col">Thuộc block</th>--}}
                             <th scope="col">Trạng thái</th>
                             <th scope="col">Thời gian bắt đầu
                                 <span role="button" data-key="date_start" data-bs-toggle="tooltip" title="" class=" svg-icon svg-icon-primary  svg-icon-2x format-database" data-bs-original-title="Lọc theo thời gian bắt đầu ">
@@ -92,6 +93,9 @@
                                 <td>
                                     {{ $value->name }}
                                 </td>
+{{--                                <td>--}}
+{{--                                    {{ $value->block_subject->where('id_subject',$value->id) }}--}}
+{{--                                </td>--}}
                                 <td>
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" data-id-subject-semeter="{{ $value->id_subject_semeter }}" type="checkbox" {{ $value->statusSubject == 1 ? 'checked' : '' }} role="switch" id="flexSwitchCheckDefault">

@@ -266,6 +266,26 @@
             })
         }
 
+        function wanrning(message) {
+            new Notify({
+                status: 'warning',
+                title: 'Đang chạy',
+                text: `${message}`,
+                effect: 'fade',
+                speed: 300,
+                customClass: null,
+                customIcon: null,
+                showIcon: true,
+                showCloseButton: true,
+                autoclose: true,
+                autotimeout: 3000,
+                gap: 20,
+                distance: 20,
+                type: 1,
+                position: 'right top'
+            })
+        }
+
         function errors(message) {
             new Notify({
                 status: 'error',
@@ -339,43 +359,49 @@
                     console.log(response)
                     $('#form-submit')[0].reset();
                     notify(response.message);
-                    var newRow = `          <tr>
-                                <td>
-                                    ${response.data.namebasis}
-                    </td>
-                    <td>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" data-id="${response.data.id}" type="checkbox" ${response.data.status == 1 ? 'checked' : ''} role="switch" id="flexSwitchCheckDefault">
-                                    </div>
-                                </td>
-   <td>
-                ${name_campus}
-                    </td>
-                                <td>${  formatDate(start_time_semeter) }</td>
-                                <td>${ formatDate(end_time_semeter)}</td>
-                                <td>
-                               <button  class="btn btn-info" onclick="location.href='admin/semeter/block/${response.data.id}'"   type="button">
-                                                                             Block
-                                                                </button>
-                                  <button  class="btn btn-info" onclick="location.href='admin/subject/exam/${response.data.id}'"   type="button">
-                                        Chi tiết
-                                    </button>
-
-                                    <button  class="btn-edit btn btn-primary"  data-id="${response.data.id}" type="button">
-                                        Chỉnh sửa
-                                    </button>
-
-
-                                </td>
-                            </tr>
-                    `;
-
-                    $('#table-data tbody').append(newRow);
-                    btnEdit = document.querySelectorAll('.btn-edit');
-                    update(btnEdit)
-                    btnDelete = document.querySelectorAll('.btn-delete');
-                    dele(btnDelete)
+   //                  var newRow = `          <tr>
+   //                              <td>
+   //                                  ${response.data.namebasis}
+   //                  </td>
+   //                  <td>
+   //                      <div class="form-check form-switch">
+   //                          <input class="form-check-input" data-id="${response.data.id}" type="checkbox" ${response.data.status == 1 ? 'checked' : ''} role="switch" id="flexSwitchCheckDefault">
+   //                                  </div>
+   //                              </td>
+   // <td>
+   //
+   //                  </td>
+   //                              <td>${  formatDate(start_time_semeter) }</td>
+   //                              <td>${ formatDate(end_time_semeter)}</td>
+   //                              <td>
+   //                             <button  class="btn btn-info" onclick="location.href='admin/semeter/block/${response.data.id}'"   type="button">
+   //                                                                           Block
+   //                                                              </button>
+   //                                <button  class="btn btn-info" onclick="location.href='admin/subject/exam/${response.data.id}'"   type="button">
+   //                                      Chi tiết
+   //                                  </button>
+   //
+   //                                  <button  class="btn-edit btn btn-primary"  data-id="${response.data.id}" type="button">
+   //                                      Chỉnh sửa
+   //                                  </button>
+   //
+   //
+   //                              </td>
+   //                          </tr>
+   //                  `;
+   //
+   //                  $('#table-data tbody').append(newRow);
+   //                  btnEdit = document.querySelectorAll('.btn-edit');
+   //                  update(btnEdit)
+   //                  btnDelete = document.querySelectorAll('.btn-delete');
+   //                  dele(btnDelete)
                     $('#kt_modal_1').modal('hide');
+                    wanrning('Đữ liệu mới đang được tải vui lòng đợi...');
+                    setTimeout(function(){
+                        notify('Tải hoàn tất ');
+                        window.location.reload();
+                    }, 1000);
+
                 },
                 error: function(response){
                     // console.log(response.responseText)

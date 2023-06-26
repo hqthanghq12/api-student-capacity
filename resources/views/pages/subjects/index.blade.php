@@ -285,6 +285,9 @@
                     notify(response.message);
                     // <td>${ response.data.start_time.replace(/\//g, '-').replace("PM", "")}</td>
                     // <td>${response.data.end_time.replace(/\//g, '-').replace("PM", "")}</td>
+                    // <button  class="btn-delete btn btn-danger" data-id="${response.data.id}">
+                    //     Xóa
+                    // </button>
                     var newRow = `          <tr>
                                 <td>
                                     ${response.data.namebasis}
@@ -304,9 +307,7 @@
                                         Chỉnh sửa
                                     </button>
 
-                                    <button  class="btn-delete btn btn-danger" data-id="${response.data.id}">
-                                        Xóa
-                                    </button>
+
                                 </td>
                             </tr>
                     `;
