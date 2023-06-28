@@ -279,7 +279,8 @@
                         <select class="form-select" name="receive_mode" id="receive_mode">
                             <option selected value="">--Cách thức phát đề--</option>
                             <option value="0">Chọn đề cụ thể</option>
-                            <option value="1">Trộn đề ngẫu nhiên</option>
+{{--                            <option value="1">Trộn đề ngẫu nhiên</option>--}}
+                            <option value="1">Đề ngẫu nhiên</option>
                         </select>
                     </div>
                     <div class="form-group m-10" id="specific_exam_form" style="display: none;">
@@ -290,32 +291,32 @@
                             @endforeach
                         </select>
                         <input type="hidden" name="exam_name" id="exam_name">
-                    </div>
-                    <div id="random_exam_form" style="display: none;">
                         <input type="hidden" name="id_subject" id="id_subject" value="{{ $id_subject }}">
-                        <div class="form-group m-10 d-flex flex-column align-items-start">
-                            <label for="" class="form-label">Số lượng câu hỏi</label>
-                            <input type="text" class="form-control" name="questions_quantity" id="questions_quantity"
-                                   placeholder="Số lượng câu hỏi">
-                        </div>
-                        <div class="form-group m-10 row">
-                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">
-                                <label for="" class="form-label">% câu mức độ dễ</label>
-                                <input type="text" class="form-control" name="ez_per_ques" id="ez_per_ques"
-                                       placeholder="0 - 100">
-                            </div>
-                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">
-                                <label for="" class="form-label">% câu mức độ tb</label>
-                                <input type="text" class="form-control" name="me_per_ques" id="me_per_ques"
-                                       placeholder="0 - 100">
-                            </div>
-                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">
-                                <label for="" class="form-label">% câu mức độ khó</label>
-                                <input type="text" class="form-control" name="diff_per_ques" id="diff_per_ques"
-                                       placeholder="0 - 100">
-                            </div>
-                        </div>
                     </div>
+{{--                    <div id="random_exam_form" style="display: none;">--}}
+{{--                        <div class="form-group m-10 d-flex flex-column align-items-start">--}}
+{{--                            <label for="" class="form-label">Số lượng câu hỏi</label>--}}
+{{--                            <input type="text" class="form-control" name="questions_quantity" id="questions_quantity"--}}
+{{--                                   placeholder="Số lượng câu hỏi">--}}
+{{--                        </div>--}}
+{{--                        <div class="form-group m-10 row">--}}
+{{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
+{{--                                <label for="" class="form-label">% câu mức độ dễ</label>--}}
+{{--                                <input type="text" class="form-control" name="ez_per_ques" id="ez_per_ques"--}}
+{{--                                       placeholder="0 - 100">--}}
+{{--                            </div>--}}
+{{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
+{{--                                <label for="" class="form-label">% câu mức độ tb</label>--}}
+{{--                                <input type="text" class="form-control" name="me_per_ques" id="me_per_ques"--}}
+{{--                                       placeholder="0 - 100">--}}
+{{--                            </div>--}}
+{{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
+{{--                                <label for="" class="form-label">% câu mức độ khó</label>--}}
+{{--                                <input type="text" class="form-control" name="diff_per_ques" id="diff_per_ques"--}}
+{{--                                       placeholder="0 - 100">--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
 {{--                    <div class="form-group m-10 d-flex flex-column align-items-start" id="time_form">--}}
 {{--                        <label for="" class="form-label">Thời gian thi</label>--}}
 {{--                        <select name="" id="time-select" class="form-select">--}}
@@ -601,10 +602,10 @@
             let id_poetry = $('#id_poetry').val();
             let receive_mode = $('#receive_mode').val();
             let exam_id = $('#exam_id').val();
-            let questions_quantity = $('#questions_quantity').val();
-            let ez_per_ques = $('#ez_per_ques').val();
-            let me_per_ques = $('#me_per_ques').val();
-            let diff_per_ques = $('#diff_per_ques').val();
+            // let questions_quantity = $('#questions_quantity').val();
+            // let ez_per_ques = $('#ez_per_ques').val();
+            // let me_per_ques = $('#me_per_ques').val();
+            // let diff_per_ques = $('#diff_per_ques').val();
             let id_subject = $('#id_subject').val();
             // let time = custom_time_checkbox.is(":checked") ? time_text_element.val() : time_select_element.val();
             let time = 90;
@@ -617,10 +618,10 @@
                 'id_poetry': id_poetry,
                 'receive_mode': receive_mode,
                 'exam_id': exam_id,
-                'questions_quantity': questions_quantity,
-                'ez_per_ques': ez_per_ques,
-                'me_per_ques': me_per_ques,
-                'diff_per_ques': diff_per_ques,
+                // 'questions_quantity': questions_quantity,
+                // 'ez_per_ques': ez_per_ques,
+                // 'me_per_ques': me_per_ques,
+                // 'diff_per_ques': diff_per_ques,
                 'id_subject': id_subject,
                 'time': time,
                 'exam_name': exam_name,
