@@ -236,7 +236,7 @@
                         <label for="" class="form-label">Nhập Email</label>
                         {{--                        <input type="email" id="emailStudent" class="form-control">--}}
                         <div class="tag-container">
-                            <input type="text" id="emailStudent" class="form-control" placeholder="Nhâp email"
+                            <input type="text" id="emailStudent" class="form-control" placeholder="<< Mỗi Email cách nhau 1 dấu cách >> Bấm enter để thêm "
                                    onkeydown="handleKeyDown(event)">
                         </div>
 
@@ -250,7 +250,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" onclick="getData()" class=" btn btn-primary">Lấy dữ liệu</button>
+{{--                        <button type="button" onclick="getData()" class=" btn btn-primary">Lấy dữ liệu</button>--}}
                         <button type="button" id="upload-add" class=" btn btn-primary">Thêm</button>
                     </div>
                 </form>

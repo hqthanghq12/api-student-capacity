@@ -24,7 +24,7 @@ Breadcrumbs::for('Management.exam.create', function (BreadcrumbTrail $trail,$id,
 // Quản lí Môn học > Ngân hàng đề thi môn > câu hỏi
 Breadcrumbs::for('Management.exam.question', function (BreadcrumbTrail $trail,$id,$name,$id_exam) {
     $trail->parent('Management.exam',$id,$name);
-    $trail->push('Thêm mới đề' , route('admin.subject.question.index',['id' => $id_exam,'id_subject' => $id,'name' => $name  ]));
+    $trail->push('Bộ câu hỏi' , route('admin.subject.question.index',['id' => $id_exam,'id_subject' => $id,'name' => $name  ]));
 });
 
 

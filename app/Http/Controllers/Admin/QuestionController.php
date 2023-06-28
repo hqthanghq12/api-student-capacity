@@ -346,7 +346,7 @@ class QuestionController extends Controller
         $exams = $this->examModel->find($id_exam);
         $exams->total_questions = $exams->total_questions - 1;
         $exams->save();
-        return redirect()->route('admin.subject.question.index', $id_exam);
+        return response()->json(['message' => 'Thành công'],202);
     }
 
     public function getModelDataStatus($id)
@@ -543,10 +543,11 @@ class QuestionController extends Controller
             ) {
 
                 $count = $count + 1;
+                $arr = [];
                 if ($count > 1) {
                     $data[] = $arr;
                 }
-                $arr = [];
+
                 $arr['imgCode'] = [];
                 $arr['questions']['content'] = $this->catchError($row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['QUESTION']], "Thiếu câu hỏi dòng $line");
                 $arr['imgCode'] = $this->getImgCode($arr['questions']['content'], $arr['imgCode']);

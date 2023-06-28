@@ -161,6 +161,7 @@ class poetry implements MPoetryInterface
                             $query->whereDoesntHave('playtopic.resultCapacity');
                         }]
                 )
+                ->groupBy('id_semeter', 'id_block_subject','id_class', 'room','assigned_user_id','id_campus','exam_date')
                 ->get();
             $totalPoetry = $records->groupBy('id_semeter')->map(function ($group) {
                 return $group->count() ;
@@ -224,6 +225,7 @@ class poetry implements MPoetryInterface
                             $query->whereDoesntHave('playtopic.resultCapacity');
                         }]
                 )
+                ->groupBy('id_semeter', 'id_block_subject','id_class', 'room','assigned_user_id','id_campus','exam_date')
                 ->get();
 
 //            T

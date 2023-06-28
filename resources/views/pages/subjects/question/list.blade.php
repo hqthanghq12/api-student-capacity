@@ -2,7 +2,9 @@
 @section('title', 'Quản lý bộ câu hỏi')
 @section('page-title', 'Quản lý bộ câu hỏi')
 @section('content')
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css" />
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
 
     <div class="mb-5">
         {{ Breadcrumbs::render('Management.exam.question',$id_subject,$name,$id ) }}
@@ -342,9 +344,10 @@
                                                 <li class="my-3">
 
 {{--                                                    {{ route('admin.subject.question.destroy') }}--}}
-                                                        <button onclick="comfirm2('Bạn có chắc muốn xóa không !',{{ $question->id }},{{ $id }})"
+{{--                                                    onclick="comfirm2('Bạn có chắc muốn xóa không !',{{ $question->id }},{{ $id }},{{ $id_subject }},'{{ $name }}')"--}}
+                                                        <button data-question="{{ $question->id }}" data-id="{{ $id }}" data-subject="{{ $id_subject }}" data-name="{{ $name }}"
                                                             style=" background: none ; border: none ; list-style : none"
-                                                            type="button" >
+                                                            type="button" class="btn-delete " >
                                                             <span role="button" class="svg-icon svg-icon-danger svg-icon-2x">
                                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                                     xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
@@ -431,11 +434,74 @@
 @endsection
 
 @section('page-script')
+
+
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
+
+        function notify(message) {
+            new Notify({
+                status: 'success',
+                title: 'Thành công',
+                text: `${message}`,
+                effect: 'fade',
+                speed: 300,
+                customClass: null,
+                customIcon: null,
+                showIcon: true,
+                showCloseButton: true,
+                autoclose: true,
+                autotimeout: 3000,
+                gap: 20,
+                distance: 20,
+                type: 1,
+                position: 'right top'
+            })
+        }
+
+        function wanrning(message) {
+            new Notify({
+                status: 'warning',
+                title: 'Đang chạy',
+                text: `${message}`,
+                effect: 'fade',
+                speed: 300,
+                customClass: null,
+                customIcon: null,
+                showIcon: true,
+                showCloseButton: true,
+                autoclose: true,
+                autotimeout: 3000,
+                gap: 20,
+                distance: 20,
+                type: 1,
+                position: 'right top'
+            })
+        }
+
+        function errors(message) {
+            new Notify({
+                status: 'error',
+                title: 'Lỗi',
+                text: `${message}`,
+                effect: 'fade',
+                speed: 300,
+                customClass: null,
+                customIcon: null,
+                showIcon: true,
+                showCloseButton: true,
+                autoclose: true,
+                autotimeout: 3000,
+                gap: 20,
+                distance: 20,
+                type: 1,
+                position: 'right top'
+            })
+        }
         let url = "/admin/subject/question/{{$id}}?";
         const _token = "{{ csrf_token() }}";
+        let btnDelete = document.querySelectorAll('.btn-delete');
         const sort = '{{ request()->has('sort') ? (request('sort') == 'desc' ? 'asc' : 'desc') : 'asc' }}';
         const start_time =
             '{{ request()->has('start_time') ? \Carbon\Carbon::parse(request('start_time'))->format('m/d/Y h:i:s A') : \Carbon\Carbon::now()->format('m/d/Y h:i:s A') }}'
@@ -499,22 +565,65 @@
 
         })
 
-        function comfirm2(message,questionId,id){
-         Swal.fire({
-                title: 'Xác minh ?',
-                text: `${message}`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Có, Tôi muốn xóa!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = `admin/subject/question/destroy/${questionId}/${id}`;
-                }
+
+
+    </script>
+
+    <script>
+        for (const item of btnDelete) {
+            item.addEventListener("click",() => {
+                const id = item.getAttribute("data-id");
+                const id_question = item.getAttribute("data-question");
+                const id_subject = item.getAttribute("data-subject");
+                const name = item.getAttribute("data-name");
+                console.log(id)
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Bạn có chắc chắn muốn xóa không!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var data = {
+                            '_token' : _token
+                        }
+                        $.ajax({
+                            type:'DELETE',
+                            url: `admin/subject/question/destroy/${id_question}/${id}`,
+                            data: data,
+                            success: (response) => {
+                                console.log(response)
+                                Swal.fire(
+                                    'Deleted!',
+                                    `${response.message}`,
+                                    'success'
+                                )
+                                const elm =  item.parentNode.parentNode.parentNode.parentNode.parentNode;
+                                var seconds = 2000/1000;
+                                elm.style.transition = "opacity "+seconds+"s ease";
+                                elm.style.opacity = 0;
+                                setTimeout(function() {
+                                    elm.remove()
+                                }, 2000);
+                            },
+                            error: function(response){
+                                // console.log(response.responseText)
+                                errors(response.responseText);
+                                // $('#ajax-form').find(".print-error-msg").find("ul").html('');
+                                // $('#ajax-form').find(".print-error-msg").css('display','block');
+                                // $.each( response.responseJSON.errors, function( key, value ) {
+                                //     $('#ajax-form').find(".print-error-msg").find("ul").append('<li>'+value+'</li>');
+                                // });
+
+                            }
+                        });
+
+                    }
+                })
             })
-
-
         }
     </script>
 

@@ -142,7 +142,7 @@ Route::prefix('subject')->group(function () {
     Route::prefix('question')->group(function () {
         Route::get('/{id}/{id_subject}/{name}', [QuestionController::class, 'indexSubject'])->name('admin.subject.question.index');
         Route::get('edit/{id}', [QuestionController::class, 'editSubject'])->name('admin.subject.question.edit');
-        Route::get('destroy/{id}/{id_exam}', [QuestionController::class, 'destroysubject'])->name('admin.subject.question.destroy');
+        Route::delete('destroy/{id}/{id_exam}', [QuestionController::class, 'destroysubject'])->name('admin.subject.question.destroy');
         Route::post('un-status/{id}', [QuestionController::class, 'un_status'])->name('admin.subject.question.un.status');
         Route::post('re-status/{id}', [QuestionController::class, 're_status'])->name('admin.subject.question.re.status');
         Route::delete('delete/{id}', [QuestionController::class, 'deletesubject'])->name('admin.subject.question.delete');

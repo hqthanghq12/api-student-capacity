@@ -23,7 +23,6 @@ class chartController extends Controller
     }
     public function index(){
         $listCampus = Campus::all();
-
         $dataResult = $this->poetry->ListPoetryChart();
         return view('pages.chart.index',['listcampus' => $listCampus,'data' => $dataResult]);
     }

@@ -104,7 +104,7 @@ class subjectController extends Controller
         $validator =  Validator::make(
             $request->all(),
             [
-                'namebasis' => 'required|min:3|unique:subject,name',
+                'namebasis' => 'required|min:2|unique:subject,name',
                 'code_subject' => 'required|unique:subject,code_subject',
                 'status' => 'required'
             ],
@@ -113,7 +113,7 @@ class subjectController extends Controller
                 'namebasis.required' => 'Không để trống tên Môn !',
                 'code_subject.required' => 'Không để trống mã môn !',
                 'code_subject.unique' => 'Mã Môn đã tồn tại',
-                'namebasis.min' => 'Tối thiếu 3 ký tự',
+                'namebasis.min' => 'Tối thiếu 2 ký tự',
                 'status.required' => 'Vui lòng chọn trạng thái'
             ]
         );

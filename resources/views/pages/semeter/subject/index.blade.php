@@ -112,9 +112,9 @@
 {{--                                        Chỉnh sửa--}}
 {{--                                    </button>--}}
 
-                                    <button  class="btn-delete btn btn-danger" data-id="{{ $value->id }}" data-semeter="{{ $id_semeter }}">
-                                        Xóa
-                                    </button>
+{{--                                    <button  class="btn-delete btn btn-danger" data-id="{{ $value->id }}" data-semeter="{{ $id_semeter }}">--}}
+{{--                                        Xóa--}}
+{{--                                    </button>--}}
                                 </td>
                             </tr>
                         @endforeach
