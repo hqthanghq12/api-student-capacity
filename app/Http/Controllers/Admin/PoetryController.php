@@ -327,7 +327,8 @@ class PoetryController extends Controller
             ['id_campus', '=', $request->campus_id_update],
             ['status', '=', $request->status_update],
             ['exam_date', '=', $request->exam_date_update],
-            ['poetry.id', '<>', $id]
+            ['poetry.id', '<>', $id],
+            ['poetry.parent_poetry_id', '<>', $id],
         ])
             ->whereBetween('start_examination_id', [$request->start_examination_id_update, $request->start_examination_id_update + 1])
             ->join('block_subject', 'block_subject.id', '=', 'id_block_subject')
