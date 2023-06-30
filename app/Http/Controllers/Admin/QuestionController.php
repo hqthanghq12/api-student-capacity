@@ -543,10 +543,11 @@ class QuestionController extends Controller
             ) {
 
                 $count = $count + 1;
-                $arr = [];
                 if ($count > 1) {
                     $data[] = $arr;
                 }
+
+                $arr = [];
 
                 $arr['imgCode'] = [];
                 $arr['questions']['content'] = $this->catchError($row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['QUESTION']], "Thiếu câu hỏi dòng $line");
@@ -576,7 +577,6 @@ class QuestionController extends Controller
             }
         }
         $data[] = $arr;
-
         // Lấy ra các đối tượng Drawing trong sheet
         if ($imagesSheet) {
 
