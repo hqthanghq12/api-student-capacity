@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\playtopic;
 use App\Models\poetry;
 use App\Models\subject;
 use App\Models\User;
@@ -206,6 +207,20 @@ class studentPoetryController extends Controller
             return response(['message' => "Xóa Thành công"], 200);
         } catch (\Throwable $th) {
             return response(['message' => 'Xóa thất bại'], 404);
+        }
+    }
+
+    public function rejoin($id)
+    {
+        try {
+            $playtopic = playtopic::query()
+                ->where('student_poetry_id', $id)
+                ->first();
+            $playtopic->update(['rejoined_at' => now()]);
+            DB::table('result_capacity')->where('playtopic_id', $playtopic->id)->delete();
+            return response(['message' => "Thành công cho học sinh thi lại"], 200);
+        } catch (\Throwable $th) {
+            return response(['message' => 'Thất bại khi cho học sinh thi lại'], 404);
         }
     }
 }

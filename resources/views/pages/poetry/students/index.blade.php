@@ -155,39 +155,41 @@
                                         {{ trim($value->exam_time) === "" ? "Chưa có thời gian" : $value->exam_time . " phút" }}
                                     </td>
                                     <td class="text-end">
-                                        {{--                                        <a href="#" class="btn btn-light btn-active-light-primary btn-sm"--}}
-                                        {{--                                           data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions--}}
-                                        {{--                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->--}}
-                                        {{--                                            <span class="svg-icon svg-icon-5 m-0">--}}
-                                        {{--															<svg xmlns="http://www.w3.org/2000/svg" width="24"--}}
-                                        {{--                                                                 height="24" viewBox="0 0 24 24" fill="none">--}}
-                                        {{--																<path--}}
-                                        {{--                                                                    d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"--}}
-                                        {{--                                                                    fill="currentColor"></path>--}}
-                                        {{--															</svg>--}}
-                                        {{--														</span>--}}
-                                        {{--                                            <!--end::Svg Icon--></a>--}}
-                                        {{--                                        <!--begin::Menu-->--}}
-                                        {{--                                        <div--}}
-                                        {{--                                            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"--}}
-                                        {{--                                            data-kt-menu="true" style="">--}}
-                                        {{--                                            <!--begin::Menu item-->--}}
-                                        {{--                                            --}}{{--                                            <div class="menu-item px-3">--}}
-                                        {{--                                            --}}{{--                                                <button  class="menu-link px-3 border border-0 bg-transparent" onclick="location.href='{{ route('admin.poetry.manage.index',$value->id) }}'"   type="button">--}}
-                                        {{--                                            --}}{{--                                                    Chi tiết--}}
-                                        {{--                                            --}}{{--                                                </button>--}}
-                                        {{--                                            --}}{{--                                            </div>--}}
-                                        {{--                                            <!--end::Menu item-->--}}
-                                        {{--                                            <!--begin::Menu item-->--}}
-                                        {{--                                            <div class="menu-item px-3">--}}
-                                        {{--                                                <button href="#"--}}
-                                        {{--                                                        class="btn-delete menu-link border border-0 bg-transparent"--}}
-                                        {{--                                                        data-id="{{ $value->id }}"--}}
-                                        {{--                                                        data-kt-users-table-filter="delete_row">Delete--}}
-                                        {{--                                                </button>--}}
-                                        {{--                                            </div>--}}
-                                        {{--                                            <!--end::Menu item-->--}}
-                                        {{--                                        </div>--}}
+                                        <a href="#" class="btn btn-light btn-active-light-primary btn-sm"
+                                           data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions
+                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                            <span class="svg-icon svg-icon-5 m-0">
+                                        															<svg
+                                                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                                                        width="24"
+                                                                                                        height="24"
+                                                                                                        viewBox="0 0 24 24"
+                                                                                                        fill="none">
+                                        																<path
+                                                                                                            d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
+                                                                                                            fill="currentColor"></path>
+                                        															</svg>
+                                        														</span>
+                                            <!--end::Svg Icon--></a>
+                                        <!--begin::Menu-->
+                                        <div
+                                            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"
+                                            data-kt-menu="true" style="">
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+{{--                                                <button href="#"--}}
+{{--                                                        class="btn-delete menu-link border border-0 bg-transparent"--}}
+{{--                                                        data-id="{{ $value->id }}"--}}
+{{--                                                        data-kt-users-table-filter="delete_row">Thi lại--}}
+{{--                                                </button>--}}
+                                                <button href="#"
+                                                        class="btn-rejoin menu-link border border-0 bg-transparent"
+                                                        data-id="{{ $value->id }}"
+                                                        data-kt-users-table-filter="delete_row">Thi lại
+                                                </button>
+                                            </div>
+                                            <!--end::Menu item-->
+                                        </div>
                                         <!--end::Menu-->
                                     </td>
                                 </tr>
@@ -236,7 +238,8 @@
                         <label for="" class="form-label">Nhập Email</label>
                         {{--                        <input type="email" id="emailStudent" class="form-control">--}}
                         <div class="tag-container">
-                            <input type="text" id="emailStudent" class="form-control" placeholder="<< Mỗi Email cách nhau 1 dấu cách >> Bấm enter để thêm "
+                            <input type="text" id="emailStudent" class="form-control"
+                                   placeholder="<< Mỗi Email cách nhau 1 dấu cách >> Bấm enter để thêm "
                                    onkeydown="handleKeyDown(event)">
                         </div>
 
@@ -250,7 +253,7 @@
                     </div>
 
                     <div class="modal-footer">
-{{--                        <button type="button" onclick="getData()" class=" btn btn-primary">Lấy dữ liệu</button>--}}
+                        {{--                        <button type="button" onclick="getData()" class=" btn btn-primary">Lấy dữ liệu</button>--}}
                         <button type="button" id="upload-add" class=" btn btn-primary">Thêm</button>
                     </div>
                 </form>
@@ -279,7 +282,7 @@
                         <select class="form-select" name="receive_mode" id="receive_mode">
                             <option selected value="">--Cách thức phát đề--</option>
                             <option value="0">Chọn đề cụ thể</option>
-{{--                            <option value="1">Trộn đề ngẫu nhiên</option>--}}
+                            {{--                            <option value="1">Trộn đề ngẫu nhiên</option>--}}
                             <option value="1">Đề ngẫu nhiên</option>
                         </select>
                     </div>
@@ -293,47 +296,47 @@
                         <input type="hidden" name="exam_name" id="exam_name">
                         <input type="hidden" name="id_subject" id="id_subject" value="{{ $id_subject }}">
                     </div>
-{{--                    <div id="random_exam_form" style="display: none;">--}}
-{{--                        <div class="form-group m-10 d-flex flex-column align-items-start">--}}
-{{--                            <label for="" class="form-label">Số lượng câu hỏi</label>--}}
-{{--                            <input type="text" class="form-control" name="questions_quantity" id="questions_quantity"--}}
-{{--                                   placeholder="Số lượng câu hỏi">--}}
-{{--                        </div>--}}
-{{--                        <div class="form-group m-10 row">--}}
-{{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
-{{--                                <label for="" class="form-label">% câu mức độ dễ</label>--}}
-{{--                                <input type="text" class="form-control" name="ez_per_ques" id="ez_per_ques"--}}
-{{--                                       placeholder="0 - 100">--}}
-{{--                            </div>--}}
-{{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
-{{--                                <label for="" class="form-label">% câu mức độ tb</label>--}}
-{{--                                <input type="text" class="form-control" name="me_per_ques" id="me_per_ques"--}}
-{{--                                       placeholder="0 - 100">--}}
-{{--                            </div>--}}
-{{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
-{{--                                <label for="" class="form-label">% câu mức độ khó</label>--}}
-{{--                                <input type="text" class="form-control" name="diff_per_ques" id="diff_per_ques"--}}
-{{--                                       placeholder="0 - 100">--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="form-group m-10 d-flex flex-column align-items-start" id="time_form">--}}
-{{--                        <label for="" class="form-label">Thời gian thi</label>--}}
-{{--                        <select name="" id="time-select" class="form-select">--}}
-{{--                            <option value="15">15 phút</option>--}}
-{{--                            <option value="20">20 phút</option>--}}
-{{--                            <option value="30">30 phút</option>--}}
-{{--                            <option value="50">50 phút</option>--}}
-{{--                            <option value="60">60 phút</option>--}}
-{{--                            <option value="90">90 phút</option>--}}
-{{--                        </select>--}}
-{{--                        <input type="text" class="form-control" name="time" id="time-text"--}}
-{{--                               placeholder="Thời gian thi" style="display: none">--}}
-{{--                        <div class="form-group my-5">--}}
-{{--                            <input type="checkbox" name="custom-time-checkbox" id="custom-time-checkbox" class="form-check-input me-3">--}}
-{{--                            <label for="custom-time-checkbox" class="form-label" style="user-select: none;">Tùy chỉnh thời gian</label>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
+                    {{--                    <div id="random_exam_form" style="display: none;">--}}
+                    {{--                        <div class="form-group m-10 d-flex flex-column align-items-start">--}}
+                    {{--                            <label for="" class="form-label">Số lượng câu hỏi</label>--}}
+                    {{--                            <input type="text" class="form-control" name="questions_quantity" id="questions_quantity"--}}
+                    {{--                                   placeholder="Số lượng câu hỏi">--}}
+                    {{--                        </div>--}}
+                    {{--                        <div class="form-group m-10 row">--}}
+                    {{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
+                    {{--                                <label for="" class="form-label">% câu mức độ dễ</label>--}}
+                    {{--                                <input type="text" class="form-control" name="ez_per_ques" id="ez_per_ques"--}}
+                    {{--                                       placeholder="0 - 100">--}}
+                    {{--                            </div>--}}
+                    {{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
+                    {{--                                <label for="" class="form-label">% câu mức độ tb</label>--}}
+                    {{--                                <input type="text" class="form-control" name="me_per_ques" id="me_per_ques"--}}
+                    {{--                                       placeholder="0 - 100">--}}
+                    {{--                            </div>--}}
+                    {{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
+                    {{--                                <label for="" class="form-label">% câu mức độ khó</label>--}}
+                    {{--                                <input type="text" class="form-control" name="diff_per_ques" id="diff_per_ques"--}}
+                    {{--                                       placeholder="0 - 100">--}}
+                    {{--                            </div>--}}
+                    {{--                        </div>--}}
+                    {{--                    </div>--}}
+                    {{--                    <div class="form-group m-10 d-flex flex-column align-items-start" id="time_form">--}}
+                    {{--                        <label for="" class="form-label">Thời gian thi</label>--}}
+                    {{--                        <select name="" id="time-select" class="form-select">--}}
+                    {{--                            <option value="15">15 phút</option>--}}
+                    {{--                            <option value="20">20 phút</option>--}}
+                    {{--                            <option value="30">30 phút</option>--}}
+                    {{--                            <option value="50">50 phút</option>--}}
+                    {{--                            <option value="60">60 phút</option>--}}
+                    {{--                            <option value="90">90 phút</option>--}}
+                    {{--                        </select>--}}
+                    {{--                        <input type="text" class="form-control" name="time" id="time-text"--}}
+                    {{--                               placeholder="Thời gian thi" style="display: none">--}}
+                    {{--                        <div class="form-group my-5">--}}
+                    {{--                            <input type="checkbox" name="custom-time-checkbox" id="custom-time-checkbox" class="form-check-input me-3">--}}
+                    {{--                            <label for="custom-time-checkbox" class="form-label" style="user-select: none;">Tùy chỉnh thời gian</label>--}}
+                    {{--                        </div>--}}
+                    {{--                    </div>--}}
                     <div class="modal-footer">
                         {{--                        @if($total >= 1)--}}
                         {{--                            <button type="button" id="reloadPlaytopic" class=" btn btn-primary">Phát Lại</button>--}}
@@ -425,6 +428,7 @@
         const table = document.querySelectorAll('#table-data tbody tr');
         let STT = parseInt(table[table.length - 1].childNodes[1].innerText) + 1;
         let btnDelete = document.querySelectorAll('.btn-delete');
+        let btnRejoin = document.querySelectorAll('.btn-rejoin');
         let btnEdit = document.querySelectorAll('.btn-edit');
         let btnUpdate = document.querySelector('#btn-update');
         const _token = "{{ csrf_token() }}";
@@ -519,8 +523,62 @@
     </script>
     {{--    Xóa --}}
     <script>
-        dele(btnDelete);
+        // dele(btnDelete);
+        const students = @json($student).data;
+        rejoin(btnRejoin);
 
+        function rejoin(btns) {
+            for (const btnDeleteElement of btns) {
+                btnDeleteElement.addEventListener("click", () => {
+                    const id = btnDeleteElement.getAttribute("data-id");
+                    const student = students.find(student => student.id == id);
+                    Swal.fire({
+                        title: 'Xác nhận thi lại',
+                        text: `Xác nhận cho học sinh ${student.nameStudent} thi lại!`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Xác nhận'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            var data = {
+                                '_token': _token
+                            }
+                            $.ajax({
+                                type: 'POST',
+                                url: `admin/poetry/manage/rejoin/${id}`,
+                                data: data,
+                                success: (response) => {
+                                    console.log(response)
+                                    Swal.fire(
+                                        'Cập nhật thành công',
+                                        `${response.message}`,
+                                        'success'
+                                    )
+
+                                    setTimeout(function () {
+                                        window.location.reload();
+                                    }, 1000);
+
+                                },
+                                error: function (response) {
+                                    // console.log(response.responseText)
+                                    errors(response.responseText);
+                                    // $('#ajax-form').find(".print-error-msg").find("ul").html('');
+                                    // $('#ajax-form').find(".print-error-msg").css('display','block');
+                                    // $.each( response.responseJSON.errors, function( key, value ) {
+                                    //     $('#ajax-form').find(".print-error-msg").find("ul").append('<li>'+value+'</li>');
+                                    // });
+
+                                }
+                            });
+
+                        }
+                    })
+                })
+            }
+        }
         function dele(btns) {
             for (const btnDeleteElement of btns) {
                 btnDeleteElement.addEventListener("click", () => {

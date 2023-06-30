@@ -165,7 +165,7 @@ class playtopicController extends Controller
             $poetriesId = DB::table('student_poetry')
                 ->select(['id'])
                 ->where('id_poetry', $request->id_poetry)
-                ->pluck('id');
+                ->pluck('id')->toArray();
         }
 //        if ($request->receive_mode == 0) {
 //            $questions = DB::table('exam_questions')
@@ -232,24 +232,69 @@ class playtopicController extends Controller
         if ($request->receive_mode == 0) {
             $exam_id = $request->exam_id;
             $exam_name = $request->exam_name;
+            $questions = (array)DB::table('exam_questions')
+                ->select(['exam_questions.question_id'])
+                ->where('exam_id', $exam_id)
+                ->pluck('question_id')->toArray();
+            foreach ($poetriesId as $poetry_id) {
+                shuffle($questions);
+                $dataInsertArr[] = [
+                    'student_poetry_id' => $poetry_id,
+                    'has_received_exam' => 1,
+                    'exam_name' => $exam_name,
+                    'questions_order' => json_encode($questions),
+                    'exam_time' => $request->time,
+                ];
+            }
         } else {
-            $examsId = DB::table('exams')->select('id', 'name')->where('subject_id', $request->id_subject)->get()->pluck('name', 'id')->toArray();
-            $exam_id = array_rand($examsId);
-            $exam_name = $examsId[$exam_id];
-        }
-        $questions = (array)DB::table('exam_questions')
-            ->select(['exam_questions.question_id'])
-            ->where('exam_id', $exam_id)
-            ->pluck('question_id')->toArray();
-        foreach ($poetriesId as $poetry_id) {
-            shuffle($questions);
-            $dataInsertArr[] = [
-                'student_poetry_id' => $poetry_id,
-                'has_received_exam' => 1,
-                'exam_name' => $exam_name,
-                'questions_order' => json_encode($questions),
-                'exam_time' => $request->time,
-            ];
+            $examsId = $this->modelExam
+                ->with('questions')
+                ->select('id', 'name')
+                ->where('subject_id', $request->id_subject)
+//                ->where('id', '664')
+                ->get();
+            if ($examsId->count() == 0) {
+                return response("Không có đề trong ngân hàng đề", 404);
+            }
+            $questionsByExamId = DB::table('exam_questions')
+                ->select(['exam_questions.question_id', 'exam_questions.id', 'exam_questions.exam_id'])
+                ->whereIn('exam_questions.exam_id', $examsId->pluck('id'))
+//                ->where('exam_questions.exam_id', '664')
+                ->get()
+                ->groupBy('exam_id')
+                ->map(function ($item) {
+                    return $item->pluck('question_id')->toArray();
+                });
+            $exams = [];
+            $examsCount = $examsId->count();
+            $studentsCount = collect($poetriesId)->count();
+            $studentPerExam = (int)round($studentsCount / $examsCount);
+            foreach ($examsId as $exam) {
+                $studentsGet = ($studentsCount < $studentPerExam) ? $studentsCount : $studentPerExam;
+                $studentsCount -= $studentsGet;
+                $exams[$exam->id] = [
+                    'id' => $exam->id,
+                    'name' => $exam->name,
+                    'total' => $studentsGet,
+                ];
+            }
+            shuffle($poetriesId);
+            foreach ($poetriesId as $poetry_id) {
+                $randomExamId = array_rand($exams, 1);
+                $questions = $questionsByExamId[$randomExamId];
+                $exam_name = $exams[$randomExamId]['name'];
+                if (--$exams[$randomExamId]['total'] <= 0) {
+                    unset($exams[$randomExamId]);
+                }
+                shuffle($questions);
+                $dataInsertArr[] = [
+                    'student_poetry_id' => $poetry_id,
+                    'has_received_exam' => 1,
+                    'exam_name' => $exam_name,
+                    'questions_order' => json_encode($questions),
+                    'exam_time' => $request->time,
+                ];
+            }
         }
         DB::table('playtopic')->whereIn('student_poetry_id', $poetriesId)->delete();
         DB::table('playtopic')->insert($dataInsertArr);
