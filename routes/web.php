@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::redirect('/', '/admin');
+Route::redirect('/', '/admin/chart');
 Route::group(['prefix' => 'auth', 'middleware' => "guest"], function () {
     Route::get('login', [AuthController::class, 'adminLogin'])->name('login');
 
