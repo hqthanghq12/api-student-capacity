@@ -179,9 +179,41 @@
                             <th scope="col">Lớp thi</th>
                             <th scope="col">Phòng</th>
                             <th scope="col">Ca thi</th>
-                            <th scope="col">Giáo viên</th>
+                            <th scope="col">Giảng viên</th>
                             <th scope="col">Cơ sở</th>
                             <th scope="col">Trạng thái</th>
+                            <th scope="col">
+                                <a href="{{ request()->getPathInfo() }}?{{ collect(request()->except('sort'))->map(function ($item, $key) {return $key . '=' . $item;})->implode('&') . '&sort=' . $sort }}">
+                                    Số sinh viên
+                                    <span role="button" data-key="name" data-bs-toggle="tooltip" title=""
+                                          class=" svg-icon svg-icon-primary  svg-icon-2x format-database"
+                                          data-bs-original-title="Lọc số sinh viên">
+                                <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo2/dist/../src/media/svg/icons/Navigation/Up-down.svg--><svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                            style="width: 14px !important ; height: 14px !important" width="24px"
+                                            height="24px" viewBox="0 0 24 24" version="1.1">
+                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                <polygon points="0 0 24 0 24 24 0 24"></polygon>
+                                                <rect fill="#000000" opacity="0.3"
+                                                      transform="translate(6.000000, 11.000000) rotate(-180.000000) translate(-6.000000, -11.000000) "
+                                                      x="5" y="5" width="2" height="12" rx="1"></rect>
+                                                <path
+                                                    d="M8.29289322,14.2928932 C8.68341751,13.9023689 9.31658249,13.9023689 9.70710678,14.2928932 C10.0976311,14.6834175 10.0976311,15.3165825 9.70710678,15.7071068 L6.70710678,18.7071068 C6.31658249,19.0976311 5.68341751,19.0976311 5.29289322,18.7071068 L2.29289322,15.7071068 C1.90236893,15.3165825 1.90236893,14.6834175 2.29289322,14.2928932 C2.68341751,13.9023689 3.31658249,13.9023689 3.70710678,14.2928932 L6,16.5857864 L8.29289322,14.2928932 Z"
+                                                    fill="#000000" fill-rule="nonzero"></path>
+                                                <rect fill="#000000" opacity="0.3"
+                                                      transform="translate(18.000000, 13.000000) scale(1, -1) rotate(-180.000000) translate(-18.000000, -13.000000) "
+                                                      x="17" y="7" width="2" height="12" rx="1"></rect>
+                                                <path
+                                                    d="M20.2928932,5.29289322 C20.6834175,4.90236893 21.3165825,4.90236893 21.7071068,5.29289322 C22.0976311,5.68341751 22.0976311,6.31658249 21.7071068,6.70710678 L18.7071068,9.70710678 C18.3165825,10.0976311 17.6834175,10.0976311 17.2928932,9.70710678 L14.2928932,6.70710678 C13.9023689,6.31658249 13.9023689,5.68341751 14.2928932,5.29289322 C14.6834175,4.90236893 15.3165825,4.90236893 15.7071068,5.29289322 L18,7.58578644 L20.2928932,5.29289322 Z"
+                                                    fill="#000000" fill-rule="nonzero"
+                                                    transform="translate(18.000000, 7.500000) scale(1, -1) translate(-18.000000, -7.500000) "></path>
+                                            </g>
+                                        </svg>
+                                        <!--end::Svg Icon-->
+                                    </span>
+                                </a>
+                            </th>
                             <th colspan="2"></th>
                         </tr>
                         </thead>
@@ -221,53 +253,20 @@
                                                    @if(auth()->user()->hasRole('teacher')) disabled @endif>
                                         </div>
                                     </td>
+                                    <td>
+                                        {{ $value->student_count }}
+                                    </td>
                                     {{--                                <td>{{ $value->start_time == null ? 'Chưa có thời gian bắt đầu' : $value->start_time	 }}</td>--}}
                                     {{--                                <td>{{ $value->end_time == null ? 'Chưa có thời gian kết thúc' :   $value->end_time }}</td>--}}
                                     <td class="text-end">
                                         @if ($value->status == 1)
-                                            <button class="btn btn-light btn-active-light-primary btn-sm"
-                                                    data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                                Actions
-                                                <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
-                                                <span class="svg-icon svg-icon-5 m-0">
-															<svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                 height="24" viewBox="0 0 24 24" fill="none">
-																<path
-                                                                    d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
-                                                                    fill="currentColor"></path>
-															</svg>
-														</span>
-                                                <!--end::Svg Icon--></button>
-                                            <!--begin::Menu-->
-                                            <div
-                                                class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"
-                                                data-kt-menu="true" style="">
-                                                <!--begin::Menu item-->
-                                                <div class="menu-item px-3">
-                                                    <button class="menu-link px-3 border border-0 bg-transparent"
-                                                            onclick="location.href='{{ route('admin.poetry.manage.index',['id' => $value->id,'id_poetry' =>$id_poetry,'id_block' => $idBlock ]) }}'"
-                                                            type="button">
-                                                        Chi tiết
-                                                    </button>
-                                                </div>
-                                                @if(!auth()->user()->hasRole('teacher'))
-                                                    <div class="menu-item px-3">
-                                                        <button
-                                                            class="btn-edit menu-link px-3 border border-0 bg-transparent"
-                                                            data-id="{{ $value->id }}"
-                                                            data-semeter="{{ $value->id_semeter }}">
-                                                            Chỉnh sửa
-                                                        </button>
-                                                    </div>
-                                                @endif
-                                                <!--end::Menu item-->
-                                                <!--begin::Menu item-->
-                                                {{--                                        <div class="menu-item px-3">--}}
-                                                {{--                                            <button  class="btn-delete menu-link border border-0 bg-transparent" data-id="{{ $value->id }}" data-kt-users-table-filter="delete_row">Delete</button>--}}
-                                                {{--                                        </div>--}}
-                                                <!--end::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <button class="menu-link px-3 border border-0 bg-transparent"
+                                                        onclick="location.href='{{ route('admin.poetry.manage.index',['id' => $value->id,'id_poetry' =>$id_poetry,'id_block' => $idBlock ]) }}'"
+                                                        type="button">
+                                                    Phát đề thi
+                                                </button>
                                             </div>
-                                            <!--end::Menu-->
                                         @endif
                                     </td>
                                 </tr>
@@ -429,7 +428,7 @@
                         </div>
                         <div class="form-group m-10">
                             <select class="form-select" name="assigned_user" id="assigned_user">
-                                <option selected value="">--Giáo viên--</option>
+                                <option selected value="">--Giảng viên--</option>
                                 @foreach($teachers as $teacher)
                                     <option
                                         value="{{ $teacher->id }}|{{ $teacher->campus_id }}">{{ $teacher->name }} - Cơ
@@ -520,7 +519,7 @@
                         </div>
                         <div class="form-group m-10">
                             <select class="form-select" name="assigned_user" id="assigned_user_update">
-                                <option selected value="">--Giáo viên--</option>
+                                <option selected value="">--Giảng viên--</option>
                                 @foreach($teachers as $teacher)
                                     <option
                                         value="{{ $teacher->id }}|{{ $teacher->campus_id }}">{{ $teacher->name }} - Cơ

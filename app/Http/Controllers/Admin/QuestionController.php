@@ -914,7 +914,8 @@ class QuestionController extends Controller
             ->whereIn('exam_date', $ngayThiArr)
             ->where('id_campus', $campus_id)
             ->where('id_semeter', $id_semeter)
-//            ->where('status', 1)
+            ->where('status', '1')
+            ->where('parent_poetry_id', '0')
             ->get()
             ->mapWithKeys(function ($item) {
                 $itemArr = (array)$item;

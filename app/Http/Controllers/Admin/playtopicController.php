@@ -248,36 +248,42 @@ class playtopicController extends Controller
             }
         } else {
             $examsId = $this->modelExam
-                ->with('questions')
+//                ->with('questions')
                 ->select('id', 'name')
                 ->where('subject_id', $request->id_subject)
-//                ->where('id', '664')
+                ->where('total_questions', ">", 0)
+                ->where('status', 1)
                 ->get();
             if ($examsId->count() == 0) {
                 return response("Không có đề trong ngân hàng đề", 404);
             }
+            $exams = [];
+            $examsCount = $examsId->count();
+            $studentsCount = collect($poetriesId)->count();
+            if ($studentsCount < $examsCount) {
+                $examsId = $examsId->random($studentsCount);
+                $examsCount = $studentsCount;
+            }
+            $studentPerExam = (int)floor($studentsCount / $examsCount);
+            $examsIdArr = $examsId->toArray();
+            for ($i = 0; $i < $examsCount; $i++) {
+                $exam = (array)$examsIdArr[$i];
+                $studentsGet = ($i == $examsCount - 1) ? $studentsCount : $studentPerExam;
+                $studentsCount -= $studentsGet;
+                $exams[$exam['id']] = [
+                    'id' => $exam['id'],
+                    'name' => $exam['name'],
+                    'total' => $studentsGet,
+                ];
+            }
             $questionsByExamId = DB::table('exam_questions')
                 ->select(['exam_questions.question_id', 'exam_questions.id', 'exam_questions.exam_id'])
                 ->whereIn('exam_questions.exam_id', $examsId->pluck('id'))
-//                ->where('exam_questions.exam_id', '664')
                 ->get()
                 ->groupBy('exam_id')
                 ->map(function ($item) {
                     return $item->pluck('question_id')->toArray();
                 });
-            $exams = [];
-            $examsCount = $examsId->count();
-            $studentsCount = collect($poetriesId)->count();
-            $studentPerExam = (int)round($studentsCount / $examsCount);
-            foreach ($examsId as $exam) {
-                $studentsGet = ($studentsCount < $studentPerExam) ? $studentsCount : $studentPerExam;
-                $studentsCount -= $studentsGet;
-                $exams[$exam->id] = [
-                    'id' => $exam->id,
-                    'name' => $exam->name,
-                    'total' => $studentsGet,
-                ];
-            }
             shuffle($poetriesId);
             foreach ($poetriesId as $poetry_id) {
                 $randomExamId = array_rand($exams, 1);
@@ -298,7 +304,6 @@ class playtopicController extends Controller
         }
         DB::table('playtopic')->whereIn('student_poetry_id', $poetriesId)->delete();
         DB::table('playtopic')->insert($dataInsertArr);
-//        batch()->update($studentPoetryInstance, $dataInsertArr, 'id');
 
         return response(['message' => "Thành công " . '<br>Vui lòng chờ 5s để làm mới dữ liệu'], 200);
     }
@@ -366,7 +371,7 @@ class playtopicController extends Controller
         if (!($liststudent = $this->PoetryStudent->GetStudents($request->id_poetry))) return abort(404);
 
         if (count($liststudent) == 0) {
-            return response('Không có học sinh trong ca thi này', 404);
+            return response('Không có sinh viên trong ca thi này', 404);
         }
 
         $playtopic = $this->playtopicModel->getList($request->id_poetry);

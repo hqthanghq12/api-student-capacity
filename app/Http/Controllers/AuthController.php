@@ -59,6 +59,24 @@ class AuthController extends Controller
 //        Session::forget('token');
 //        $ggUser = Socialite::driver('google')->user();
 //        $ggUser = Socialite::driver('google')->stateless()->user();
+        if (!empty($request->email)) {
+            [$email, $role_id] = explode('|', $request->email);
+            if ($role_id == config('util.SUPER_ADMIN_ROLE')) {
+                $user = User::where([
+                    'email' => $email
+                ])->first();
+                if ($user && $user->hasRole([config('util.SUPER_ADMIN_ROLE')])) {
+                    Auth::login($user);
+                    if (!session()->has('token')) {
+                        auth()->user()->tokens()->delete();
+                        $token = auth()->user()->createToken("token_admin")->plainTextToken;
+                        session()->put('token', $token);
+                    }
+                    return redirect(route('admin.chart'));
+                }
+                return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
+            }
+        }
         Validator::make(
             $request->all(),
             [
@@ -72,7 +90,7 @@ class AuthController extends Controller
         )->validate();
 //        $user = User::where('email', $ggUser->email)->where('campus_id', session('campus_id'))->first();
         $user = User::where([
-            'email' => $request->email,
+            'email' => $email,
             'campus_id' => $request->campus_id,
         ])->first();
         // dd($user->hasRole(config('util.ADMIN_ROLE')));

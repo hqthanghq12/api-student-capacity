@@ -10,6 +10,7 @@ use App\Models\semeter;
 use App\Models\studentPoetry;
 use App\Models\subject;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class poetry implements MPoetryInterface
 {
@@ -19,10 +20,12 @@ class poetry implements MPoetryInterface
     {
     }
 
-    public function ListPoetry($id, $idblock, $request)
+    public function ListPoetry($id, $idblock, $request, $orderBy = null)
     {
         try {
             $records = $this->modelPoetry
+                ->query()
+                ->select('poetry.*', DB::raw('COALESCE(COUNT(student_poetry.id), 0) as student_count'))
                 ->with([
                     'child_poetry',
                     'semeter',
@@ -32,29 +35,35 @@ class poetry implements MPoetryInterface
                     'block_subject'
                 ])
                 ->where([
-                    ['id_semeter', $id],
-                    ['parent_poetry_id', 0]
+                    ['poetry.id_semeter', $id],
+                    ['poetry.parent_poetry_id', 0]
                 ])
+                ->groupBy('poetry.id')
+                ->leftJoin('student_poetry', 'poetry.id', '=', 'student_poetry.id_poetry')
                 ->withWhereHas('block_subject', function ($q) use ($idblock) {
                     $q->where('id_block', $idblock);
                 });
             if (!empty($request->gv)) {
-                $records->where('assigned_user_id', $request->gv);
+                $records->where('poetry.assigned_user_id', $request->gv);
             }
             if (!empty($request->ct)) {
-                $records->where('start_examination_id', $request->ct);
+                $records->where('poetry.start_examination_id', $request->ct);
             }
             if (!empty($request->s)) {
-                $records->where('id_block_subject', $request->s);
+                $records->where('poetry.id_block_subject', $request->s);
             }
             if (!empty($request->c)) {
-                $records->where('id_class', $request->c);
+                $records->where('poetry.id_class', $request->c);
+            }
+            if (!empty($orderBy)) {
+                $records
+                    ->orderBy('student_count', $orderBy);
             }
             if (!auth()->user()->hasRole('super admin')) {
-                $records->where('id_campus', auth()->user()->campus->id);
+                $records->where('poetry.id_campus', auth()->user()->campus->id);
             }
             if (auth()->user()->hasRole('teacher')) {
-                $records->where('assigned_user_id', auth()->user()->id);
+                $records->where('poetry.assigned_user_id', auth()->user()->id);
             }
 //        foreach ($records->paginate(10) as $item) {
 //            dd($item->block_subject);

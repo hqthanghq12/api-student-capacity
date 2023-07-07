@@ -37,7 +37,7 @@
                     <table id="table-data" class="table table-row-bordered table-row-gray-300 gy-7  table-hover ">
                         <thead>
                         <tr>
-                            <th scope="col">Tên học sinh
+                            <th scope="col">Tên sinh viên
                                 <span role="button" data-key="name" data-bs-toggle="tooltip" title=""
                                       class=" svg-icon svg-icon-primary  svg-icon-2x format-database"
                                       data-bs-original-title="Lọc theo tên đánh giá năng lực">

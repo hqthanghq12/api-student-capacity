@@ -1,34 +1,45 @@
 <?php
 
 namespace App\Services\Modules\MSemeter;
+
 use App\Models\poetry as modelPoetry;
 use App\Models\semeter as SemeterModel;
+
 class Semeter implements MSemeterInterface
 {
 
-    public function __construct(private SemeterModel $modelSemeter,   private modelPoetry $modelPoetry){
+    public function __construct(private SemeterModel $modelSemeter, private modelPoetry $modelPoetry)
+    {
 
     }
-    public function ListSemeter(){
+
+    public function ListSemeter()
+    {
         return $this->modelSemeter::all();
     }
+
     public function GetSemeter()
     {
-        $data = $this->modelSemeter::paginate(5);
+        $dataQuery = $this->modelSemeter::query();
+        if (!(auth()->user()->hasRole('super admin'))) {
+            $dataQuery->where('id_campus', auth()->user()->campus_id);
+        }
+        $data = $dataQuery->paginate(5);
         return $data;
     }
 
     public function GetSemeterAPI()
     {
         $data = $this->modelSemeter::paginate(5);
-        foreach ($data as $value){
-            $value['total_poetry'] = $this->modelPoetry->where('id_semeter',$value->id)->count();
+        foreach ($data as $value) {
+            $value['total_poetry'] = $this->modelPoetry->where('id_semeter', $value->id)->count();
         }
 
         return $data;
     }
 
-    public function getItemSemeter($id){
+    public function getItemSemeter($id)
+    {
         try {
             return $this->modelSemeter->find($id);
         } catch (\Exception $e) {
@@ -36,7 +47,8 @@ class Semeter implements MSemeterInterface
         }
     }
 
-    public function getName($id){
+    public function getName($id)
+    {
         try {
             return $this->modelSemeter->find($id)->name;
         } catch (\Exception $e) {
@@ -44,9 +56,10 @@ class Semeter implements MSemeterInterface
         }
     }
 
-    public function getListByCampus($id_campus){
+    public function getListByCampus($id_campus)
+    {
         try {
-            return $this->modelSemeter->where('id_campus',$id_campus)->get();
+            return $this->modelSemeter->where('id_campus', $id_campus)->get();
         } catch (\Exception $e) {
             return $e;
         }

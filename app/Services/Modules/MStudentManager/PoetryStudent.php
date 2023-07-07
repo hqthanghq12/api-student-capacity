@@ -153,7 +153,7 @@ class PoetryStudent implements MPoetryStudentsInterface
             }
             return $users;
         } catch (\Exception $e) {
-            return 'Không tồn tại học sinh có email là ' . $email;
+            return 'Không tồn tại sinh viên có email là ' . $email;
         }
     }
 

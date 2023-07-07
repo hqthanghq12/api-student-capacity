@@ -73,7 +73,7 @@
                                         value="{{ $campus->id }}"
                                         @if(old('campus_id') === $campus->id) selected @endif
                                     >
-                                        CĐ {{ $campus->name }}
+                                        PC {{ $campus->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -89,9 +89,9 @@
                                         value="{{ $user->email }}"
                                         @if(old('email') === $user->email) selected @endif
                                     >
-                                        {{ $user->email }} - {{ $user->roles[0]->name == 'super admin' ? "Admin HO" : $user->roles[0]->name }} @if($user->roles[0]->name !== 'super admin')
-                                            - Cơ
-                                            sở {{ $user->campus->name }}
+                                        {{ $user->email }}
+                                        - {{ $user->roles[0]->name == 'super admin' ? "Admin HO" : $user->roles[0]->name }} @if($user->roles[0]->name !== 'super admin')
+                                            - Cơ sở {{ $user->campus->name }}
                                         @endif
                                     </option>
                                 @endforeach
@@ -117,14 +117,14 @@
         </div>
         <!--end::Content-->
         <!--begin::Footer-->
-        <div class="d-flex flex-center flex-column-auto p-10">
-            <!--begin::Links-->
-            <div class="d-flex align-items-center fw-bold fs-6">
-                <a href="javascript:;" class="text-muted text-hover-primary px-2">Phát triển bởi Xưởng thực hành BM
-                    CNTT - Fpoly HN</a>
-            </div>
-            <!--end::Links-->
-        </div>
+        {{--        <div class="d-flex flex-center flex-column-auto p-10">--}}
+        {{--            <!--begin::Links-->--}}
+        {{--            <div class="d-flex align-items-center fw-bold fs-6">--}}
+        {{--                <a href="javascript:;" class="text-muted text-hover-primary px-2">Phát triển bởi Xưởng thực hành BM--}}
+        {{--                    CNTT - Fpoly HN</a>--}}
+        {{--            </div>--}}
+        {{--            <!--end::Links-->--}}
+        {{--        </div>--}}
         <!--end::Footer-->
     </div>
     <!--end::Authentication - Sign-in-->
@@ -134,6 +134,33 @@
 <!--begin::Javascript-->
 <script>
     var hostUrl = "{{ asset('assets') . '/' }}";
+</script>
+<script>
+    const users = @json($users);
+    const campusElement = document.querySelector('select[name="campus_id"]');
+    const userElement = document.querySelector('select[name="email"]');
+    const adminHo = users.filter(user => user.roles[0].name === 'super admin');
+    const usersNotAdminHo = users.filter(user => user.roles[0].name !== 'super admin');
+    campusElement.addEventListener('change', e => {
+        userFil = usersNotAdminHo.filter(user => user.campus_id == e.target.value);
+        userFil = [...adminHo, ...userFil];
+        userElement.innerHTML =
+            `<option value="">Chọn tài khoản</option>`
+            + userFil.map(user => {
+                let name = user.roles[0].name === 'super admin' ? "Admin HO" : user.roles[0].name;
+                let text = `${user.email} - ${name}`
+                if (user.roles[0].name !== 'super admin') {
+                    text += ` - Cơ sở ${user.campus.name}`;
+                }
+
+                return `<option value="${user.email}|${user.roles[0].id}">${text}</option>`
+            }).join('')
+        ;
+    })
+    userFil = adminHo;
+    userElement.innerHTML =
+        `<option value="">Chọn tài khoản</option>`
+        + userFil.map(user => `<option value="${user.email}|${user.roles[0].id}">${user.email} - Admin HO</option>`).join('');
 </script>
 <!--begin::Global Javascript Bundle(used by all pages)-->
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>

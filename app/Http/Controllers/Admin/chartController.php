@@ -22,7 +22,11 @@ class chartController extends Controller
     {
     }
     public function index(){
-        $listCampus = Campus::all();
+        $listCampusQuery = Campus::query();
+        if (!(auth()->user()->hasRole('super admin'))) {
+            $listCampusQuery->where('id', auth()->user()->campus_id);
+        }
+        $listCampus = $listCampusQuery->get();
         $dataResult = $this->poetry->ListPoetryChart();
         return view('pages.chart.index',['listcampus' => $listCampus,'data' => $dataResult]);
     }

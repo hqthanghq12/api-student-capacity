@@ -122,7 +122,7 @@
                         @else
                             <tr id="error_null">
                                 <td colspan="4">
-                                    <h1 class="text-center">Không có học sinh nào trong ca thi</h1>
+                                    <h1 class="text-center">Không có sinh viên nào trong ca thi</h1>
                                 </td>
                             </tr>
                         @endif

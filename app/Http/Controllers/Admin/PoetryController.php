@@ -36,9 +36,15 @@ class PoetryController extends Controller
 
     public function index($id, $idblock, Request $request)
     {
-//        $data = $this->oneindexApi(140);
-//        dd($data);
-        $data = $this->poetry->ListPoetry($id, $idblock, $request);
+//        dd($request->except('sort'));
+        $sort = $request->sort;
+        $data = $this->poetry->ListPoetry($id, $idblock, $request, $sort);
+        if (!empty($sort)) {
+            $sort = $sort == 'asc' ? 'desc' : 'asc';
+        } else {
+            $sort = 'asc';
+        }
+        $data->appends($request->query());
         $semeter = $this->semeter->ListSemeter();
         $name = $this->semeter->getName($id);
         $listExamination = $this->examination->getList();
@@ -69,6 +75,7 @@ class PoetryController extends Controller
             'listClass' => $listClass,
             'blockSubjectIdToName' => $blockSubjectIdToName,
             'teachers' => $teachers,
+            'sort' => $sort,
         ]);
     }
 
@@ -144,7 +151,7 @@ class PoetryController extends Controller
                 'finish_examination_id.required' => 'Vui lòng chọn ca kết thúc!',
                 'finish_examination_id.gte' => 'Ca thi kết thúc không được nhỏ hơn ca thi bắt đầu!',
                 'class_id.required' => 'Vui lòng chọn lớp!',
-                'assigned_user.required' => 'Vui lòng chọn giáo viên!',
+                'assigned_user.required' => 'Vui lòng chọn giảng viên!',
                 'status.required' => 'Vui lòng chọn trạng thái',
                 'exam_date.required' => 'Vui lòng chọn ngày thi',
                 'exam_date.after' => 'Ngày thi không được nhỏ hơn ngày hôm nay',
@@ -170,7 +177,7 @@ class PoetryController extends Controller
         }
         [$assigned_user_id, $assigned_user_campus_id] = explode('|', $request->assigned_user);
         if ($request->campus_id != $assigned_user_campus_id) {
-            return response("Vui lòng chọn giáo viên phù hợp với cơ sở", 404);
+            return response("Vui lòng chọn giảng viên phù hợp với cơ sở", 404);
         }
 
         $checkIsset = DB::table('poetry')->where([
@@ -181,10 +188,14 @@ class PoetryController extends Controller
             ['exam_date', '=', $request->exam_date],
         ])
             ->whereBetween('start_examination_id', [$request->start_examination_id, $request->start_examination_id + 1])
+            ->where([
+                ['poetry.status', '1'],
+                ['parent_poetry_id', '0']
+            ])
             ->join('block_subject', 'block_subject.id', '=', 'id_block_subject')
             ->first();
         if (!empty($checkIsset)) {
-            return response("Phòng thi này đã tồn tại ca thi bạn chọn, vui lòng chọn lựa chọn khác", 404);
+            return response("Phòng thi này đã tồn tại ca thi, vui lòng chọn lựa chọn khác", 404);
         }
         $poetryIdMax = DB::table('poetry')->max('id') ?? 0;
         $data = [
@@ -244,8 +255,8 @@ class PoetryController extends Controller
     {
         try {
             $this->poetry->getItempoetry($id)->delete();
-            DB::table('student_poetry')->where('id_poetry',$id)->delete();
-            return response( ['message' => "Xóa Thành công"],200);
+            DB::table('student_poetry')->where('id_poetry', $id)->delete();
+            return response(['message' => "Xóa Thành công"], 200);
         } catch (\Throwable $th) {
             return response(['message' => 'Xóa thất bại'], 404);
         }
@@ -292,7 +303,7 @@ class PoetryController extends Controller
                 'finish_examination_id_update.required' => 'Vui lòng chọn ca kết thúc!',
                 'finish_examination_id_update.gte' => 'Ca thi kết thúc không được nhỏ hơn ca thi bắt đầu!',
                 'class_id_update.required' => 'Vui lòng chọn lớp!',
-                'assigned_user_update.required' => 'Vui lòng chọn giáo viên!',
+                'assigned_user_update.required' => 'Vui lòng chọn giảng viên!',
                 'status_update.required' => 'Vui lòng chọn trạng thái',
                 'exam_date_update.required' => 'Vui lòng chọn ngày thi',
                 'exam_date_update.after' => 'Ngày thi không được nhỏ hơn ngày hôm nay',
@@ -318,7 +329,7 @@ class PoetryController extends Controller
         }
         [$assigned_user_id_update, $assigned_user_campus_id_update] = explode('|', $request->assigned_user_update);
         if ($request->campus_id_update != $assigned_user_campus_id_update) {
-            return response("Vui lòng chọn giáo viên phù hợp với cơ sở", 404);
+            return response("Vui lòng chọn giảng viên phù hợp với cơ sở", 404);
         }
 
         $checkIsset = DB::table('poetry')->where([

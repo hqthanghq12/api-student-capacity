@@ -141,6 +141,10 @@ class studentPoetryController extends Controller
 
         }
         $id_poetry = $request->id_poetry;
+        $subject_id = DB::table('poetry')
+            ->where('poetry.id', $id_poetry)
+            ->join('block_subject', 'poetry.id_block_subject', '=', 'block_subject.id')
+            ->first()->id_subject;
 //        $data = null;
         $studentsQuery = User::query()
             ->with('poetry_student')
@@ -159,30 +163,81 @@ class studentPoetryController extends Controller
         $emailFiltered = $students->pluck('email')->toArray();
         $userSuccessCount = count($emailFiltered);
         $userFailedCount = count(array_diff($request->emailStudent, $emailFiltered));
-//        foreach ($request->emailStudent as $value) {
-//            $data[] = $this->PoetryStudent->findUser($value, $request->id_poetry);
-//        }
-//        $errors = 0;
-//        $data = array_filter($data, function ($item) use (&$errors) {
-//            if (!is_object($item)) {
-//                $errors++;
-//            }
-//            return is_object($item);
-//        });
-
-
+        $poetriesId = [];
+        $maxStudentPoetryId = DB::table('student_poetry')->max('id');
         $dataInsertArr = [];
         foreach ($students as $object) {
             $dataInsert = [
+                'id' => ++$maxStudentPoetryId,
                 'id_poetry' => $id_poetry,
                 'id_student' => $object->id,
                 'status' => $request->status,
                 'created_at' => now(),
                 'updated_at' => null
             ];
+            $poetriesId[] = $maxStudentPoetryId;
             $dataInsertArr[] = $dataInsert;
         }
+        $dataInsertPlaytopicArr = [];
+        if (!empty($poetriesId)) {
+            $examsId = DB::table('exams')
+                ->select('id', 'name')
+                ->where('subject_id', $subject_id)
+                ->where('total_questions', ">", 0)
+                ->where('status', 1)
+                ->get();
+            if ($examsId->count() == 0) {
+                return response("Không có đề trong ngân hàng đề", 404);
+            }
+            $exams = [];
+            $examsCount = $examsId->count();
+            $studentsCount = collect($poetriesId)->count();
+            if ($studentsCount < $examsCount) {
+                $examsId = $examsId->random($studentsCount);
+                $examsCount = $studentsCount;
+            }
+            $studentPerExam = (int)floor($studentsCount / $examsCount);
+            $examsIdArr = $examsId->toArray();
+            for ($i = 0; $i < $examsCount; $i++) {
+                $exam = (array)$examsIdArr[$i];
+                $studentsGet = ($i == $examsCount - 1) ? $studentsCount : $studentPerExam;
+                $studentsCount -= $studentsGet;
+                $exams[$exam['id']] = [
+                    'id' => $exam['id'],
+                    'name' => $exam['name'],
+                    'total' => $studentsGet,
+                ];
+            }
+            $questionsByExamId = DB::table('exam_questions')
+                ->select(['exam_questions.question_id', 'exam_questions.id', 'exam_questions.exam_id'])
+                ->whereIn('exam_questions.exam_id', $examsId->pluck('id'))
+                ->get()
+                ->groupBy('exam_id')
+                ->map(function ($item) {
+                    return $item->pluck('question_id')->toArray();
+                });
+            shuffle($poetriesId);
+            foreach ($poetriesId as $poetry_id) {
+                $randomExamId = array_rand($exams, 1);
+                $questions = $questionsByExamId[$randomExamId];
+                $exam_name = $exams[$randomExamId]['name'];
+                if (--$exams[$randomExamId]['total'] <= 0) {
+                    unset($exams[$randomExamId]);
+                }
+                shuffle($questions);
+                $dataInsertPlaytopicArr[] = [
+                    'student_poetry_id' => $poetry_id,
+                    'has_received_exam' => 1,
+                    'exam_name' => $exam_name,
+                    'questions_order' => json_encode($questions),
+                    'exam_time' => 90,
+                ];
+            }
+        }
         DB::table('student_poetry')->insert($dataInsertArr);
+        if (!empty($dataInsertPlaytopicArr)) {
+            DB::table('playtopic')->insert($dataInsertPlaytopicArr);
+        }
         return response(['message' => "Thành công " . $userSuccessCount . '<br> Thất bại ' . $userFailedCount . '<br>Vui lòng chờ 5s để làm mới dữ liệu', 'data' => $students], 200);
     }
 
@@ -218,9 +273,9 @@ class studentPoetryController extends Controller
                 ->first();
             $playtopic->update(['rejoined_at' => now()]);
             DB::table('result_capacity')->where('playtopic_id', $playtopic->id)->delete();
-            return response(['message' => "Thành công cho học sinh thi lại"], 200);
+            return response(['message' => "Thành công cho sinh viên thi lại"], 200);
         } catch (\Throwable $th) {
-            return response(['message' => 'Thất bại khi cho học sinh thi lại'], 404);
+            return response(['message' => 'Thất bại khi cho sinh viên thi lại'], 404);
         }
     }
 }

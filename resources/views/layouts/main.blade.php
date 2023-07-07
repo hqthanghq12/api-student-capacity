@@ -4,7 +4,7 @@
 
 <head>
     <base href="/">
-    <title>FPT Polytechnic - Cổng đánh giá năng lực sinh viên</title>
+    <title>PTCĐ FPT Polytechnic</title>
     <meta charset="utf-8" />
     <meta name="description" content="" />
     <meta name="keywords" content="" />
@@ -36,7 +36,7 @@
                 <div class="aside-logo flex-column-auto" id="kt_aside_logo">
                     <!--begin::Logo-->
                     <a href="{{ route('admin.chart') }}">
-                        <img alt="Logo" src="{{ asset('assets/media/logos/logo-poly.png') }}" class="h-25px logo" />
+                        <img alt="Logo" src="{{ asset('assets/media/logos/logo-poly.png') }}" class="h-40px logo" />
                     </a>
                     <!--end::Logo-->
                     <!--begin::Aside toggler-->
@@ -114,9 +114,9 @@
                         class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
                         <!--begin::Copyright-->
                         <div class="text-dark order-2 order-md-1">
-                            <span class="text-muted fw-bold me-1">2022©</span>
+                            <span class="text-muted fw-bold me-1">{{ date('Y') }}©</span>
                             <a href="https://caodang.fpt.edu.vn/" target="_blank"
-                                class="text-gray-800 text-hover-primary">Cao đẳng FPT Polytechnic</a>
+                                class="text-gray-800 text-hover-primary">PTCĐ FPT Polytechnic</a>
                         </div>
                         <!--end::Copyright-->
                         <!--begin::Menu-->
