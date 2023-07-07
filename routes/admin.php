@@ -290,7 +290,7 @@ Route::group([
         return response()->download(public_path('assets/media/excel/excel_download.xlsx'));
     })->name("admin.download.execel.pass");
     Route::get('dowload-frm-excel-poetry', function () {
-        return response()->download(public_path('assets/media/excel/Poetry-dowload-new.xlsx'));
+        return response()->download(public_path('assets/media/excel/file-mau-kh-thi.xlsx'));
     })->name("admin.download.execel.poetry");
     Route::post('upload-image', [CkeditorController::class, 'updoadFile'])->name('admin.ckeditor.upfile');
     Route::prefix('questions')->group(function () {

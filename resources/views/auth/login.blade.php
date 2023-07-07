@@ -73,7 +73,7 @@
                                         value="{{ $campus->id }}"
                                         @if(old('campus_id') === $campus->id) selected @endif
                                     >
-                                        PC {{ $campus->name }}
+                                        PTCĐ {{ $campus->name }}
                                     </option>
                                 @endforeach
                             </select>
