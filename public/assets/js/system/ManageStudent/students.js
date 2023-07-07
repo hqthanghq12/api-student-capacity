@@ -121,6 +121,14 @@ selectSubject.addEventListener("change", function() {
 classSubjectSelect.addEventListener("change", function() {
     var idClass = classSubjectSelect.value;
     DataResult.class  = idClass;
+    console.log(DataResult);
+    const url = `admin/accountStudent/exportClass/${DataResult.semeter}/${DataResult.block}/${DataResult.subject}/${DataResult.class}`
+    const btnEx = document.querySelector('#btnExport');
+    if (idClass !== "") {
+        btnEx.innerHTML = ` <button type="button" class="btn btn-primary er fs-6 px-8 py-4" onclick="location.href='${url}'">Xuất Điểm</button>`
+    }else  {
+        btnEx.innerHTML = ``
+    }
 });
 const search = document.getElementById('searchResult');
 search.addEventListener('click',() => {

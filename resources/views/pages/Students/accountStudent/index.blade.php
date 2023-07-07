@@ -42,8 +42,14 @@
             </div>
 
             <div class="row">
-                <div class="col-2 my-4 mx-auto">
+                <div class="col-5 my-4 ">
+                </div>
+                <div class="col-2 my-4">
                     <button type="button" class="btn btn-primary er fs-6 px-8 py-4" id="searchResult">Tra cứu</button>
+                </div>
+                <div class="col-2 my-4"></div>
+                <div class="col-3 my-4 text-end" id="btnExport">
+
                 </div>
             </div>
 

@@ -254,6 +254,107 @@ class UserController extends Controller
         return response()->download($outputFileName)->deleteFileAfterSend(true, $outputFileName);
     }
 
+
+    public function ExportpointClass(Request $request){
+        $subjectIdToSubjectInfo = DB::table('subject')->select('id', 'name', 'code_subject')->get()->keyBy('id')->toArray();
+        $subjectIdToSubjectName = collect($subjectIdToSubjectInfo)->pluck('name', 'id')->toArray();
+        $subjectIdToSubjectCode = collect($subjectIdToSubjectInfo)->pluck('code_subject', 'id')->toArray();
+
+        $campusCodeToCampusName = DB::table('campuses')->select('id', 'name')->pluck('name', 'id')->toArray();
+        $examinationIdToExaminationName = DB::table('examination')->select('id', 'name')->pluck('name', 'id')->toArray();
+        $classIdToClassName = DB::table('class')->select('id', 'name')->pluck('name', 'id')->toArray();
+        $semesterIdToSemesterName = DB::table('semester')->select('id', 'name')->pluck('name', 'id')->toArray();
+
+        $point = $this->playtopic
+            ->query()
+            ->select([
+                'playtopic.exam_name',
+                'block_subject.id_subject',
+                'poetry.id_semeter',
+                'playtopic.exam_time',
+                'poetry.id_class',
+                'result_capacity.scores',
+                'result_capacity.created_at',
+                'result_capacity.updated_at',
+                'student_poetry.id_student',
+                'users.name'
+            ])
+            ->join('student_poetry', 'student_poetry.id', '=', 'playtopic.student_poetry_id')
+            ->join('users', 'users.id', '=', 'student_poetry.id_student')
+            ->join('poetry', 'poetry.id', '=', 'student_poetry.id_poetry')
+            ->join('block_subject', 'block_subject.id', '=', 'poetry.id_block_subject')
+            ->join('result_capacity', 'result_capacity.playtopic_id', '=', 'playtopic.id')
+            ->where('poetry.id_semeter', $request->id_semeter)
+            ->where('block_subject.id_block', $request->id_block)
+            ->where('id_subject',  $request->id_subject)
+            ->where('id_class',  $request->id_class)
+            ->get();
+        $className = DB::table('class')->where('id',$request->id_class)->first()->name;
+        $data = [];
+        foreach ($point as $key => $value) {
+            if (isset($value->scores)) {
+                $data[] = [
+                    $key + 1,
+                    $value->name,
+                    $subjectIdToSubjectName[$value->id_subject],
+                    $subjectIdToSubjectCode[$value->id_subject],
+                    $semesterIdToSemesterName[$value->id_semeter],
+                    $classIdToClassName[$value->id_class],
+                    $value->scores,
+                    $value->scores > 5 ? 'Đạt' : 'Không đạt'
+                ];
+            }
+        }
+
+        $spreadsheet = new Spreadsheet();
+        // Thực hiện xử lý dữ liệu
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'TT');
+        $sheet->setCellValue('B1', 'Tên Học Sinh');
+        $sheet->setCellValue('C1', 'Môn Học');
+        $sheet->setCellValue('D1', 'Mã Môn');
+        $sheet->setCellValue('E1', 'Kỳ Học');
+        $sheet->setCellValue('F1', 'Lớp');
+        $sheet->setCellValue('G1', 'Điểm');
+        $sheet->setCellValue('H1', 'Trạng Thái');
+        $borderStyle = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['argb' => '000000'],
+                ],
+            ],
+        ];
+
+        $row = 2;
+        $column = 1;
+        foreach ($data as $recordata) {
+            foreach ($recordata as $value) {
+                $sheet->setCellValueByColumnAndRow($column, $row, $value);
+                $sheet->getStyleByColumnAndRow($column, $row)->applyFromArray($borderStyle);
+                $column++;
+            }
+            $row++;
+            $column = 1;
+        }
+        $sheet->getColumnDimension('A')->setWidth(15);
+        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(15);
+        $sheet->getColumnDimension('D')->setWidth(15);
+        $sheet->getColumnDimension('E')->setWidth(10);
+        $sheet->getColumnDimension('F')->setWidth(10);
+        $sheet->getColumnDimension('G')->setWidth(10);
+        $sheet->getColumnDimension('H')->setWidth(10);
+        // Định dạng căn giữa và màu nền cho hàng tiêu đề
+        $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:H1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
+
+        $writer = new Xlsx($spreadsheet);
+        $outputFileName = 'diem_thi_lop_' .  $className . '.xlsx';
+        $writer->save($outputFileName);
+        return response()->download($outputFileName)->deleteFileAfterSend(true, $outputFileName);
+
+    }
     private function getStudents()
     {
         try {
