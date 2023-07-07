@@ -36,7 +36,7 @@
                 <div class="aside-logo flex-column-auto" id="kt_aside_logo">
                     <!--begin::Logo-->
                     <a href="{{ route('admin.chart') }}">
-                        <img alt="Logo" src="{{ asset('assets/media/logos/logo-poly.png') }}" class="h-40px logo" />
+                        <img alt="Logo" src="{{ asset('assets/media/logos/logo-ptcd.png') }}" class="h-40px logo" />
                     </a>
                     <!--end::Logo-->
                     <!--begin::Aside toggler-->
