@@ -346,7 +346,7 @@ class QuestionController extends Controller
         $exams = $this->examModel->find($id_exam);
         $exams->total_questions = $exams->total_questions - 1;
         $exams->save();
-        return response()->json(['message' => 'Thành công'],202);
+        return response()->json(['message' => 'Thành công'], 202);
     }
 
     public function getModelDataStatus($id)
@@ -487,13 +487,10 @@ class QuestionController extends Controller
     public function importAndRunSemeter(ImportQuestion $request, $semeter_id, $idBlock)
     {
         try {
-            $id_campus = auth()->user()->campus_id;
-            if (auth()->user()->hasRole('super admin')) {
-                if (empty($request->campus_id)) {
-                    throw new Exception("Vui lòng chọn cơ sở");
-                } else {
-                    $id_campus = $request->campus_id;
-                }
+            if (empty($request->campus_id)) {
+                throw new Exception("Vui lòng chọn cơ sở");
+            } else {
+                $id_campus = $request->campus_id;
             }
             $this->readExClass($request->ex_file, $semeter_id, $idBlock, $id_campus);
 //            $import = new QuestionsImport($exam_id);
@@ -708,7 +705,8 @@ class QuestionController extends Controller
         $spreadsheet = IOFactory::load($file);
         $sheetCount = $spreadsheet->getSheetCount();
         // Lấy ra sheet chứa câu hỏi
-        $questionsSheet = $spreadsheet->getSheet(0);
+//        $questionsSheet = $spreadsheet->getSheet(0);
+        $questionsSheet = $spreadsheet->getActiveSheet();
         $infoSubject = $questionsSheet->toArray();
         unset($infoSubject[0]);
         $infoSubject = array_values($infoSubject);
@@ -719,37 +717,39 @@ class QuestionController extends Controller
         $classes = [];
         $checkTrungArr = [];
         foreach ($infoSubject as $value) {
-            $date = date('Y-m-d', strtotime($value[0]));
+            if (empty($value[1])) {
+                break;
+            }
+            $date = date('Y-m-d', strtotime($value[1]));
             $is_child_poetry = false;
             $key = implode('|', [
-                $value[0],
-                $value[2],
-                $value[4],
-                $value[8],
-                $value[9]
+                $value[1],
+                $value[3],
+                $value[5],
+                $value[9],
+                $value[10]
             ]);
             $priKey = $key;
             if (!empty($arrItem[$key])) {
-                $priKey .= '/' . $value[1];
+                $priKey .= '/' . $value[2];
                 $is_child_poetry = true;
             }
             $arrItem[$priKey] = [
                 'ngay_thi' => $date,
-                'ca_thi' => $value[1],
-                'room' => $value[2],
-                'subject_name' => $value[3],
-                'subject_code' => $value[4],
-                'start_examination_id' => $value[1],
-                'class' => $value[8],
-                'assigned_user_email' => $value[9] . config('util.END_EMAIL_FPT'),
+                'ca_thi' => $value[2],
+                'room' => $value[3],
+                'subject_name' => $value[4],
+                'subject_code' => $value[5],
+                'start_examination_id' => $value[2],
+                'class' => $value[9],
+                'assigned_user_email' => $value[10] . config('util.END_EMAIL_FPT'),
             ];
             $arrItem[$priKey]['parent_poetry_examination'] = $is_child_poetry ? $arrItem[$key]['ca_thi'] : 0;
             $ngayThiArr[] = $date;
-            $emails[] = $value[9] . config('util.END_EMAIL_FPT');
-            $subjects[$value[4]] = $value[3];
-            $classes[] = $value[8];
+            $emails[] = $value[10] . config('util.END_EMAIL_FPT');
+            $subjects[$value[5]] = $value[4];
+            $classes[] = $value[9];
         }
-//        dd($arrItem);
 
         $emails = array_unique($emails);
         $classes = array_unique($classes);

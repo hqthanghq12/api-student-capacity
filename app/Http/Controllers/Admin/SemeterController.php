@@ -21,7 +21,11 @@ class SemeterController extends Controller
 
     public function index(){
         $data = $this->semeter->GetSemeter();
-        $campusList = Campus::all();
+        $campusListQuery = Campus::query();
+        if (!(auth()->user()->hasRole('super admin'))) {
+            $campusListQuery->where('id', auth()->user()->campus_id);
+        }
+        $campusList = $campusListQuery->get();
         return view('pages.semeter.index',['setemer' => $data,'campusList' => $campusList]);
     }
 
