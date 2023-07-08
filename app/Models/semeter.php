@@ -13,4 +13,9 @@ class semeter extends Model
     public function campus(){
         return $this->hasOne(Campus::class,'id','id_campus');
     }
+
+    public function blocks()
+    {
+        return $this->hasMany(Block::class, 'id_semeter', 'id');
+    }
 }

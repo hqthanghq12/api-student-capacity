@@ -57,10 +57,15 @@ class PoetryController extends Controller
                 $query->where('id', config('util.TEACHER_ROLE'));
             });
 //        $listCampusQuery = (new Campus())->query();
-        if (!auth()->user()->hasRole('super admin')) {
+        if (auth()->user()->hasRole('admin')) {
 //            $listCampusQuery->where('id', auth()->user()->campus_id);
             $usersQuery->where('campus_id', auth()->user()->campus_id);
         }
+        if (auth()->user()->hasRole('teacher')) {
+//            $listCampusQuery->where('id', auth()->user()->campus_id);
+            $usersQuery->where('id', auth()->user()->id);
+        }
+//            dd(1);
 //        $listCampus = $listCampusQuery->get();
         $teachers = $usersQuery->get();
         return view('pages.poetry.index', [
