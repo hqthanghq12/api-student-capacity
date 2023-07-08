@@ -194,7 +194,8 @@ class subjectController extends Controller
         foreach ($blocks as $block) {
             $dataInsertArr[] = [
                 'id_subject' => $request->subject_id,
-                'id_block' => $block
+                'id_block' => $block,
+                'status' => 1,
             ];
         }
         blockSubject::insert($dataInsertArr);
