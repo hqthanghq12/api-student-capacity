@@ -28,9 +28,9 @@ class Semeter implements MSemeterInterface
         return $data;
     }
 
-    public function GetSemeterAPI()
+    public function GetSemeterAPI($codeCampus)
     {
-        $data = $this->modelSemeter::paginate(5);
+        $data = $this->modelSemeter->where('id_campus',$codeCampus)->get();
         foreach ($data as $value) {
             $value['total_poetry'] = $this->modelPoetry->where('id_semeter', $value->id)->count();
         }
