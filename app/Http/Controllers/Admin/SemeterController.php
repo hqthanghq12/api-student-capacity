@@ -34,8 +34,8 @@ class SemeterController extends Controller
         return response()->json(['data' => $data], 200);
     }
 
-    public function indexApi(){
-        if (!($data = $this->semeter->GetSemeterAPI()))  return $this->responseApi(false);
+    public function indexApi($codeCampus){
+        if (!($data = $this->semeter->GetSemeterAPI($codeCampus)))  return $this->responseApi(false);
         return $this->responseApi(true, $data);
     }
     public function edit($id){

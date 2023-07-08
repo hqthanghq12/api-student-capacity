@@ -31,7 +31,7 @@ Route::prefix('subject')->group(function () {
 });
 
 Route::prefix('semeter')->group(function () {
-    Route::get('', [SemeterController::class, 'indexApi'])->name('admin.semeterApi.index');
+    Route::get('/{codeCampus}', [SemeterController::class, 'indexApi'])->name('admin.semeterApi.index');
     Route::prefix('poetry')->group(function () {
         Route::get('/{id}/{id_user}', [PoetryController::class, 'indexApi'])->name('admin.poetry.api.index');
         Route::get('oneItem/{id_poetry}', [PoetryController::class, 'oneindexApi']);
