@@ -143,14 +143,15 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="form-group m-10">
-                        <select class="form-select" name="subject" id="block_id">
-                            <option selected value="">Block</option>
-                            @foreach($listBlock as $value)
-                                <option value="{{ $value->id }}">{{ $value->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                        <input type="hidden" name="subject" id="block_id" value="{{ $listBlock->pluck('id')->implode('|') }}">
+{{--                    <div class="form-group m-10">--}}
+{{--                        <select class="form-select" name="subject" id="block_id">--}}
+{{--                            <option selected value="">Block</option>--}}
+{{--                            @foreach($listBlock as $value)--}}
+{{--                                <option value="{{ $value->id }}">{{ $value->name }}</option>--}}
+{{--                            @endforeach--}}
+{{--                        </select>--}}
+{{--                    </div>--}}
                     <div class="modal-footer">
                         <button type="button" id="upload-basis" class=" btn btn-primary">Thêm </button>
                     </div>
