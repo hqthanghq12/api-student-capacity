@@ -39,6 +39,7 @@
                     <table id="table-data" class="table table-row-bordered table-row-gray-300 gy-7  table-hover ">
                         <thead>
                         <tr>
+                            <th scope="col">Mã môn</th>
                             <th scope="col">Tên Môn học
                                 <span role="button" data-key="name" data-bs-toggle="tooltip" title="" class=" svg-icon svg-icon-primary  svg-icon-2x format-database" data-bs-original-title="Lọc theo tên đánh giá năng lực">
                                 <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo2/dist/../src/media/svg/icons/Navigation/Up-down.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="width: 14px !important ; height: 14px !important" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
@@ -88,6 +89,7 @@
                         <tbody>
                         @foreach($subjects as $key => $value)
                             <tr>
+                                <td>{{ $value->code_subject }}</td>
                                 <td>
                                     {{ $value->name }}
                                 </td>
