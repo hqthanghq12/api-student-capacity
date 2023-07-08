@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -727,7 +728,7 @@ class QuestionController extends Controller
                 $value[3],
                 $value[5],
                 $value[9],
-                $value[10]
+                Str::lower($value[10]),
             ]);
             $priKey = $key;
             if (!empty($arrItem[$key])) {
@@ -742,11 +743,11 @@ class QuestionController extends Controller
                 'subject_code' => $value[5],
                 'start_examination_id' => $value[2],
                 'class' => $value[9],
-                'assigned_user_email' => $value[10] . config('util.END_EMAIL_FPT'),
+                'assigned_user_email' => Str::lower($value[10]) . config('util.END_EMAIL_FPT'),
             ];
             $arrItem[$priKey]['parent_poetry_examination'] = $is_child_poetry ? $arrItem[$key]['ca_thi'] : 0;
             $ngayThiArr[] = $date;
-            $emails[] = $value[10] . config('util.END_EMAIL_FPT');
+            $emails[] = Str::lower($value[10]) . config('util.END_EMAIL_FPT');
             $subjects[$value[5]] = $value[4];
             $classes[] = $value[9];
         }
@@ -758,7 +759,11 @@ class QuestionController extends Controller
         $emailsDb = User::query()
             ->select('id', 'email')
             ->whereIn('email', $emails)
-            ->get();
+            ->get()
+            ->map(function ($user) {
+                $user['email'] = Str::lower($user['email']);
+                return $user;
+            });
         $emailToUserId = $emailsDb->pluck('id', 'email')->toArray();
         $emailDiff = array_diff($emails, array_keys($emailToUserId));
         if (!empty($emailDiff)) {
