@@ -55,7 +55,7 @@
                     </div>
                     <div class="col-lg-6 btn-group justify-content-end">
                         <div class="">
-                            @if($student->count() > 0)
+                            @if($student->count() > 0 && $is_allow)
                                 <div class=" d-flex flex-row-reverse bd-highlight">
                                     <label data-bs-toggle="modal" data-bs-target="#kt_modal_2" type="button"
                                            class="btn btn-primary me-3">
@@ -65,15 +65,17 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="">
-                            <div class=" d-flex flex-row-reverse bd-highlight">
-                                <label data-bs-toggle="modal" data-bs-target="#kt_modal_1" type="button"
-                                       class="btn btn-light-primary me-3" id="kt_file_manager_new_folder">
+                        @if ($is_allow)
+                            <div class="">
+                                <div class=" d-flex flex-row-reverse bd-highlight">
+                                    <label data-bs-toggle="modal" data-bs-target="#kt_modal_1" type="button"
+                                           class="btn btn-light-primary me-3" id="kt_file_manager_new_folder">
 
-                                    <!--end::Svg Icon-->Thêm sinh viên
-                                </label>
+                                        <!--end::Svg Icon-->Thêm sinh viên
+                                    </label>
+                                </div>
                             </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
 
@@ -82,7 +84,9 @@
                     <table id="table-data" class="table table-row-bordered table-row-gray-300 gy-7  table-hover ">
                         <thead>
                         <tr>
-                            <th></th>
+                            @if ($is_allow)
+                                <th></th>
+                            @endif
                             <th scope="col">Tên sinh viên
                                 <span role="button" data-key="name" data-bs-toggle="tooltip" title=""
                                       class=" svg-icon svg-icon-primary  svg-icon-2x format-database"
@@ -125,8 +129,10 @@
                         @if($student->count() > 0)
                             @foreach($student as $key => $value)
                                 <tr>
-                                    <td><input type="checkbox" class="form-check-input checkbox-student"
-                                               data-id="{{ $value->id }}" name="" id=""></td>
+                                    @if ($is_allow)
+                                        <td><input type="checkbox" class="form-check-input checkbox-student"
+                                                   data-id="{{ $value->id }}" name="" id=""></td>
+                                    @endif
                                     <td>
                                         {{ $value->nameStudent }}
                                     </td>
@@ -154,13 +160,15 @@
                                     <td>
                                         {{ trim($value->exam_time) === "" ? "Chưa có thời gian" : $value->exam_time . " phút" }}
                                     </td>
-                                    <td class="text-end">
-                                        <button href="#"
-                                                class="btn-rejoin menu-link border border-0 bg-transparent px-3"
-                                                data-id="{{ $value->id }}"
-                                                data-kt-users-table-filter="delete_row">Thi lại
-                                        </button>
-                                    </td>
+                                    @if (!(auth()->user()->hasRole('teacher')))
+                                        <td class="text-end">
+                                            <button href="#"
+                                                    class="btn-rejoin menu-link border border-0 bg-transparent px-3 btn btn-sm btn-outline-primary"
+                                                    data-id="{{ $value->id }}"
+                                                    data-kt-users-table-filter="delete_row">Thi lại
+                                            </button>
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         @else
@@ -548,6 +556,7 @@
                 })
             }
         }
+
         function dele(btns) {
             for (const btnDeleteElement of btns) {
                 btnDeleteElement.addEventListener("click", () => {

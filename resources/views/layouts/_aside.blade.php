@@ -8,6 +8,7 @@
         <div
             class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
             id="#kt_aside_menu" data-kt-menu="true" data-kt-menu-expand="false">
+            @if (!(auth()->user()->hasRole('teacher')))
             <div class="menu-item menu-accordion">
                 <a class="menu-link" href="{{ route('admin.chart') }}">
                     <span class="menu-icon">
@@ -30,6 +31,7 @@
                 </a>
 
             </div>
+            @endif
             <div class="menu-item menu-accordion">
                 <a class="menu-link" href="{{ route('admin.semeter.index') }}">
                     <span class="menu-icon">

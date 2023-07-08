@@ -94,7 +94,7 @@ class AuthController extends Controller
             'campus_id' => $request->campus_id,
         ])->first();
         // dd($user->hasRole(config('util.ADMIN_ROLE')));
-        if ($user && $user->hasRole([config('util.SUPER_ADMIN_ROLE'), config('util.ADMIN_ROLE'), config('util.TEACHER_ROLE')])) {
+        if ($user && $user->hasRole([config('util.ADMIN_ROLE')])) {
             Auth::login($user);
             if (!session()->has('token')) {
                 auth()->user()->tokens()->delete();
@@ -102,6 +102,16 @@ class AuthController extends Controller
                 session()->put('token', $token);
             }
             return redirect(route('admin.chart'));
+        }
+
+        if ($user && $user->hasRole([config('util.TEACHER_ROLE')])) {
+            Auth::login($user);
+            if (!session()->has('token')) {
+                auth()->user()->tokens()->delete();
+                $token = auth()->user()->createToken("token_admin")->plainTextToken;
+                session()->put('token', $token);
+            }
+            return redirect(route('admin.semeter.index'));
         }
 //        return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
         return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");

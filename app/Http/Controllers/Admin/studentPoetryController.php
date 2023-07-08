@@ -35,7 +35,14 @@ class studentPoetryController extends Controller
     public function index($id, $id_poetry, $idBlock)
     {
         $liststudent = $this->PoetryStudent->GetStudents($id);
-        $id_block_subject = $this->poetry->query()->where('id', $id)->first()->id_block_subject;
+        $poetry = $this->poetry->query()->where('id', $id)->first();
+        if (auth()->user()->hasRole('teacher')) {
+            $start_time = DB::table('examination')->where('id', $poetry->start_examination_id)->first()->started_at;
+            $time = $poetry->exam_date . ' ' . $start_time;
+            $isAllow = time() < strtotime($time) && $liststudent->count() == 0;
+        } else
+            $isAllow = true;
+        $id_block_subject = $poetry->id_block_subject;
         $id_subject = DB::table('block_subject')->where('id', $id_block_subject)->first()->id_subject;
 //        if (!$liststudent) return abort(404);
         $examsList = $this->exam->getListExam($id_subject);
@@ -48,6 +55,7 @@ class studentPoetryController extends Controller
             'id_poetry' => $id_poetry,
             'idBlock' => $idBlock,
             'id_block_subject' => $id_block_subject,
+            'is_allow' => $isAllow,
         ]);
     }
 
