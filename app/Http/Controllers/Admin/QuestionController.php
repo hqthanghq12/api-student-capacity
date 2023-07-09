@@ -914,7 +914,7 @@ class QuestionController extends Controller
                 'room',
 //                'assigned_user_id',
                 'id_campus',
-//                'status',
+                'exam_date',
             ])
             ->whereIn('exam_date', $ngayThiArr)
             ->where('id_campus', $campus_id)
@@ -954,7 +954,7 @@ class QuestionController extends Controller
                 $room,
 //                $assigned_user_id,
                 $id_campus,
-//                $status
+                $exam_date
             ]);
             $poetryDataArr[$key] = [
                 'id_semeter' => $id_semeter,
@@ -975,6 +975,7 @@ class QuestionController extends Controller
                     $room,
 //                    $assigned_user_id,
                     $id_campus,
+                    $exam_date,
                 ]),
             ];
         }
@@ -982,8 +983,8 @@ class QuestionController extends Controller
 //        dd($poetryDataArr);
         $poetryKeyValidArr = array_diff(array_keys($poetryDataArr), $poetryByDay);
         $poetryKeyInvalidArr = array_diff(array_keys($poetryDataArr), $poetryKeyValidArr);
-//        dd($poetryKeyInvalidArr);
         if (count(($poetryKeyValidArr)) !== 0) {
+//            dd($poetryDataArr);
             foreach ($poetryKeyInvalidArr as $key) {
                 if (!empty($poetryDataArr[$key])) {
                     $parentKey = $poetryDataArr[$key]['parent_poetry_examination_key'];
@@ -1001,7 +1002,6 @@ class QuestionController extends Controller
                 });
                 unset($poetryDataArr[$key]);
             }
-//            dd($poetryDataArr);
             if (count($poetryDataArr) > 0) {
                 $poetryInsertArr = [];
                 $poetryIdMax = DB::table('poetry')->max('id') ?? 0;
