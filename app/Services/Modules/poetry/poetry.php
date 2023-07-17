@@ -313,6 +313,7 @@ class poetry implements MPoetryInterface
                     ['student_poetry.id_student', $id_user],
                     ['playtopic.has_received_exam', 1],
                     ['poetry.status', 1],
+                    ['student_poetry.status', 1],
                     ['exam_date', date('Y-m-d')],
                 ])
                 ->orderBy('playtopic.created_at', 'DESC')

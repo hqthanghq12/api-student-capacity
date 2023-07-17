@@ -121,6 +121,7 @@
                             <th scope="col">Trạng thái phát đề</th>
                             <th scope="col">Tên đề thi</th>
                             <th scope="col">Điểm</th>
+                            <th scope="col">Thời gian nộp</th>
                             <th scope="col">Thời gian thi</th>
                             <th colspan="2"></th>
                         </tr>
@@ -147,7 +148,9 @@
                                             <input class="form-check-input form-change-status"
                                                    data-id="{{ $value->id }}" type="checkbox"
                                                    {{ $value->status == 1 ? 'checked' : '' }} role="switch"
-                                                   id="flexSwitchCheckDefault">
+                                                   id="flexSwitchCheckDefault"
+                                                   @disabled($is_in_time)
+                                            >
                                         </div>
                                     </td>
                                     <td>
@@ -157,6 +160,7 @@
                                         {{ trim($value->exam_name) === "" ? "Chưa có đề thi" : $value->exam_name }}
                                     </td>
                                     <td>{{ trim($value->scores) === "" ? "Chưa thi" : $value->scores }}</td>
+                                    <td>{{ !empty($value->created_at) ? date('H:i d-m-Y', strtotime($value->created_at)) : "Chưa thi" }}</td>
                                     <td>
                                         {{ trim($value->exam_time) === "" ? "Chưa có thời gian" : $value->exam_time . " phút" }}
                                     </td>
