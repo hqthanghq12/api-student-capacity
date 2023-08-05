@@ -13,17 +13,17 @@ const receiveExamEvent = () => {
             case "":
                 sepecificExamEle.css('display', 'none');
                 randomExamEle.css('display', 'none');
-                timeInput.val('');
+                // timeInput.val('');
                 examNameInput.val('');
                 break;
             case "0":
                 sepecificExamEle.css('display', 'block');
                 randomExamEle.css('display', 'none');
                 break;
-            case "1":
+            case "2":
                 randomExamEle.css('display', 'block');
                 sepecificExamEle.css('display', 'none');
-                timeInput.val('');
+                // timeInput.val('');
                 examNameInput.val('');
                 break;
 

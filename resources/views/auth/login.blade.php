@@ -56,9 +56,10 @@
                         <!--end::Title-->
                     </div>
                     <!--begin::Actions-->
-                    {{--                    <form class="text-center" action="{{ route('auth.redirect-google') }}" method="post">--}}
-                    <form class="text-center" action="{{ route('google-auth.callback') }}" method="post">
+                    <form class="text-center" action="{{ route('auth.redirect-google') }}" method="post">
+                        {{--                    <form class="text-center" action="{{ route('google-auth.callback') }}" method="post">--}}
                         @csrf
+                        <input type="hidden" name="login_type" id="login_type">
                         <div class="form-group mb-3">
                             @error('campus_id')
                             <div class="alert-danger py-3 mb-2">{{ $message }}</div>
@@ -98,14 +99,20 @@
                             </select>
                         </div>
                         <!--begin::Google link-->
-                        {{--                        <button--}}
-                        {{--                            class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5 text-center">--}}
-                        {{--                            <img alt="Logo" src="assets/media/svg/brand-logos/google-icon.svg"--}}
-                        {{--                                 class="h-20px me-3"/>Continue with Google--}}
-                        {{--                        </button>--}}
                         <button
-                            class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5 text-center">
+                            class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5 text-center"
+                            name="normal_login"
+                            onclick="document.querySelector('#login_type').value = 0"
+                        >
                             Đăng nhập
+                        </button>
+                        <button
+                            class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5 text-center"
+                            name="google_login"
+                            onclick="document.querySelector('#login_type').value = 1"
+                        >
+                            <img alt="Logo" src="assets/media/svg/brand-logos/google-icon.svg"
+                                 class="h-20px me-3"/>Continue with Google
                         </button>
                         <!--end::Google link-->
                     </form>

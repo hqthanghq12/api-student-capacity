@@ -141,6 +141,27 @@ class playtopicController extends Controller
 //                'diff_per_ques' => '% số câu khó',
                 'time' => 'Thời gian thi',
             ];
+        } elseif ($request->receive_mode == 2) {
+            $rules = array_merge($rules, [
+                'id_subject' => ['required'],
+                'questions_quantity' => ['required', 'numeric', 'min:1'],
+                'ez_per_ques' => ['required', 'numeric', 'min:0', 'max: 100'],
+                'me_per_ques' => ['required', 'numeric', 'min:0', 'max: 100'],
+                'diff_per_ques' => ['required', 'numeric', 'min:0', 'max: 100'],
+            ]);
+            $messages = [
+                'required' => "Vui lòng nhập :attribute",
+                'numeric' => 'Thời gian thi',
+                'min' => ":attribute tối thiểu là :min",
+                'max' => ":attribute tối đa là :max",
+            ];
+            $attributes = [
+                'questions_quantity' => 'số lượng câu hỏi',
+                'ez_per_ques' => '% số câu dễ',
+                'me_per_ques' => '% số câu trung bình',
+                'diff_per_ques' => '% số câu khó',
+                'time' => 'Thời gian thi',
+            ];
         }
         $fields = array_keys($rules);
         $validator = Validator::make($request->all(), $rules, $messages, $attributes);
@@ -183,51 +204,7 @@ class playtopicController extends Controller
 //                ];
 //            }
 //        } else {
-//            if (($request->diff_per_ques + $request->me_per_ques + $request->ez_per_ques) != 100) {
-//                return response("Tổng % câu hỏi 3 mức độ phải bằng 100%", 404);
-//            }
-//            $questions = DB::table('exam_questions')
-//                ->select(['exam_questions.question_id', 'exam_questions.id', 'questions.rank'])
-//                ->leftJoin('questions', 'questions.id', '=', 'exam_questions.question_id')
-//                ->leftJoin('exams', 'exams.id', '=', 'exam_questions.exam_id')
-//                ->where('exams.subject_id', $request->id_subject)
-//                ->get()
-//                ->groupBy('rank')
-//                ->map(function ($item) {
-//                    return $item->pluck('question_id')->toArray();
-//                });
-//            $diffQuesNum = round(($request->diff_per_ques / 100) * $request->questions_quantity);
-//            $meQuesNum = round(($request->me_per_ques / 100) * $request->questions_quantity);
-//            $ezQuesNum = $request->questions_quantity - $diffQuesNum - $meQuesNum;
-//            dd($questions);
-//            $quesNumArr = [
-//                config('util.RANK_QUESTION_EASY') => [
-//                    'rank' => 'dễ',
-//                    'num' => (int)$ezQuesNum
-//                ],
-//                config('util.RANK_QUESTION_MEDIUM') => [
-//                    'rank' => 'trung bình',
-//                    'num' => (int)$meQuesNum
-//                ],
-//                config('util.RANK_QUESTION_DIFFICULT') => [
-//                    'rank' => 'khó',
-//                    'num' => (int)$diffQuesNum
-//                ],
-//            ];
-//            foreach ($quesNumArr as $rank => $ques) {
-//                if ($ques['num'] > count($questions[$rank])) {
-//                    return response("Số lượng câu mức độ {$ques['rank']} không đủ, vui lòng điều chỉnh lại", 404);
-//                }
-//            }
-//            foreach ($poetriesId as $poetry_id) {
-//                $dataInsertArr[] = [
-//                    'student_poetry_id' => $poetry_id,
-//                    'has_received_exam' => 1,
-//                    'exam_name' => "Ngẫu nhiên",
-//                    'questions_order' => json_encode($this->getRandomQuestionsOrder($quesNumArr, $questions, $request->questions_quantity)),
-//                    'exam_time' => $request->time,
-//                ];
-//            }
+//
 //        }
         if ($request->receive_mode == 0) {
             $exam_id = $request->exam_id;
@@ -246,7 +223,7 @@ class playtopicController extends Controller
                     'exam_time' => $request->time,
                 ];
             }
-        } else {
+        } elseif ($request->receive_mode == 1) {
             $examsId = $this->modelExam
 //                ->with('questions')
                 ->select('id', 'name')
@@ -301,6 +278,60 @@ class playtopicController extends Controller
                     'exam_time' => $request->time,
                 ];
             }
+        } elseif ($request->receive_mode == 2) {
+            if (($request->diff_per_ques + $request->me_per_ques + $request->ez_per_ques) != 100) {
+                return response("Tổng % câu hỏi 3 mức độ phải bằng 100%", 404);
+            }
+            $questions = DB::table('exam_questions')
+                ->select(['exam_questions.question_id', 'exam_questions.id', 'questions.rank'])
+                ->leftJoin('questions', 'questions.id', '=', 'exam_questions.question_id')
+                ->leftJoin('exams', 'exams.id', '=', 'exam_questions.exam_id')
+                ->where('exams.subject_id', $request->id_subject)
+                ->get();
+
+            if ($questions->count() == 0) {
+                return response("Không có câu hỏi trong ngân hàng câu hỏi!", 404);
+            }
+
+            $questions = $questions
+                ->groupBy('rank')
+                ->map(function ($item) {
+                    return $item->pluck('question_id')->toArray();
+                })
+                ->toArray()
+            ;
+
+            $diffQuesNum = round(($request->diff_per_ques / 100) * $request->questions_quantity);
+            $meQuesNum = round(($request->me_per_ques / 100) * $request->questions_quantity);
+            $ezQuesNum = $request->questions_quantity - $diffQuesNum - $meQuesNum;
+            $quesNumArr = [
+                config('util.RANK_QUESTION_EASY') => [
+                    'rank' => 'dễ',
+                    'num' => (int)$ezQuesNum
+                ],
+                config('util.RANK_QUESTION_MEDIUM') => [
+                    'rank' => 'trung bình',
+                    'num' => (int)$meQuesNum
+                ],
+                config('util.RANK_QUESTION_DIFFICULT') => [
+                    'rank' => 'khó',
+                    'num' => (int)$diffQuesNum
+                ],
+            ];
+            foreach ($quesNumArr as $rank => $ques) {
+                if ($ques['num'] > count($questions[$rank])) {
+                    return response("Số lượng câu hỏi mức độ {$ques['rank']} không đủ, vui lòng điều chỉnh lại", 404);
+                }
+            }
+            foreach ($poetriesId as $poetry_id) {
+                $dataInsertArr[] = [
+                    'student_poetry_id' => $poetry_id,
+                    'has_received_exam' => 1,
+                    'exam_name' => "Ngẫu nhiên",
+                    'questions_order' => json_encode($this->getRandomQuestionsOrder($quesNumArr, $questions, $request->questions_quantity)),
+                    'exam_time' => $request->time,
+                ];
+            }
         }
         DB::table('playtopic')->whereIn('student_poetry_id', $poetriesId)->delete();
         DB::table('playtopic')->insert($dataInsertArr);
@@ -310,6 +341,7 @@ class playtopicController extends Controller
 
     public function getRandomQuestionsOrder($quesNumArr, $questions, $questions_quantity)
     {
+        $questions = (array)$questions;
         try {
             $questionsOrder = [];
             foreach ($quesNumArr as $rank => $quesNum) {
@@ -321,6 +353,7 @@ class playtopicController extends Controller
                 $randomElements = array_intersect_key($questions[$rank], array_flip((array)$randomKeys));
                 array_push($questionsOrder, ...$randomElements);
             }
+            $finalQuestionsOrder = $questionsOrder;
             $numQuesRandom = count($questionsOrder);
             if ((int)$questions_quantity < $numQuesRandom) {
                 $keyRemoveRandom = array_rand($questionsOrder, $numQuesRandom - (int)$questions_quantity);
