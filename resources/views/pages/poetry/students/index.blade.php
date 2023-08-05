@@ -312,12 +312,14 @@
                             <option value="60">60 phút</option>
                             <option value="90">90 phút</option>
                         </select>
-                                                <input type="text" class="form-control" name="time" id="time-text"
-                                                       placeholder="Thời gian thi" style="display: none">
-                                                <div class="form-group my-5">
-                                                    <input type="checkbox" name="custom-time-checkbox" id="custom-time-checkbox" class="form-check-input me-3">
-                                                    <label for="custom-time-checkbox" class="form-label" style="user-select: none;">Tùy chỉnh thời gian</label>
-                                                </div>
+                        <input type="text" class="form-control" name="time" id="time-text"
+                               placeholder="Thời gian thi" style="display: none">
+                        <div class="form-group my-5">
+                            <input type="checkbox" name="custom-time-checkbox" id="custom-time-checkbox"
+                                   class="form-check-input me-3">
+                            <label for="custom-time-checkbox" class="form-label" style="user-select: none;">Tùy chỉnh
+                                thời gian</label>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         {{--                        @if($total >= 1)--}}

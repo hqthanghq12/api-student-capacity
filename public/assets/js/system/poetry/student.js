@@ -20,6 +20,10 @@ const receiveExamEvent = () => {
                 sepecificExamEle.css('display', 'block');
                 randomExamEle.css('display', 'none');
                 break;
+            case "1":
+                sepecificExamEle.css('display', 'none');
+                randomExamEle.css('display', 'none');
+                break;
             case "2":
                 randomExamEle.css('display', 'block');
                 sepecificExamEle.css('display', 'none');
