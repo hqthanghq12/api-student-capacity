@@ -36,12 +36,16 @@ class studentPoetryController extends Controller
     {
         $liststudent = $this->PoetryStudent->GetStudents($id);
         $poetry = $this->poetry->query()->where('id', $id)->first();
+        $start = DB::table('examination')->where('id', $poetry->start_examination_id)->first()->started_at;
+        $end = DB::table('examination')->where('id', $poetry->finish_examination_id)->first()->finished_at;
+        $start_time = $poetry->exam_date . ' ' . $start;
+        $end_time = $poetry->exam_date . ' ' . $end;
+        $is_in_time = time() >= strtotime($start_time) && time() < strtotime($end_time);
         if (auth()->user()->hasRole('teacher')) {
-            $start_time = DB::table('examination')->where('id', $poetry->start_examination_id)->first()->started_at;
-            $time = $poetry->exam_date . ' ' . $start_time;
-            $isAllow = time() < strtotime($time) && $liststudent->count() == 0;
-        } else
+            $isAllow = time() < strtotime($start_time) && $liststudent->count() == 0;
+        } else {
             $isAllow = true;
+        }
         $id_block_subject = $poetry->id_block_subject;
         $id_subject = DB::table('block_subject')->where('id', $id_block_subject)->first()->id_subject;
 //        if (!$liststudent) return abort(404);
@@ -56,6 +60,7 @@ class studentPoetryController extends Controller
             'idBlock' => $idBlock,
             'id_block_subject' => $id_block_subject,
             'is_allow' => $isAllow,
+            'is_in_time' => $is_in_time,
         ]);
     }
 

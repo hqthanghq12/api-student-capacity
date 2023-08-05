@@ -121,6 +121,7 @@
                             <th scope="col">Trạng thái phát đề</th>
                             <th scope="col">Tên đề thi</th>
                             <th scope="col">Điểm</th>
+                            <th scope="col">Thời gian nộp</th>
                             <th scope="col">Thời gian thi</th>
                             <th colspan="2"></th>
                         </tr>
@@ -147,7 +148,9 @@
                                             <input class="form-check-input form-change-status"
                                                    data-id="{{ $value->id }}" type="checkbox"
                                                    {{ $value->status == 1 ? 'checked' : '' }} role="switch"
-                                                   id="flexSwitchCheckDefault">
+                                                   id="flexSwitchCheckDefault"
+                                                @disabled($is_in_time)
+                                            >
                                         </div>
                                     </td>
                                     <td>
@@ -157,6 +160,7 @@
                                         {{ trim($value->exam_name) === "" ? "Chưa có đề thi" : $value->exam_name }}
                                     </td>
                                     <td>{{ trim($value->scores) === "" ? "Chưa thi" : $value->scores }}</td>
+                                    <td>{{ !empty($value->created_at) ? date('H:i d-m-Y', strtotime($value->created_at)) : "Chưa thi" }}</td>
                                     <td>
                                         {{ trim($value->exam_time) === "" ? "Chưa có thời gian" : $value->exam_time . " phút" }}
                                     </td>
@@ -261,6 +265,7 @@
                             <option value="0">Chọn đề cụ thể</option>
                             {{--                            <option value="1">Trộn đề ngẫu nhiên</option>--}}
                             <option value="1">Đề ngẫu nhiên</option>
+                            <option value="2">Trộn câu hỏi ngẫu nhiên</option>
                         </select>
                     </div>
                     <div class="form-group m-10" id="specific_exam_form" style="display: none;">
@@ -273,47 +278,47 @@
                         <input type="hidden" name="exam_name" id="exam_name">
                         <input type="hidden" name="id_subject" id="id_subject" value="{{ $id_subject }}">
                     </div>
-                    {{--                    <div id="random_exam_form" style="display: none;">--}}
-                    {{--                        <div class="form-group m-10 d-flex flex-column align-items-start">--}}
-                    {{--                            <label for="" class="form-label">Số lượng câu hỏi</label>--}}
-                    {{--                            <input type="text" class="form-control" name="questions_quantity" id="questions_quantity"--}}
-                    {{--                                   placeholder="Số lượng câu hỏi">--}}
-                    {{--                        </div>--}}
-                    {{--                        <div class="form-group m-10 row">--}}
-                    {{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
-                    {{--                                <label for="" class="form-label">% câu mức độ dễ</label>--}}
-                    {{--                                <input type="text" class="form-control" name="ez_per_ques" id="ez_per_ques"--}}
-                    {{--                                       placeholder="0 - 100">--}}
-                    {{--                            </div>--}}
-                    {{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
-                    {{--                                <label for="" class="form-label">% câu mức độ tb</label>--}}
-                    {{--                                <input type="text" class="form-control" name="me_per_ques" id="me_per_ques"--}}
-                    {{--                                       placeholder="0 - 100">--}}
-                    {{--                            </div>--}}
-                    {{--                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">--}}
-                    {{--                                <label for="" class="form-label">% câu mức độ khó</label>--}}
-                    {{--                                <input type="text" class="form-control" name="diff_per_ques" id="diff_per_ques"--}}
-                    {{--                                       placeholder="0 - 100">--}}
-                    {{--                            </div>--}}
-                    {{--                        </div>--}}
-                    {{--                    </div>--}}
-                    {{--                    <div class="form-group m-10 d-flex flex-column align-items-start" id="time_form">--}}
-                    {{--                        <label for="" class="form-label">Thời gian thi</label>--}}
-                    {{--                        <select name="" id="time-select" class="form-select">--}}
-                    {{--                            <option value="15">15 phút</option>--}}
-                    {{--                            <option value="20">20 phút</option>--}}
-                    {{--                            <option value="30">30 phút</option>--}}
-                    {{--                            <option value="50">50 phút</option>--}}
-                    {{--                            <option value="60">60 phút</option>--}}
-                    {{--                            <option value="90">90 phút</option>--}}
-                    {{--                        </select>--}}
-                    {{--                        <input type="text" class="form-control" name="time" id="time-text"--}}
-                    {{--                               placeholder="Thời gian thi" style="display: none">--}}
-                    {{--                        <div class="form-group my-5">--}}
-                    {{--                            <input type="checkbox" name="custom-time-checkbox" id="custom-time-checkbox" class="form-check-input me-3">--}}
-                    {{--                            <label for="custom-time-checkbox" class="form-label" style="user-select: none;">Tùy chỉnh thời gian</label>--}}
-                    {{--                        </div>--}}
-                    {{--                    </div>--}}
+                    <div id="random_exam_form" style="display: none;">
+                        <div class="form-group m-10 d-flex flex-column align-items-start">
+                            <label for="" class="form-label">Số lượng câu hỏi</label>
+                            <input type="text" class="form-control" name="questions_quantity" id="questions_quantity"
+                                   placeholder="Số lượng câu hỏi">
+                        </div>
+                        <div class="form-group m-10 row">
+                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">
+                                <label for="" class="form-label">% câu mức độ dễ</label>
+                                <input type="text" class="form-control" name="ez_per_ques" id="ez_per_ques"
+                                       placeholder="0 - 100">
+                            </div>
+                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">
+                                <label for="" class="form-label">% câu mức độ tb</label>
+                                <input type="text" class="form-control" name="me_per_ques" id="me_per_ques"
+                                       placeholder="0 - 100">
+                            </div>
+                            <div class="form-group col-lg-4 d-flex flex-column align-items-start">
+                                <label for="" class="form-label">% câu mức độ khó</label>
+                                <input type="text" class="form-control" name="diff_per_ques" id="diff_per_ques"
+                                       placeholder="0 - 100">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group m-10 d-flex flex-column align-items-start" id="time_form">
+                        <label for="" class="form-label">Thời gian thi</label>
+                        <select name="" id="time-select" class="form-select">
+                            <option value="15">15 phút</option>
+                            <option value="20">20 phút</option>
+                            <option value="30">30 phút</option>
+                            <option value="50">50 phút</option>
+                            <option value="60">60 phút</option>
+                            <option value="90">90 phút</option>
+                        </select>
+                                                <input type="text" class="form-control" name="time" id="time-text"
+                                                       placeholder="Thời gian thi" style="display: none">
+                                                <div class="form-group my-5">
+                                                    <input type="checkbox" name="custom-time-checkbox" id="custom-time-checkbox" class="form-check-input me-3">
+                                                    <label for="custom-time-checkbox" class="form-label" style="user-select: none;">Tùy chỉnh thời gian</label>
+                                                </div>
+                    </div>
                     <div class="modal-footer">
                         {{--                        @if($total >= 1)--}}
                         {{--                            <button type="button" id="reloadPlaytopic" class=" btn btn-primary">Phát Lại</button>--}}
@@ -638,13 +643,13 @@
             let id_poetry = $('#id_poetry').val();
             let receive_mode = $('#receive_mode').val();
             let exam_id = $('#exam_id').val();
-            // let questions_quantity = $('#questions_quantity').val();
-            // let ez_per_ques = $('#ez_per_ques').val();
-            // let me_per_ques = $('#me_per_ques').val();
-            // let diff_per_ques = $('#diff_per_ques').val();
+            let questions_quantity = $('#questions_quantity').val();
+            let ez_per_ques = $('#ez_per_ques').val();
+            let me_per_ques = $('#me_per_ques').val();
+            let diff_per_ques = $('#diff_per_ques').val();
             let id_subject = $('#id_subject').val();
-            // let time = custom_time_checkbox.is(":checked") ? time_text_element.val() : time_select_element.val();
-            let time = 90;
+            let time = custom_time_checkbox.is(":checked") ? time_text_element.val() : time_select_element.val();
+            // let time = 90;
             let exam_name = $('#exam_name').val();
             let poetryStudentId = $('.checkbox-student:checked').map(function () {
                 return $(this).attr('data-id');
@@ -654,10 +659,10 @@
                 'id_poetry': id_poetry,
                 'receive_mode': receive_mode,
                 'exam_id': exam_id,
-                // 'questions_quantity': questions_quantity,
-                // 'ez_per_ques': ez_per_ques,
-                // 'me_per_ques': me_per_ques,
-                // 'diff_per_ques': diff_per_ques,
+                'questions_quantity': questions_quantity,
+                'ez_per_ques': ez_per_ques,
+                'me_per_ques': me_per_ques,
+                'diff_per_ques': diff_per_ques,
                 'id_subject': id_subject,
                 'time': time,
                 'exam_name': exam_name,
