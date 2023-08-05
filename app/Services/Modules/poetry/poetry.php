@@ -341,7 +341,9 @@ class poetry implements MPoetryInterface
                 $rejoin_timestamp = strtotime($value->rejoined_at);
                 $is_in_time = (
                     (time() >= $rejoin_timestamp && time() < strtotime("+15 minutes", $rejoin_timestamp))
-                    || (time() >= $start_time_timestamp && time() < strtotime("+15 minutes", $start_time_timestamp) && time() < strtotime($finish_time))
+                    || (time() >= $start_time_timestamp
+//                        && time() < strtotime("+15 minutes", $start_time_timestamp)
+                        && time() < strtotime($finish_time))
                 );
                 $have_done = (!empty($value->created_at) && $value->status == 1);
                 $data['data'][] = [

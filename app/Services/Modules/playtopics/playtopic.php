@@ -56,7 +56,9 @@ class playtopic
             $rejoin_timestamp = strtotime($records->rejoined_at);
             $records->is_in_time = (
                 (time() >= $rejoin_timestamp && time() < strtotime("+15 minutes", $rejoin_timestamp))
-                || (time() >= $start_time_timestamp && time() < strtotime("+15 minutes", $start_time_timestamp) && time() < strtotime($finish_time))
+                || (time() >= $start_time_timestamp
+//                    && time() < strtotime("+15 minutes", $start_time_timestamp)
+                    && time() < strtotime($finish_time))
             );
             $records->have_done = (!empty($records->status) && $records->status == 1);
             $records->start_time = $start_time;
