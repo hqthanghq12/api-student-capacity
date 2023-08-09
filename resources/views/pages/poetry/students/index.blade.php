@@ -160,7 +160,7 @@
                                         {{ trim($value->exam_name) === "" ? "Chưa có đề thi" : $value->exam_name }}
                                     </td>
                                     <td>{{ trim($value->scores) === "" ? "Chưa thi" : $value->scores }}</td>
-                                    <td>{{ !empty($value->created_at) ? date('H:i d-m-Y', strtotime($value->created_at)) : "Chưa thi" }}</td>
+                                    <td>{{ !empty($value->updated_at) ? date('H:i d-m-Y', strtotime($value->updated_at)) : "Chưa thi" }}</td>
                                     <td>
                                         {{ trim($value->exam_time) === "" ? "Chưa có thời gian" : $value->exam_time . " phút" }}
                                     </td>
