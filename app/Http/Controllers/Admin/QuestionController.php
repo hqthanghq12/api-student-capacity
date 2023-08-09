@@ -343,7 +343,7 @@ class QuestionController extends Controller
 
     public function destroysubject($id, $id_exam)
     {
-        $this->questionModel::find($id)->delete();
+        $this->questionModel::query()->find($id)->forceDelete();
         $exams = $this->examModel->find($id_exam);
         $exams->total_questions = $exams->total_questions - 1;
         $exams->save();

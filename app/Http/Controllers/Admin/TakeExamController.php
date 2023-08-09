@@ -294,32 +294,32 @@ class TakeExamController extends Controller
     {
         $user_id = auth('sanctum')->user()->id;
         $dB::beginTransaction();
-            $playtopic = $this->playtopic->query()->where('id', $request->id)->pluck('id');
+        $playtopic = $this->playtopic->query()->where('id', $request->id)->pluck('id');
 //            if (is_null($exam)) return $this->responseApi(false, 'Lỗi truy cập hệ thống !!');
-            if (is_null($playtopic)) return $this->responseApi(false, 'Lỗi truy cập hệ thống !!');
+        if (is_null($playtopic)) return $this->responseApi(false, 'Lỗi truy cập hệ thống !!');
 //            $resultCapacity = $this->resultCapacity->whereInExamUser($exam, $user_id);
-            $resultCapacity = $this->resultCapacity->whereInPlaytopicUser($playtopic[0], $user_id);
-            if ($resultCapacity) {
+        $resultCapacity = $this->resultCapacity->whereInPlaytopicUser($playtopic[0], $user_id);
+        if ($resultCapacity) {
 //                $exam = $this->exam->find($resultCapacity->exam_id);
-                $playtopic = $this->playtopic->query()->find($resultCapacity->playtopic_id);
-            } else {
+            $playtopic = $this->playtopic->query()->find($resultCapacity->playtopic_id);
+        } else {
 //                $exam = $this->exam->where(['id' => $request->id])->inRandomOrder()->first();
-                $playtopic = $this->playtopic->query()->where(['id' => $request->id])->first();
-                $resultCapacityNew = $this->resultCapacity->create([
-                    'scores' => 0,
-                    'status' => config('util.STATUS_RESULT_CAPACITY_DOING'),
+            $playtopic = $this->playtopic->query()->where(['id' => $request->id])->first();
+            $resultCapacityNew = $this->resultCapacity->create([
+                'scores' => 0,
+                'status' => config('util.STATUS_RESULT_CAPACITY_DOING'),
 //                    'exam_id' => $exam->id,
-                    'user_id' => $user_id,
-                    'type' => config('util.TYPE_TEST'),
-                    'playtopic_id' => $playtopic->id,
-                ]);
-            }
-            $string = $playtopic->questions_order;
-            $arrayOrder = json_decode($string);
+                'user_id' => $user_id,
+                'type' => config('util.TYPE_TEST'),
+                'playtopic_id' => $playtopic->id,
+            ]);
+        }
+        $string = $playtopic->questions_order;
+        $arrayOrder = json_decode($string);
 //            $arrayOrder = explode(',',trim($string, '[]'));
 //            $exam->test = $arrayOrder;
 //        return $string;
-            $questions = $this->question->findInId($arrayOrder, ['answers', 'images']);
+        $questions = $this->question->findInId($arrayOrder, ['answers', 'images']);
 //        $questions = \App\Models\Question::whereIn('id', $arrayOrder)->get();
 //            $exam->load(['questions' => function ($q) use ($arrayOrder) {
 //                $q->orderByRaw("FIELD(questions.id, " . implode(",", $arrayOrder) . ")");
@@ -332,20 +332,20 @@ class TakeExamController extends Controller
 //                    }
 //                ]);
 //            }]);
-            $data = [
-                'id' => $playtopic->id,
-                'name' => $playtopic->exam_name,
-                'total_questions' => count($arrayOrder),
-                'time' => $playtopic->exam_time,
-                'questions' => $questions,
-                'questions_order' => $playtopic->questions_order,
-            ];
-            $dB::commit();
-            if ($resultCapacity) {
-                return $this->responseApi(true, $data, ['exam_at' => $resultCapacity->created_at]);
-            } else {
-                return $this->responseApi(true, $data, ['exam_at' => $resultCapacityNew->created_at]);
-            }
+        $data = [
+            'id' => $playtopic->id,
+            'name' => $playtopic->exam_name,
+            'total_questions' => count($arrayOrder),
+            'time' => $playtopic->exam_time,
+            'questions' => $questions,
+            'questions_order' => $playtopic->questions_order,
+        ];
+        $dB::commit();
+        if ($resultCapacity) {
+            return $this->responseApi(true, $data, ['exam_at' => $resultCapacity->created_at]);
+        } else {
+            return $this->responseApi(true, $data, ['exam_at' => $resultCapacityNew->created_at]);
+        }
         try {
 //            $exam = $this->exam->whereGet(['id' => $request->id])->pluck('id');
         } catch (\Throwable $th) {
@@ -397,26 +397,50 @@ class TakeExamController extends Controller
 //        $donotAnswer = $exam->questions_count - count($request->data);
         $donotAnswer = $questions_count - count($request->data);
         foreach ($request->data as $key => $data) {
-            if ($data['answerId'] == null) {
-                $donotAnswer += 1;
-            } else {
-                $answer = $this->answer->findById(
-                    $data['answerId'],
-                    [
-                        'question_id' => $data['questionId'],
-                        'is_correct' => config('util.ANSWER_TRUE'),
-                    ]
-                );
-                if ($answer && $data['answerId'] === $answer->id) {
-                    $score += $score_one_question;
-                    $trueAnswer += 1;
+            if ($data['type'] == 0) {
+                if ($data['answerId'] == null) {
+                    $donotAnswer += 1;
                 } else {
+                    $answer = $this->answer->findById(
+                        $data['answerId'],
+                        [
+                            'question_id' => $data['questionId'],
+                            'is_correct' => config('util.ANSWER_TRUE'),
+                        ]
+                    );
+                    if ($answer && $data['answerId'] === $answer->id) {
+                        $score += $score_one_question;
+                        $trueAnswer += 1;
+                    } else {
+                        $falseAnswer += 1;
+                    }
+                }
+            } else {
+                if (count($data['answerIds']) > 0 && count($data['answerIds']) <= 1) {
                     $falseAnswer += 1;
+                } else if (count($data['answerIds']) <= 0) {
+                    $donotAnswer += 1;
+                } else {
+                    $answer = $this->answer->whereInId(
+                        $data['answerIds'],
+                        [
+                            'question_id' => $data['questionId'],
+                            'is_correct' => config('util.ANSWER_TRUE'),
+                        ]
+                    );
+                    if (count($data['answerIds']) === count($answer)) {
+                        $score += $score_one_question;
+                        $trueAnswer += 1;
+                    } else {
+                        $falseAnswer += 1;
+                    }
                 }
             }
+
         }
 //        $resultCapacity = $this->resultCapacity->findByUserExam($user_id, $request->exam_id);
         $resultCapacity = $this->resultCapacity->findByUserPlaytopic($user_id, $request->playtopic_id);
+//        return $score;
         $db::beginTransaction();
         try {
             $resultCapacity->update([
@@ -428,13 +452,25 @@ class TakeExamController extends Controller
             ]);
             $dataInsert = [];
             foreach ($request->data as $data) {
-                $dataInsert[] = [
-                    'result_capacity_id' => $resultCapacity->id,
-                    'question_id' => $data['questionId'],
-                    'answer_id' => $data['answerId'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                if ($data['type'] == 0) {
+                    $dataInsert[] = [
+                        'result_capacity_id' => $resultCapacity->id,
+                        'question_id' => $data['questionId'],
+                        'answer_id' => $data['answerId'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                } else {
+                    foreach ($data['answerIds'] as $dataAns) {
+                        $dataInsert[] = [
+                            'result_capacity_id' => $resultCapacity->id,
+                            'question_id' => $data['questionId'],
+                            'answer_id' => $dataAns,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                }
 //                $this->resultCapacityDetail->create([
 //                    'result_capacity_id' => $resultCapacity->id,
 //                    'question_id' => $data['questionId'],
@@ -457,7 +493,7 @@ class TakeExamController extends Controller
             );
         } catch (\Throwable $th) {
             $db::rollBack();
-            dd($th->getMessage());
+            return $th->getMessage();
         }
     }
 
