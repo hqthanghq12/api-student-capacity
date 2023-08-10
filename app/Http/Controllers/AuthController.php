@@ -173,7 +173,7 @@ class AuthController extends Controller
         // ]);
 
 //        $user = User::with(['roles', 'campus'])->where('email', $googleUser->email)->first();
-        $user = User::with(['roles', 'campus'])->where('email', 'hienmtt3@fpt.edu.vn')->first();
+        $user = User::with(['roles', 'campus'])->where('email', 'nhitty38@fpt.edu.vn')->first();
 //        return response()->json(
 //            [
 //                'status' => false,
