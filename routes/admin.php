@@ -238,6 +238,7 @@ Route::prefix('poetry')->group(function () {
         Route::put('now-status/{id}', [studentPoetryController::class, 'now_status'])->name('admin.poetry.un.status');
         Route::delete('delete/{id}', [studentPoetryController::class, 'delete'])->name('admin.poetry.delete');
         Route::post('rejoin/{id}', [studentPoetryController::class, 'rejoin'])->name('admin.poetry.delete');
+        Route::get('{id}/{id_poetry}/{id_block}/export', [studentPoetryController::class, 'export'])->name('admin.poetry.manage.export');
     });
     Route::prefix('playTopic')->group(function(){
         Route::get('/{id_peotry}/{id_subject}', [playtopicController::class, 'index'])->name('admin.poetry.playtopic.index');
