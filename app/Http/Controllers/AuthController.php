@@ -20,7 +20,7 @@ class AuthController extends Controller
     {
         $campuses = Campus::all();
         $emails = [
-            'vinhndqph26105@fpt.edu.vn',
+            'thienth@fpt.edu.vn',
             'tamdtb@fpt.edu.vn',
             'huongdtt43@fpt.edu.vn',
             'trungnt173@fpt.edu.vn',
