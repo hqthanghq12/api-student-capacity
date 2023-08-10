@@ -100,12 +100,13 @@ class studentPoetryController extends Controller
             ->get();
 
         $data = [];
-        foreach ($liststudent as $key => $value) {
+        $key = 0;
+        foreach ($liststudent as $value) {
             $start = Carbon::parse($value->created_at);
             $end = Carbon::parse($value->updated_at);
-            if (isset($value->scores)) {
+            if ($value->scores) {
                 $data[] = [
-                    $key + 1,
+                    ++$key,
                     $value->emailStudent,
                     $value->scores,
                     $end->diffForHumans($start),
