@@ -39,6 +39,7 @@ class PoetryStudent implements MPoetryStudentsInterface
                         "{$user}.mssv",
                         "{$poetry}.id_block_subject",
                         'result_capacity.scores',
+                        'result_capacity.created_at',
                         'result_capacity.updated_at',
                     ]
                 )
