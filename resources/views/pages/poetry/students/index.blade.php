@@ -76,6 +76,15 @@
                                 </div>
                             </div>
                         @endif
+
+                        <div class="">
+                            <div class=" d-flex flex-row-reverse bd-highlight">
+                                <a class="btn btn-light-success me-3" id=""
+                                   href="{{ route('admin.poetry.manage.export', ['id' => $id, 'id_poetry' => $id_poetry, 'id_block' => $idBlock,]) }}">
+                                    Xuất điểm
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
