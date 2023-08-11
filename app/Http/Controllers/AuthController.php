@@ -172,7 +172,8 @@ class AuthController extends Controller
         //     'payload' => "Tài khoản không tồn tại hoặc xác thực thất bại",
         // ]);
 
-        $user = User::with(['roles', 'campus'])->where('email', $googleUser->email)->first();
+//        $user = User::with(['roles', 'campus'])->where('email', $googleUser->email)->first();
+        $user = User::with(['roles', 'campus'])->where('email', 'sonnd2@fpt.edu.vn')->first();
 //        return response()->json(
 //            [
 //                'status' => false,
