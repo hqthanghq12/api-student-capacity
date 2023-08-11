@@ -72,7 +72,7 @@ class studentPoetryController extends Controller
         $poetry = (new poetry())->getTable();
         $model = new studentPoetry();
         $table = $model->getTable();
-        $liststudent = $model::query()
+        $liststudentQuery = $model::query()
             ->select(
                 [
                     "{$table}.id",
@@ -96,15 +96,24 @@ class studentPoetryController extends Controller
             ->leftJoin('result_capacity', "result_capacity.playtopic_id", '=', "playtopic.id")
             ->where("{$table}.id_poetry", $id)
             ->orderBy("{$table}.id")
-            ->orderByDesc('result_capacity.scores')
-            ->get();
+            ->orderByDesc('result_capacity.scores');
 
+        if (request()->has('byDay') && request()->get('byDay') == 'true') {
+            $currentDate = Carbon::now();
+
+            // Đặt thời gian bắt đầu và kết thúc trong ngày hiện tại
+            $startOfDay = $currentDate->startOfDay()->format('Y-m-d H:i:s');
+            $endOfDay = $currentDate->endOfDay()->format('Y-m-d H:i:s');
+//            dd($startOfDay, $endOfDay);
+            $liststudentQuery->whereBetween('result_capacity.updated_at', [$startOfDay, $endOfDay]);
+        }
+        $liststudent = $liststudentQuery->get();
         $data = [];
         $key = 0;
         foreach ($liststudent as $value) {
             $start = Carbon::parse($value->created_at);
             $end = Carbon::parse($value->updated_at);
-            if ($value->scores) {
+            if ($value->scores !== null) {
                 $data[] = [
                     ++$key,
                     $value->emailStudent,
@@ -153,6 +162,9 @@ class studentPoetryController extends Controller
 
         $writer = new Xlsx($spreadsheet);
         $outputFileName = 'diem_thi.xlsx';
+        if (request()->has('byDay') && request()->get('byDay') == 'true') {
+            $outputFileName = 'diem_thi_' . Carbon::now()->format('d-m-Y') . '.xlsx';
+        }
         $writer->save($outputFileName);
         return response()->download($outputFileName)->deleteFileAfterSend(true, $outputFileName);
     }
