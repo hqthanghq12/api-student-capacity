@@ -47,13 +47,13 @@
             </div>
             <div class="card card-flush p-4">
                 <div class="row">
-                    <div class=" col-lg-6">
+                    <div class=" col-lg-3">
 
                         <h1>
                             Danh sách ca thi số {{ $id }}
                         </h1>
                     </div>
-                    <div class="col-lg-6 btn-group justify-content-end">
+                    <div class="col-lg-9 btn-group justify-content-end">
                         <div class="">
                             @if($student->count() > 0 && $is_allow)
                                 <div class=" d-flex flex-row-reverse bd-highlight">
@@ -82,6 +82,14 @@
                                 <a class="btn btn-light-success me-3" id=""
                                    href="{{ route('admin.poetry.manage.export', ['id' => $id, 'id_poetry' => $id_poetry, 'id_block' => $idBlock,]) }}">
                                     Xuất điểm
+                                </a>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class=" d-flex flex-row-reverse bd-highlight">
+                                <a class="btn btn-light-info me-3" id=""
+                                   href="{{ route('admin.poetry.manage.export', ['id' => $id, 'id_poetry' => $id_poetry, 'id_block' => $idBlock, 'byDay' => 'true']) }}">
+                                    Xuất điểm trong ngày
                                 </a>
                             </div>
                         </div>
