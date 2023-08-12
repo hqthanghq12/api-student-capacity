@@ -25,7 +25,7 @@ class PoetryStudent implements MPoetryStudentsInterface
         try {
             $user = (new User())->getTable();
             $poetry = (new poetry())->getTable();
-            $data = $this->model::query()
+            $dataQuery = $this->model::query()
                 ->select(
                     [
                         "{$this->table}.id",
@@ -48,8 +48,13 @@ class PoetryStudent implements MPoetryStudentsInterface
                 ->leftJoin('playtopic', "playtopic.student_poetry_id", '=', "{$this->table}.id")
                 ->leftJoin('result_capacity', "result_capacity.playtopic_id", '=', "playtopic.id")
                 ->where("{$this->table}.id_poetry", $id_poetry)
-                ->orderBy("{$this->table}.id")
-                ->paginate(10);
+                ->orderBy("{$this->table}.id");
+
+            if (request()->has('email') && request('email') != '') {
+                $dataQuery->where("{$user}.email", 'like', '%' . request('email') . '%');
+            }
+
+            $data = $dataQuery->paginate(10);
             return $data;
         } catch (\Exception $e) {
             return false;
