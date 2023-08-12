@@ -45,7 +45,21 @@
             <div class="mb-5">
                 {{ Breadcrumbs::render('manageSemeter',['id' => $id,'id_poetry' => $id_poetry,'id_block' => $idBlock]) }}
             </div>
+            {{--            <div class="card card-flush p-4">--}}
+            {{--            </div>--}}
             <div class="card card-flush p-4">
+                <form action="" class="my-5 p-3">
+                    <label for="email">Tìm kiếm theo email</label>
+                    <div class="row">
+                        <div class="col-10">
+                            <input type="search" name="email" id="" class="form-control col-9"
+                        value="{{ request('email') ?? '' }}">
+                        </div>
+                        <div class="col-2">
+                        <button class="btn btn-secondary">Tìm kiếm</button>
+                        </div>
+                    </div>
+                </form>
                 <div class="row">
                     <div class=" col-lg-3">
 
