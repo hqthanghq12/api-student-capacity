@@ -334,7 +334,7 @@ Route::post('/upload-user', function (\Illuminate\Http\Request $request) {
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file'));
     $sheetCount = $spreadsheet->getSheetCount();
     $emails = \App\Models\User::query()->pluck('email');
-    $userQueryInsert = "INSERT INTO `users` (`id`, `name`, `email`, `mssv`, `status`, `campus_id`) VALUES ";
+    $userQueryInsert = "INSERT INTO `users` (`id`, `name`, `email`, `status`, `campus_id`) VALUES ";
     $roleQueryInsert = "INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES ";
     $maxId = \App\Models\User::query()->max('id');
     $userQueryArr = [];
@@ -361,7 +361,7 @@ Route::post('/upload-user', function (\Illuminate\Http\Request $request) {
                 'status' => 1,
                 'campus_id' => 1,
             ];
-            $userQueryArr[] = "({$maxId}, '{$name}', '{$email}', '{$mssv}', 1, 1)";
+            $userQueryArr[] = "({$maxId}, '{$name}', '{$email}', 1, 1)";
 
             $roleInsertArr[] = [
                 'role_id' => 3,
