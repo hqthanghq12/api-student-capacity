@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\studentPoetryController;
 use App\Http\Controllers\Admin\playtopicController;
 use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\chartController;
+
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::prefix('dashboard')->group(function () {
     Route::get('api-cuoc-thi', [DashboardController::class, 'chartCompetity'])->name('dashboard.chart-competity');
@@ -40,7 +41,7 @@ Route::prefix('dashboard')->group(function () {
 //    ], function () {
 //        Route::post('send-mail/{id}', [SendMailController::class, 'sendMailRoundUser'])->name('round.send.mail.pass');
 //        Route::get('{id}/form-send-mail', [RoundController::class, 'sendMail'])->name('admin.round.send.mail');
-      // Route::get('form-add', [RoundController::class, 'create'])->name('admin.round.create');
+// Route::get('form-add', [RoundController::class, 'create'])->name('admin.round.create');
 //        Route::get('form-add', [RoundController::class, 'creatRound'])->name('admin.round.create');
 ////        Route::post('form-add-save', [RoundController::class, 'store'])->name('admin.round.store');
 //        Route::post('form-add-save', [RoundController::class, 'storeNew'])->name('admin.round.store');
@@ -215,12 +216,12 @@ Route::prefix('accountStudent')->group(function () {
     Route::get('exportUserPoint/{id}', [studentPoetryController::class, 'UserExportpoint'])->name('manage.student.list.export');
 });
 
-Route::prefix('chart')->group(function(){
-    Route::get('',[chartController::class, 'index'])->middleware('role_admin')->name('admin.chart');
-    Route::get('getsemeter/{id_campus}',[chartController::class, 'semeter'])->name('admin.getsemter');
-    Route::get('getBlock/{id_semeter}',[chartController::class, 'block'])->name('admin.getsemter');
+Route::prefix('chart')->group(function () {
+    Route::get('', [chartController::class, 'index'])->middleware('role_admin')->name('admin.chart');
+    Route::get('getsemeter/{id_campus}', [chartController::class, 'semeter'])->name('admin.getsemter');
+    Route::get('getBlock/{id_semeter}', [chartController::class, 'block'])->name('admin.getsemter');
     Route::post('GetPoetryDetail', [PoetryController::class, 'ListPoetryResponedetailChart'])->name('manage.semeter.list');
-    Route::get('detail',[chartController::class, 'detail'])->name('admin.chart.detail');
+    Route::get('detail', [chartController::class, 'detail'])->name('admin.chart.detail');
 });
 //Ca học =>done
 Route::prefix('poetry')->group(function () {
@@ -240,7 +241,7 @@ Route::prefix('poetry')->group(function () {
         Route::post('rejoin/{id}', [studentPoetryController::class, 'rejoin'])->name('admin.poetry.delete');
         Route::get('{id}/{id_poetry}/{id_block}/export', [studentPoetryController::class, 'export'])->name('admin.poetry.manage.export');
     });
-    Route::prefix('playTopic')->group(function(){
+    Route::prefix('playTopic')->group(function () {
         Route::get('/{id_peotry}/{id_subject}', [playtopicController::class, 'index'])->name('admin.poetry.playtopic.index');
         Route::get('getExam/{id_subject}', [playtopicController::class, 'listExam']);
         Route::post('addTopics', [playtopicController::class, 'AddTopic'])->name('admin.poetry.playtopic.create');
@@ -323,3 +324,59 @@ Route::group([
 Route::get("dev", function () {
     return "<h1>Chức năng đang phát triển</h1> ";
 })->name('admin.dev.show');
+
+
+Route::get('/upload-user', function () {
+    return view('upload-user');
+});
+
+Route::post('/upload-user', function (\Illuminate\Http\Request $request) {
+    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file'));
+    $sheetCount = $spreadsheet->getSheetCount();
+    $emails = \App\Models\User::query()->pluck('email');
+    $userQueryInsert = "INSERT INTO `users` (`id`, `name`, `email`, `mssv`, `status`, `campus_id`) VALUES ";
+    $roleQueryInsert = "INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES ";
+    $maxId = \App\Models\User::query()->max('id');
+    $userQueryArr = [];
+    $userInsertArr = [];
+    $roleInsertArr = [];
+    $roleQueryArr = [];
+    $emailsEcho = [];
+    for ($i = 0; $i < $sheetCount; $i++) {
+        $sheet = $spreadsheet->getSheet($i)->toArray();
+        for ($j = 4, $jMax = count($sheet); $j < $jMax; $j++) {
+            [, , $mssv, $name, $class, $email] = $sheet[$j];
+            $email = \Illuminate\Support\Str::lower($email);
+            $emailsEcho[] = $email;
+            if ($emails->contains($email)) {
+                continue;
+            }
+            $name = $name ?: \Illuminate\Support\Str::replaceLast('@fpt.edu.vn', '', $email);
+            $name = \Illuminate\Support\Str::title($name);
+            $userInsertArr[] = [
+                'id' => ++$maxId,
+                'name' => $name,
+                'email' => $email,
+                'mssv' => $mssv,
+                'status' => 1,
+                'campus_id' => 1,
+            ];
+            $userQueryArr[] = "({$maxId}, '{$name}', '{$email}', '{$mssv}', 1, 1)";
+
+            $roleInsertArr[] = [
+                'role_id' => 3,
+                'model_type' => 'App\Models\User',
+                'model_id' => $maxId,
+            ];
+            $roleQueryArr[] = "(3, 'App\\\\Models\\\\User', {$maxId})";
+        }
+    }
+    $userQueryInsert .= implode(',', $userQueryArr);
+    $roleQueryInsert .= implode(',', $roleQueryArr);
+    echo $userQueryInsert;
+    echo '<hr>';
+    echo $roleQueryInsert;
+    echo '<hr>';
+    echo implode(' ', $emailsEcho);
+
+})->name('upload-user');
