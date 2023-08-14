@@ -38,6 +38,7 @@ class PoetryController extends Controller
     {
         $sort = $request->sort;
         $data = $this->poetry->ListPoetry($id, $idblock, $request, $sort);
+//        dd($data);
         if (!empty($sort)) {
             $sort = $sort == 'asc' ? 'desc' : 'asc';
         } else {

@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\playtopic;
 use App\Models\poetry;
+use App\Models\studentPoetry;
 use App\Models\subject;
 use App\Models\User;
 use App\Services\Traits\TResponse;
 use App\Services\Traits\TUploadImage;
 use Illuminate\Http\Request;
 use App\Services\Modules\MStudentManager\PoetryStudent;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Modules\MExam\Exam;
@@ -36,12 +38,16 @@ class studentPoetryController extends Controller
     {
         $liststudent = $this->PoetryStudent->GetStudents($id);
         $poetry = $this->poetry->query()->where('id', $id)->first();
+        $start = DB::table('examination')->where('id', $poetry->start_examination_id)->first()->started_at;
+        $end = DB::table('examination')->where('id', $poetry->finish_examination_id)->first()->finished_at;
+        $start_time = $poetry->exam_date . ' ' . $start;
+        $end_time = $poetry->exam_date . ' ' . $end;
+        $is_in_time = time() >= strtotime($start_time) && time() < strtotime($end_time);
         if (auth()->user()->hasRole('teacher')) {
-            $start_time = DB::table('examination')->where('id', $poetry->start_examination_id)->first()->started_at;
-            $time = $poetry->exam_date . ' ' . $start_time;
-            $isAllow = time() < strtotime($time) && $liststudent->count() == 0;
-        } else
+            $isAllow = time() < strtotime($start_time) && $liststudent->count() == 0;
+        } else {
             $isAllow = true;
+        }
         $id_block_subject = $poetry->id_block_subject;
         $id_subject = DB::table('block_subject')->where('id', $id_block_subject)->first()->id_subject;
 //        if (!$liststudent) return abort(404);
@@ -56,7 +62,111 @@ class studentPoetryController extends Controller
             'idBlock' => $idBlock,
             'id_block_subject' => $id_block_subject,
             'is_allow' => $isAllow,
+            'is_in_time' => $is_in_time,
         ]);
+    }
+
+    public function export($id, $id_poetry, $idBlock)
+    {
+        $user = (new User())->getTable();
+        $poetry = (new poetry())->getTable();
+        $model = new studentPoetry();
+        $table = $model->getTable();
+        $liststudentQuery = $model::query()
+            ->select(
+                [
+                    "{$table}.id",
+                    "{$table}.id_student",
+                    "playtopic.exam_name",
+                    "{$table}.status",
+                    "playtopic.has_received_exam",
+                    "playtopic.exam_time",
+                    "{$user}.name as nameStudent",
+                    "{$user}.email as emailStudent",
+                    "{$user}.mssv",
+                    "{$poetry}.id_block_subject",
+                    'result_capacity.scores',
+                    'result_capacity.created_at',
+                    'result_capacity.updated_at',
+                ]
+            )
+            ->leftJoin($user, "{$user}.id", '=', "{$table}.id_student")
+            ->leftJoin($poetry, "{$poetry}.id", '=', "{$table}.id_poetry")
+            ->leftJoin('playtopic', "playtopic.student_poetry_id", '=', "{$table}.id")
+            ->leftJoin('result_capacity', "result_capacity.playtopic_id", '=', "playtopic.id")
+            ->where("{$table}.id_poetry", $id)
+            ->orderBy("{$table}.id")
+            ->orderByDesc('result_capacity.scores');
+
+        if (request()->has('byDay') && request()->get('byDay') == 'true') {
+            $currentDate = Carbon::now();
+
+            // Đặt thời gian bắt đầu và kết thúc trong ngày hiện tại
+            $startOfDay = $currentDate->startOfDay()->format('Y-m-d H:i:s');
+            $endOfDay = $currentDate->endOfDay()->format('Y-m-d H:i:s');
+//            dd($startOfDay, $endOfDay);
+            $liststudentQuery->whereBetween('result_capacity.updated_at', [$startOfDay, $endOfDay]);
+        }
+        $liststudent = $liststudentQuery->get();
+        $data = [];
+        $key = 0;
+        foreach ($liststudent as $value) {
+            $start = Carbon::parse($value->created_at);
+            $end = Carbon::parse($value->updated_at);
+            if ($value->scores !== null) {
+                $data[] = [
+                    ++$key,
+                    $value->emailStudent,
+                    $value->scores,
+                    $end->diffForHumans($start),
+                    $end->format('H:i d-m-Y'),
+                ];
+            }
+        }
+        $spreadsheet = new Spreadsheet();
+        // Thực hiện xử lý dữ liệu
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'TT');
+        $sheet->setCellValue('B1', 'Email');
+        $sheet->setCellValue('C1', 'Điểm');
+        $sheet->setCellValue('D1', 'Thời gian làm bài');
+        $sheet->setCellValue('E1', 'Thời gian nôp bài');
+        $borderStyle = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['argb' => '000000'],
+                ],
+            ],
+        ];
+
+        $row = 2;
+        $column = 1;
+        foreach ($data as $recordata) {
+            foreach ($recordata as $value) {
+                $sheet->setCellValueByColumnAndRow($column, $row, $value);
+                $sheet->getStyleByColumnAndRow($column, $row)->applyFromArray($borderStyle);
+                $column++;
+            }
+            $row++;
+            $column = 1;
+        }
+        $sheet->getColumnDimension('A')->setWidth(15);
+        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(15);
+        $sheet->getColumnDimension('D')->setWidth(15);
+        $sheet->getColumnDimension('E')->setWidth(10);
+        // Định dạng căn giữa và màu nền cho hàng tiêu đề
+        $sheet->getStyle('A1:E1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:E1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
+
+        $writer = new Xlsx($spreadsheet);
+        $outputFileName = 'diem_thi.xlsx';
+        if (request()->has('byDay') && request()->get('byDay') == 'true') {
+            $outputFileName = 'diem_thi_' . Carbon::now()->format('d-m-Y') . '.xlsx';
+        }
+        $writer->save($outputFileName);
+        return response()->download($outputFileName)->deleteFileAfterSend(true, $outputFileName);
     }
 
     public function listUser($id)
@@ -154,6 +264,10 @@ class studentPoetryController extends Controller
             ->join('block_subject', 'poetry.id_block_subject', '=', 'block_subject.id')
             ->first()->id_subject;
 //        $data = null;
+        $user = User::query()->whereIn('email', $request->emailStudent)->get();
+//        foreach ($user as $item) {
+//            dd($item->roles);
+//        }
         $studentsQuery = User::query()
             ->with('poetry_student')
             ->select(['id', 'email'])
@@ -164,11 +278,14 @@ class studentPoetryController extends Controller
             ->whereDoesntHave('poetry_student', function ($query) use ($id_poetry) {
                 $query->where('id_poetry', $id_poetry);
             });
-        if (!auth()->user()->hasRole('super admin')) {
-            $studentsQuery->where('campus_id', auth()->user()->campus_id);
-        }
+//        if (!auth()->user()->hasRole('super admin')) {
+//            $studentsQuery->where('campus_id', auth()->user()->campus_id);
+//        }
         $students = $studentsQuery->get();
+//        dd($students);
         $emailFiltered = $students->pluck('email')->toArray();
+//        dd($emailFiltered);
+//        dd($request->emailStudent);
         $userSuccessCount = count($emailFiltered);
         $userFailedCount = count(array_diff($request->emailStudent, $emailFiltered));
         $poetriesId = [];

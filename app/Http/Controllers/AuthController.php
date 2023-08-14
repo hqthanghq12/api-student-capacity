@@ -20,7 +20,7 @@ class AuthController extends Controller
     {
         $campuses = Campus::all();
         $emails = [
-            'vinhndqph26105@fpt.edu.vn',
+            'tuannda3@fpt.edu.vn',
             'tamdtb@fpt.edu.vn',
             'huongdtt43@fpt.edu.vn',
             'trungnt173@fpt.edu.vn',
@@ -33,88 +33,123 @@ class AuthController extends Controller
 
     public function redirectToGoogle(Request $request)
     {
-        Validator::make(
-            $request->all(),
-            [
-                'campus_id' => ['required'],
+        if ($request->login_type == 0) {
+            $rules = [
+//                'campus_id' => ['required'],
                 'email' => ['required'],
-            ],
-            [
-                'campus_id.required' => 'Vui lòng chọn cơ sở',
+            ];
+            $messages = [
+//                'campus_id.required' => 'Vui lòng chọn cơ sở',
                 'email.required' => 'Vui lòng chọn tài khoản',
-            ],
-        )->validate();
+            ];
+            Validator::make($request->all(), $rules, $messages)->validate();
+        }
         $dataPut = [
             'campus_id' => $request->campus_id,
             'email' => $request->email,
+            'login_type' => $request->login_type ?? null,
         ];
-//        Session::put($dataPut);
-        return redirect()->route('google-auth.callback')->with($dataPut);
-//        return Socialite::driver('google')->redirect();
+        Session::flash('data', $dataPut);
+        if ($request->login_type == 0) return redirect()->route('google-auth.callback');
+        return Socialite::driver('google')->redirect();
     }
 
-    public function adminGoogleCallback(Request $request)
+    public function adminGoogleCallback()
     {
-//        dd(Session::all());
+        if (!isset(session('data')['login_type'])) return redirect(route('login'))->with('msg', "Vui lòng chọn loại tài khoản!");
 //        Session::forget('token');
 //        $ggUser = Socialite::driver('google')->user();
 //        $ggUser = Socialite::driver('google')->stateless()->user();
-        if (!empty($request->email)) {
-            [$email, $role_id] = explode('|', $request->email);
+        if (session('data')['login_type'] == 0) {
+            [$email, $role_id] = explode('|', session('data')['email']);
             if ($role_id == config('util.SUPER_ADMIN_ROLE')) {
                 $user = User::where([
                     'email' => $email
                 ])->first();
                 if ($user && $user->hasRole([config('util.SUPER_ADMIN_ROLE')])) {
-                    Auth::login($user);
-                    if (!session()->has('token')) {
-                        auth()->user()->tokens()->delete();
-                        $token = auth()->user()->createToken("token_admin")->plainTextToken;
-                        session()->put('token', $token);
-                    }
-                    return redirect(route('admin.chart'));
+                    $this->handleLoginForEachRole($user);
                 }
                 return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
             }
+        } else {
+            $ggUser = Socialite::driver('google')->user();
+            $email = $ggUser->email;
         }
-        Validator::make(
-            $request->all(),
-            [
-                'campus_id' => ['required'],
-                'email' => ['required'],
-            ],
-            [
-                'campus_id.required' => 'Vui lòng chọn cơ sở',
-                'email.required' => 'Vui lòng chọn tài khoản',
-            ],
-        )->validate();
 //        $user = User::where('email', $ggUser->email)->where('campus_id', session('campus_id'))->first();
         $user = User::where([
             'email' => $email,
-            'campus_id' => $request->campus_id,
         ])->first();
-        // dd($user->hasRole(config('util.ADMIN_ROLE')));
-        if ($user && $user->hasRole([config('util.ADMIN_ROLE')])) {
-            Auth::login($user);
-            if (!session()->has('token')) {
-                auth()->user()->tokens()->delete();
-                $token = auth()->user()->createToken("token_admin")->plainTextToken;
-                session()->put('token', $token);
-            }
-            return redirect(route('admin.chart'));
+
+        if ($user && $user->hasRole([config('util.SUPER_ADMIN_ROLE')])) {
+            $this->handleLoginForEachRole($user);
+//            Auth::login($user);
+//            if (!session()->has('token')) {
+//                auth()->user()->tokens()->delete();
+//                $token = auth()->user()->createToken("token_admin")->plainTextToken;
+//                session()->put('token', $token);
+//            }
+//            return redirect(route('admin.chart'));
         }
 
-        if ($user && $user->hasRole([config('util.TEACHER_ROLE')])) {
-            Auth::login($user);
-            if (!session()->has('token')) {
-                auth()->user()->tokens()->delete();
-                $token = auth()->user()->createToken("token_admin")->plainTextToken;
-                session()->put('token', $token);
-            }
-            return redirect(route('admin.semeter.index'));
+        $validator = Validator::make(
+            \session('data'),
+            [
+                'campus_id' => ['required'],
+            ],
+            [
+                'campus_id.required' => 'Vui lòng chọn cơ sở',
+            ],
+        );
+        if ($validator->fails()) {
+            return redirect(route('login'))->withErrors($validator)->with(\session('data'));
+        }
+
+        if ($user->campus_id == session('data')['campus_id']) {
+
+            $this->handleLoginForEachRole($user);
+//            if ($user && $user->hasRole([config('util.ADMIN_ROLE')])) {
+//                Auth::login($user);
+//                if (!session()->has('token')) {
+//                    auth()->user()->tokens()->delete();
+//                    $token = auth()->user()->createToken("token_admin")->plainTextToken;
+//                    session()->put('token', $token);
+//                }
+//                return redirect(route('admin.chart'));
+//            }
+//
+//            if ($user && $user->hasRole([config('util.TEACHER_ROLE')])) {
+//                Auth::login($user);
+//                if (!session()->has('token')) {
+//                    auth()->user()->tokens()->delete();
+//                    $token = auth()->user()->createToken("token_admin")->plainTextToken;
+//                    session()->put('token', $token);
+//                }
+//                return redirect(route('admin.semeter.index'));
+//            }
         }
 //        return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
         return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
+    }
+
+    private function handleLoginForEachRole($user)
+    {
+        $route = 'login';
+        switch ($user->roles->first()->id) {
+            case config('util.SUPER_ADMIN_ROLE'):
+            case config('util.ADMIN_ROLE'):
+                $route = 'admin.chart';
+                break;
+            case config('util.TEACHER_ROLE'):
+                $route = 'admin.semeter.index';
+                break;
+        }
+        Auth::login($user);
+        if (!session()->has('token')) {
+            auth()->user()->tokens()->delete();
+            $token = auth()->user()->createToken("token_admin")->plainTextToken;
+            session()->put('token', $token);
+        }
+        return redirect(route($route));
     }
 
     public function postLoginToken(Request $request)

@@ -41,7 +41,7 @@ Route::prefix('dashboard')->group(function () {
 //    ], function () {
 //        Route::post('send-mail/{id}', [SendMailController::class, 'sendMailRoundUser'])->name('round.send.mail.pass');
 //        Route::get('{id}/form-send-mail', [RoundController::class, 'sendMail'])->name('admin.round.send.mail');
-// Route::get('form-add', [RoundController::class, 'create'])->name('admin.round.create');
+      // Route::get('form-add', [RoundController::class, 'create'])->name('admin.round.create');
 //        Route::get('form-add', [RoundController::class, 'creatRound'])->name('admin.round.create');
 ////        Route::post('form-add-save', [RoundController::class, 'store'])->name('admin.round.store');
 //        Route::post('form-add-save', [RoundController::class, 'storeNew'])->name('admin.round.store');
@@ -239,6 +239,7 @@ Route::prefix('poetry')->group(function () {
         Route::put('now-status/{id}', [studentPoetryController::class, 'now_status'])->name('admin.poetry.un.status');
         Route::delete('delete/{id}', [studentPoetryController::class, 'delete'])->name('admin.poetry.delete');
         Route::post('rejoin/{id}', [studentPoetryController::class, 'rejoin'])->name('admin.poetry.delete');
+        Route::get('{id}/{id_poetry}/{id_block}/export', [studentPoetryController::class, 'export'])->name('admin.poetry.manage.export');
     });
     Route::prefix('playTopic')->group(function () {
         Route::get('/{id_peotry}/{id_subject}', [playtopicController::class, 'index'])->name('admin.poetry.playtopic.index');
@@ -323,6 +324,7 @@ Route::group([
 Route::get("dev", function () {
     return "<h1>Chức năng đang phát triển</h1> ";
 })->name('admin.dev.show');
+
 
 Route::get('/upload-user', function () {
     return view('upload-user');
