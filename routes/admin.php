@@ -41,7 +41,7 @@ Route::prefix('dashboard')->group(function () {
 //    ], function () {
 //        Route::post('send-mail/{id}', [SendMailController::class, 'sendMailRoundUser'])->name('round.send.mail.pass');
 //        Route::get('{id}/form-send-mail', [RoundController::class, 'sendMail'])->name('admin.round.send.mail');
-      // Route::get('form-add', [RoundController::class, 'create'])->name('admin.round.create');
+// Route::get('form-add', [RoundController::class, 'create'])->name('admin.round.create');
 //        Route::get('form-add', [RoundController::class, 'creatRound'])->name('admin.round.create');
 ////        Route::post('form-add-save', [RoundController::class, 'store'])->name('admin.round.store');
 //        Route::post('form-add-save', [RoundController::class, 'storeNew'])->name('admin.round.store');
@@ -357,7 +357,7 @@ Route::post('/upload-user', function (\Illuminate\Http\Request $request) {
                 'id' => ++$maxId,
                 'name' => $name,
                 'email' => $email,
-                'mssv' => $mssv,
+                'mssv' => $mssv ?? null,
                 'status' => 1,
                 'campus_id' => 1,
             ];
