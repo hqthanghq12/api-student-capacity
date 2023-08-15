@@ -73,13 +73,16 @@ class studentPoetryController extends Controller
         $model = new studentPoetry();
         $table = $model->getTable();
         if (request()->has('full')) {
-            $poetries = poetry::query()->where('id', '>', 16)->where('parent_poetry_id', 0)->get();
+            $poetries = poetry::query()
+                ->where('id', '>', 16)
+                ->where('id', '<', 27)
+                ->where('parent_poetry_id', 0)->get();
             $studentPoetry = studentPoetry::query()->whereIn('id_poetry', $poetries->pluck('id'))->get();
             $resultCapacity = DB::table('result_capacity')
                 ->select(['result_capacity.scores', 'result_capacity.user_id', 'student_poetry.id_poetry'])
                 ->join('playtopic', 'playtopic.id', '=', 'result_capacity.playtopic_id')
                 ->join('student_poetry', 'student_poetry.id', '=', 'playtopic.student_poetry_id')
-                ->whereIn('playtopic_id', $studentPoetry->pluck('id'))
+                ->whereIn('student_poetry_id', $studentPoetry->pluck('id'))
                 ->get();
             $users = User::query()->whereIn('id', $studentPoetry->pluck('id_student'))->get();
             $data = [];
