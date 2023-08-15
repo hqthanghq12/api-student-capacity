@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Modules\MExam\Exam;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -95,6 +96,7 @@ class studentPoetryController extends Controller
                 $score5 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 25)->first();
                 $data[] = [
                     ++$key,
+                    $value->name ? $value->name : Str::replaceLast('@fpt.edu.vn', '', $value->email),
                     $value->email,
                     $score1 ? $score1->scores : "Chưa thi",
                     $score2 ? $score2->scores : "Chưa thi",
@@ -107,12 +109,13 @@ class studentPoetryController extends Controller
             // Thực hiện xử lý dữ liệu
             $sheet = $spreadsheet->getActiveSheet();
             $sheet->setCellValue('A1', 'TT');
-            $sheet->setCellValue('B1', 'Email');
-            $sheet->setCellValue('C1', 'CTSV');
-            $sheet->setCellValue('D1', 'Hành chính');
-            $sheet->setCellValue('E1', 'Quản lý phí');
-            $sheet->setCellValue('F1', 'DVSV');
-            $sheet->setCellValue('G1', 'Giám thị');
+            $sheet->setCellValue('B1', 'Họ tên');
+            $sheet->setCellValue('C1', 'Email');
+            $sheet->setCellValue('D1', 'CTSV');
+            $sheet->setCellValue('E1', 'Hành chính');
+            $sheet->setCellValue('F1', 'Quản lý phí');
+            $sheet->setCellValue('G1', 'DVSV');
+            $sheet->setCellValue('H1', 'Giám thị');
             $borderStyle = [
                 'borders' => [
                     'allBorders' => [
@@ -140,9 +143,10 @@ class studentPoetryController extends Controller
             $sheet->getColumnDimension('E')->setWidth(15);
             $sheet->getColumnDimension('F')->setWidth(15);
             $sheet->getColumnDimension('G')->setWidth(15);
+            $sheet->getColumnDimension('H')->setWidth(15);
             // Định dạng căn giữa và màu nền cho hàng tiêu đề
-            $sheet->getStyle('A1:G1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('A1:G1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
+            $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A1:H1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
 
             $writer = new Xlsx($spreadsheet);
             $outputFileName = 'diem_thi.xlsx';
