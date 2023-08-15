@@ -72,6 +72,81 @@ class studentPoetryController extends Controller
         $poetry = (new poetry())->getTable();
         $model = new studentPoetry();
         $table = $model->getTable();
+        if (request()->has('full')) {
+            $poetries = poetry::query()->where('id', '>', 16)->where('parent_poetry_id', 0)->get();
+            $studentPoetry = studentPoetry::query()->whereIn('id_poetry', $poetries->pluck('id'))->get();
+            $resultCapacity = DB::table('result_capacity')
+                ->select(['result_capacity.scores', 'result_capacity.user_id', 'student_poetry.id_poetry'])
+                ->join('playtopic', 'playtopic.id', '=', 'result_capacity.playtopic_id')
+                ->join('student_poetry', 'student_poetry.id', '=', 'playtopic.student_poetry_id')
+                ->whereIn('playtopic_id', $studentPoetry->pluck('id'))
+                ->get();
+            $users = User::query()->whereIn('id', $studentPoetry->pluck('id_student'))->get();
+            $data = [];
+            $key = 0;
+            foreach ($users as $value) {
+                $score1 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 17)->first();
+                $score2 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 19)->first();
+                $score3 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 21)->first();
+                $score4 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 23)->first();
+                $score5 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 25)->first();
+                $data[] = [
+                    ++$key,
+                    $value->email,
+                    $value->scores,
+                    $score1 ? $score1->scores : "Chưa thi",
+                    $score2 ? $score2->scores : "Chưa thi",
+                    $score3 ? $score3->scores : "Chưa thi",
+                    $score4 ? $score4->scores : "Chưa thi",
+                    $score5 ? $score5->scores : "Chưa thi",
+                ];
+            }
+            $spreadsheet = new Spreadsheet();
+            // Thực hiện xử lý dữ liệu
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setCellValue('A1', 'TT');
+            $sheet->setCellValue('B1', 'Email');
+            $sheet->setCellValue('C1', 'CTSV');
+            $sheet->setCellValue('D1', 'Hành chính');
+            $sheet->setCellValue('E1', 'Quản lý phí');
+            $sheet->setCellValue('F1', 'DVSV');
+            $sheet->setCellValue('G1', 'Giám thị');
+            $borderStyle = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['argb' => '000000'],
+                    ],
+                ],
+            ];
+
+            $row = 2;
+            $column = 1;
+            foreach ($data as $recordata) {
+                foreach ($recordata as $value) {
+                    $sheet->setCellValueByColumnAndRow($column, $row, $value);
+                    $sheet->getStyleByColumnAndRow($column, $row)->applyFromArray($borderStyle);
+                    $column++;
+                }
+                $row++;
+                $column = 1;
+            }
+            $sheet->getColumnDimension('A')->setWidth(15);
+            $sheet->getColumnDimension('B')->setWidth(20);
+            $sheet->getColumnDimension('C')->setWidth(15);
+            $sheet->getColumnDimension('D')->setWidth(15);
+            $sheet->getColumnDimension('E')->setWidth(15);
+            $sheet->getColumnDimension('F')->setWidth(15);
+            $sheet->getColumnDimension('G')->setWidth(15);
+            // Định dạng căn giữa và màu nền cho hàng tiêu đề
+            $sheet->getStyle('A1:G1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A1:G1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
+
+            $writer = new Xlsx($spreadsheet);
+            $outputFileName = 'diem_thi.xlsx';
+            $writer->save($outputFileName);
+            return response()->download($outputFileName)->deleteFileAfterSend(true, $outputFileName);
+        }
         $liststudentQuery = $model::query()
             ->select(
                 [
