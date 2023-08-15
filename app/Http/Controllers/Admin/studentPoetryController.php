@@ -96,7 +96,6 @@ class studentPoetryController extends Controller
                 $data[] = [
                     ++$key,
                     $value->email,
-                    $value->scores,
                     $score1 ? $score1->scores : "Chưa thi",
                     $score2 ? $score2->scores : "Chưa thi",
                     $score3 ? $score3->scores : "Chưa thi",
