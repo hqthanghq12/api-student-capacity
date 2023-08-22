@@ -129,6 +129,7 @@
                         </tr>
                         </thead>
                         <tbody>
+                            <p style="display: none">{{ $i=0 }}</p>
                         @foreach($setemer as $key => $value)
                             <tr>
                                 <td>
@@ -149,9 +150,9 @@
                                 <td>
                                     @if (auth()->user()->hasRole([config('util.SUPER_ADMIN_ROLE'),config('util.ADMIN_ROLE')]))
                                         <button class="btn btn-info"
-                                                onclick="location.href='{{ route('admin.semeter.block',$value->id) }}'"
+                                                onclick="location.href='{{ route('admin.poetry.index',[$value->id,$id[$i++]]) }}'"
                                                 type="button">
-                                            Block
+                                            Quản lí ca thi
                                         </button>
                                         <button class="btn btn-info"
                                                 onclick="location.href='{{ route('admin.semeter.subject.index',$value->id) }}'"
@@ -165,13 +166,13 @@
                                         </button>
                                     @endif
                                     @if(auth()->user()->hasRole('teacher'))
-                                        @foreach($value->blocks as $block)
+                                        {{-- @foreach($value->blocks as $block) --}}
                                             <button class="btn btn-info"
-                                                    onclick="location.href='{{ route('admin.poetry.index',['id' => $value->id, 'id_block' => $block->id,]) }}'"
+                                                    onclick="location.href='{{ route('admin.poetry.index',['id' => $value->id, 'id_block' => $value->blocks[0]->id,]) }}'"
                                                     type="button">
-                                                {{ $block->name }}
+                                                {{ $value->blocks[0]->name }}
                                             </button>
-                                        @endforeach
+                                        {{-- @endforeach --}}
                                     @endif
 
                                     {{--                                    <button  class="btn-delete btn btn-danger" data-id="{{ $value->id }}">--}}

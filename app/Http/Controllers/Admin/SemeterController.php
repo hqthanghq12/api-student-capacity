@@ -7,6 +7,7 @@ use App\Services\Traits\TResponse;
 use App\Services\Traits\TUploadImage;
 use Illuminate\Http\Request;
 use App\Services\Modules\MSemeter\Semeter;
+use App\Services\Modules\MBlock\Block;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Campus;
@@ -14,19 +15,25 @@ class SemeterController extends Controller
 {
     use TUploadImage, TResponse;
     public function __construct(
-        private Semeter $semeter
+        private Semeter $semeter,
+        private Block $block
     )
     {
     }
 
     public function index(){
         $data = $this->semeter->GetSemeter();
+        $block_id= [];
+        foreach ($data as $key => $value){
+            $id_semeter = $value->id;
+            $block_id[] = $this->block->getWhereList($id_semeter)[0]->id;
+        }        
         $campusListQuery = Campus::query();
         if (!(auth()->user()->hasRole('super admin'))) {
             $campusListQuery->where('id', auth()->user()->campus_id);
         }
         $campusList = $campusListQuery->get();
-        return view('pages.semeter.index',['setemer' => $data,'campusList' => $campusList]);
+        return view('pages.semeter.index',['setemer' => $data,'campusList' => $campusList,'id'=>$block_id]);
     }
 
     public function ListSemeter($id_semeter){
