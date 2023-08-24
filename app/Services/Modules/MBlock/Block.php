@@ -14,4 +14,12 @@ class Block
         return $this->block->where('id_semeter',$id)->get();
     }
 
+    public function getAllIdBlockOne($ids){
+        return $this->block
+        ->selectRaw(' MIN(id) as min_id')
+        ->whereIn('id_semeter',$ids)
+        ->groupBy('id_semeter')
+        ->get();
+    }
+
 }

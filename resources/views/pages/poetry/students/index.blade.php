@@ -106,7 +106,7 @@
                                     Xuất điểm trong ngày
                                 </a>
                             </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
 
