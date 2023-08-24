@@ -211,7 +211,7 @@ Route::prefix('accountStudent')->group(function () {
     Route::post('GetPoetryDetail', [PoetryController::class, 'ListPoetryResponedetail'])->name('manage.semeter.list');
     Route::get('ListUser/{id}', [studentPoetryController::class, 'listUser'])->name('admin.manage.semeter.index');
     Route::get('viewpoint/{id_user}', [UserController::class, 'Listpoint'])->name('manage.student.view');
-    Route::get('exportClass/{id_semeter}/{id_block}/{id_subject}/{id_class}', [UserController::class, 'ExportpointClass'])->name('manage.student.export');
+    Route::get('exportClass/{id_semeter}/{id_block}/{id_subject}/{id_class?}', [UserController::class, 'ExportpointClass'])->name('manage.student.export');
     Route::get('exportPoint/{id_user}', [UserController::class, 'Exportpoint'])->name('manage.student.export');
     Route::get('exportUserPoint/{id}', [studentPoetryController::class, 'UserExportpoint'])->name('manage.student.list.export');
 });

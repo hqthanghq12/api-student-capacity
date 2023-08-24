@@ -155,7 +155,6 @@ class UserController extends Controller
         }
 
 
-
 //        $point = $this->playtopic->where('id_user', $id)->get();
         return view('pages.Students.accountStudent.viewpoint', ['point' => $point, 'user' => $user, 'id' => $id]);
     }
@@ -255,17 +254,18 @@ class UserController extends Controller
     }
 
 
-    public function ExportpointClass(Request $request){
+    public function ExportpointClass(Request $request)
+    {
         $subjectIdToSubjectInfo = DB::table('subject')->select('id', 'name', 'code_subject')->get()->keyBy('id')->toArray();
         $subjectIdToSubjectName = collect($subjectIdToSubjectInfo)->pluck('name', 'id')->toArray();
         $subjectIdToSubjectCode = collect($subjectIdToSubjectInfo)->pluck('code_subject', 'id')->toArray();
 
-        $campusCodeToCampusName = DB::table('campuses')->select('id', 'name')->pluck('name', 'id')->toArray();
-        $examinationIdToExaminationName = DB::table('examination')->select('id', 'name')->pluck('name', 'id')->toArray();
+//        $campusCodeToCampusName = DB::table('campuses')->select('id', 'name')->pluck('name', 'id')->toArray();
+//        $examinationIdToExaminationName = DB::table('examination')->select('id', 'name')->pluck('name', 'id')->toArray();
         $classIdToClassName = DB::table('class')->select('id', 'name')->pluck('name', 'id')->toArray();
         $semesterIdToSemesterName = DB::table('semester')->select('id', 'name')->pluck('name', 'id')->toArray();
 
-        $point = $this->playtopic
+        $pointQuery = $this->playtopic
             ->query()
             ->select([
                 'playtopic.exam_name',
@@ -279,31 +279,41 @@ class UserController extends Controller
                 'student_poetry.id_student',
                 'users.name'
             ])
-            ->join('student_poetry', 'student_poetry.id', '=', 'playtopic.student_poetry_id')
-            ->join('users', 'users.id', '=', 'student_poetry.id_student')
-            ->join('poetry', 'poetry.id', '=', 'student_poetry.id_poetry')
-            ->join('block_subject', 'block_subject.id', '=', 'poetry.id_block_subject')
-            ->join('result_capacity', 'result_capacity.playtopic_id', '=', 'playtopic.id')
+            ->leftJoin('student_poetry', 'student_poetry.id', '=', 'playtopic.student_poetry_id')
+            ->leftJoin('users', 'users.id', '=', 'student_poetry.id_student')
+            ->leftJoin('poetry', 'poetry.id', '=', 'student_poetry.id_poetry')
+            ->leftJoin('block_subject', 'block_subject.id', '=', 'poetry.id_block_subject')
+            ->leftJoin('result_capacity', 'result_capacity.playtopic_id', '=', 'playtopic.id')
             ->where('poetry.id_semeter', $request->id_semeter)
-            ->where('block_subject.id_block', $request->id_block)
-            ->where('id_subject',  $request->id_subject)
-            ->where('id_class',  $request->id_class)
-            ->get();
-        $className = DB::table('class')->where('id',$request->id_class)->first()->name;
+            ->where('block_subject.id_block', $request->id_block);
+
+        if (!empty($request->id_subject)) {
+            $pointQuery->where('id_subject', $request->id_subject);
+            $subjectCode = DB::table('subject')->where('id', $request->id_subject)->first()->code_subject;
+        }
+
+        if (!empty($request->id_class)) {
+            $pointQuery->where('id_class', $request->id_class);
+            $className = DB::table('class')->where('id', $request->id_class)->first()->name;
+        }
+
+        $point = $pointQuery->orderBy('poetry.id_class')->get();
+
         $data = [];
+
+        $i = 0;
+
         foreach ($point as $key => $value) {
-            if (isset($value->scores)) {
-                $data[] = [
-                    $key + 1,
-                    $value->name,
-                    $subjectIdToSubjectName[$value->id_subject],
-                    $subjectIdToSubjectCode[$value->id_subject],
-                    $semesterIdToSemesterName[$value->id_semeter],
-                    $classIdToClassName[$value->id_class],
-                    $value->scores,
-                    $value->scores > 5 ? 'Đạt' : 'Không đạt'
-                ];
-            }
+            $data[] = [
+                ++$i,
+                $value->name,
+                $subjectIdToSubjectName[$value->id_subject],
+                $subjectIdToSubjectCode[$value->id_subject],
+                $semesterIdToSemesterName[$value->id_semeter],
+                $classIdToClassName[$value->id_class],
+                $value->scores ?? 'Chưa thi',
+                $value->scores && $value->scores > 5 ? 'Đạt' : 'Không đạt'
+            ];
         }
 
         $spreadsheet = new Spreadsheet();
@@ -350,11 +360,24 @@ class UserController extends Controller
         $sheet->getStyle('A1:H1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
 
         $writer = new Xlsx($spreadsheet);
-        $outputFileName = 'diem_thi_lop_' .  $className . '.xlsx';
+        $outputFileName = 'diem_thi';
+
+        if (!empty($request->id_subject)) {
+            $outputFileName .= '_' . $subjectCode;
+        }
+
+        if (!empty($request->id_class)) {
+            $outputFileName .= '_' . $className;
+        }
+
+        $outputFileName .= '.xlsx';
+
         $writer->save($outputFileName);
+
         return response()->download($outputFileName)->deleteFileAfterSend(true, $outputFileName);
 
     }
+
     private function getStudents()
     {
         try {
