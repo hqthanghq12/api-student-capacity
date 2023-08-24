@@ -23,11 +23,13 @@ class SemeterController extends Controller
 
     public function index(){
         $data = $this->semeter->GetSemeter();
-        $block_id= [];
-        foreach ($data as $key => $value){
-            $id_semeter = $value->id;
-            $block_id[] = $this->block->getWhereList($id_semeter)[0]->id;
-        }        
+        
+        //Tao mang
+        $ids=[];
+        foreach($data as $key=>$value){
+            $ids[]=$value->id;
+        } 
+        $block_id= $this->block->getAllIdBlockOne($ids);
         $campusListQuery = Campus::query();
         if (!(auth()->user()->hasRole('super admin'))) {
             $campusListQuery->where('id', auth()->user()->campus_id);

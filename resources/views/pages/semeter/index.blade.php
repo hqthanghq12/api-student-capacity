@@ -150,7 +150,7 @@
                                 <td>
                                     @if (auth()->user()->hasRole([config('util.SUPER_ADMIN_ROLE'),config('util.ADMIN_ROLE')]))
                                         <button class="btn btn-info"
-                                                onclick="location.href='{{ route('admin.poetry.index',[$value->id,$id[$i++]]) }}'"
+                                                onclick="location.href='{{ route('admin.poetry.index',[$value->id,$id[$i++]->min_id]) }}'"
                                                 type="button">
                                             Quản lí ca thi
                                         </button>
