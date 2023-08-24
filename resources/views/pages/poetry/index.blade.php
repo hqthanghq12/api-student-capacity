@@ -260,12 +260,21 @@
                                     {{--                                <td>{{ $value->end_time == null ? 'Chưa có thời gian kết thúc' :   $value->end_time }}</td>--}}
                                     <td class="text-end">
                                         @if ($value->status == 1)
-                                            <div class="menu-item px-3">
-                                                <button class="menu-link px-3 border border-0 bg-transparent btn btn-sm btn-outline-primary"
-                                                        onclick="location.href='{{ route('admin.poetry.manage.index',['id' => $value->id,'id_poetry' =>$id_poetry,'id_block' => $idBlock ]) }}'"
-                                                        type="button">
+                                            <div class="menu-item px-3 d-inline-block">
+                                                <button
+                                                    class="text-decoration-none px-3 border border-0 bg-transparent btn btn-sm btn-outline-primary"
+                                                    onclick="location.href='{{ route('admin.poetry.manage.index',['id' => $value->id,'id_poetry' =>$id_poetry,'id_block' => $idBlock ]) }}'"
+                                                    type="button">
                                                     Phát đề thi
                                                 </button>
+                                                @role('super admin')
+                                                <button
+                                                    class="btn-edit px-3 border border-0 bg-transparent btn btn-sm btn-outline-primary"
+                                                    data-id="{{ $value->id }}"
+                                                    data-semeter="{{ $value->id_semeter }}">
+                                                    Chỉnh sửa
+                                                </button>
+                                                @endrole
                                             </div>
                                         @endif
                                     </td>

@@ -53,10 +53,10 @@
                     <div class="row">
                         <div class="col-10">
                             <input type="search" name="email" id="" class="form-control col-9"
-                        value="{{ request('email') ?? '' }}">
+                                   value="{{ request('email') ?? '' }}">
                         </div>
                         <div class="col-2">
-                        <button class="btn btn-secondary">Tìm kiếm</button>
+                            <button class="btn btn-secondary">Tìm kiếm</button>
                         </div>
                     </div>
                 </form>
@@ -106,7 +106,7 @@
                                     Xuất điểm trong ngày
                                 </a>
                             </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
 
