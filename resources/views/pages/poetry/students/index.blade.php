@@ -45,15 +45,29 @@
             <div class="mb-5">
                 {{ Breadcrumbs::render('manageSemeter',['id' => $id,'id_poetry' => $id_poetry,'id_block' => $idBlock]) }}
             </div>
+            {{--            <div class="card card-flush p-4">--}}
+            {{--            </div>--}}
             <div class="card card-flush p-4">
+                <form action="" class="my-5 p-3">
+                    <label for="email">Tìm kiếm theo email</label>
+                    <div class="row">
+                        <div class="col-10">
+                            <input type="search" name="email" id="" class="form-control col-9"
+                        value="{{ request('email') ?? '' }}">
+                        </div>
+                        <div class="col-2">
+                        <button class="btn btn-secondary">Tìm kiếm</button>
+                        </div>
+                    </div>
+                </form>
                 <div class="row">
-                    <div class=" col-lg-6">
+                    <div class=" col-lg-3">
 
                         <h1>
                             Danh sách ca thi số {{ $id }}
                         </h1>
                     </div>
-                    <div class="col-lg-6 btn-group justify-content-end">
+                    <div class="col-lg-9 btn-group justify-content-end">
                         <div class="">
                             @if($student->count() > 0 && $is_allow)
                                 <div class=" d-flex flex-row-reverse bd-highlight">
@@ -74,6 +88,23 @@
                                         <!--end::Svg Icon-->Thêm sinh viên
                                     </label>
                                 </div>
+                            </div>
+                        @endif
+
+                        <div class="">
+                            <div class=" d-flex flex-row-reverse bd-highlight">
+                                <a class="btn btn-light-success me-3" id=""
+                                   href="{{ route('admin.poetry.manage.export', ['id' => $id, 'id_poetry' => $id_poetry, 'id_block' => $idBlock,]) }}">
+                                    Xuất điểm
+                                </a>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class=" d-flex flex-row-reverse bd-highlight">
+                                <a class="btn btn-light-info me-3" id=""
+                                   href="{{ route('admin.poetry.manage.export', ['id' => $id, 'id_poetry' => $id_poetry, 'id_block' => $idBlock, 'byDay' => 'true']) }}">
+                                    Xuất điểm trong ngày
+                                </a>
                             </div>
                         @endif
                     </div>

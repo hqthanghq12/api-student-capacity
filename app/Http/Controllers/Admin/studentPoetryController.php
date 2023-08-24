@@ -5,15 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\playtopic;
 use App\Models\poetry;
+use App\Models\studentPoetry;
 use App\Models\subject;
 use App\Models\User;
 use App\Services\Traits\TResponse;
 use App\Services\Traits\TUploadImage;
 use Illuminate\Http\Request;
 use App\Services\Modules\MStudentManager\PoetryStudent;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Modules\MExam\Exam;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -62,6 +65,189 @@ class studentPoetryController extends Controller
             'is_allow' => $isAllow,
             'is_in_time' => $is_in_time,
         ]);
+    }
+
+    public function export($id, $id_poetry, $idBlock)
+    {
+        $user = (new User())->getTable();
+        $poetry = (new poetry())->getTable();
+        $model = new studentPoetry();
+        $table = $model->getTable();
+        if (request()->has('full')) {
+            $poetries = poetry::query()
+                ->where('id', '>', 16)
+                ->where('id', '<', 27)
+                ->where('parent_poetry_id', 0)->get();
+            $studentPoetry = studentPoetry::query()->whereIn('id_poetry', $poetries->pluck('id'))->get();
+            $resultCapacity = DB::table('result_capacity')
+                ->select(['result_capacity.scores', 'result_capacity.user_id', 'student_poetry.id_poetry'])
+                ->join('playtopic', 'playtopic.id', '=', 'result_capacity.playtopic_id')
+                ->join('student_poetry', 'student_poetry.id', '=', 'playtopic.student_poetry_id')
+                ->whereIn('student_poetry_id', $studentPoetry->pluck('id'))
+                ->get();
+            $users = User::query()->whereIn('id', $studentPoetry->pluck('id_student'))->get();
+            $data = [];
+            $key = 0;
+            foreach ($users as $value) {
+                $score1 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 17)->first();
+                $score2 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 19)->first();
+                $score3 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 21)->first();
+                $score4 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 23)->first();
+                $score5 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 25)->first();
+                $data[] = [
+                    ++$key,
+                    $value->name ? $value->name : Str::replaceLast('@fpt.edu.vn', '', $value->email),
+                    $value->email,
+                    $score1 ? $score1->scores : "Chưa thi",
+                    $score2 ? $score2->scores : "Chưa thi",
+                    $score3 ? $score3->scores : "Chưa thi",
+                    $score4 ? $score4->scores : "Chưa thi",
+                    $score5 ? $score5->scores : "Chưa thi",
+                ];
+            }
+            $spreadsheet = new Spreadsheet();
+            // Thực hiện xử lý dữ liệu
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setCellValue('A1', 'TT');
+            $sheet->setCellValue('B1', 'Họ tên');
+            $sheet->setCellValue('C1', 'Email');
+            $sheet->setCellValue('D1', 'CTSV');
+            $sheet->setCellValue('E1', 'Hành chính');
+            $sheet->setCellValue('F1', 'Quản lý phí');
+            $sheet->setCellValue('G1', 'DVSV');
+            $sheet->setCellValue('H1', 'Giám thị');
+            $borderStyle = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['argb' => '000000'],
+                    ],
+                ],
+            ];
+
+            $row = 2;
+            $column = 1;
+            foreach ($data as $recordata) {
+                foreach ($recordata as $value) {
+                    $sheet->setCellValueByColumnAndRow($column, $row, $value);
+                    $sheet->getStyleByColumnAndRow($column, $row)->applyFromArray($borderStyle);
+                    $column++;
+                }
+                $row++;
+                $column = 1;
+            }
+            $sheet->getColumnDimension('A')->setWidth(15);
+            $sheet->getColumnDimension('B')->setWidth(20);
+            $sheet->getColumnDimension('C')->setWidth(15);
+            $sheet->getColumnDimension('D')->setWidth(15);
+            $sheet->getColumnDimension('E')->setWidth(15);
+            $sheet->getColumnDimension('F')->setWidth(15);
+            $sheet->getColumnDimension('G')->setWidth(15);
+            $sheet->getColumnDimension('H')->setWidth(15);
+            // Định dạng căn giữa và màu nền cho hàng tiêu đề
+            $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A1:H1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
+
+            $writer = new Xlsx($spreadsheet);
+            $outputFileName = 'diem_thi.xlsx';
+            $writer->save($outputFileName);
+            return response()->download($outputFileName)->deleteFileAfterSend(true, $outputFileName);
+        }
+        $liststudentQuery = $model::query()
+            ->select(
+                [
+                    "{$table}.id",
+                    "{$table}.id_student",
+                    "playtopic.exam_name",
+                    "{$table}.status",
+                    "playtopic.has_received_exam",
+                    "playtopic.exam_time",
+                    "{$user}.name as nameStudent",
+                    "{$user}.email as emailStudent",
+                    "{$user}.mssv",
+                    "{$poetry}.id_block_subject",
+                    'result_capacity.scores',
+                    'result_capacity.created_at',
+                    'result_capacity.updated_at',
+                ]
+            )
+            ->leftJoin($user, "{$user}.id", '=', "{$table}.id_student")
+            ->leftJoin($poetry, "{$poetry}.id", '=', "{$table}.id_poetry")
+            ->leftJoin('playtopic', "playtopic.student_poetry_id", '=', "{$table}.id")
+            ->leftJoin('result_capacity', "result_capacity.playtopic_id", '=', "playtopic.id")
+            ->where("{$table}.id_poetry", $id)
+            ->orderBy("{$table}.id")
+            ->orderByDesc('result_capacity.scores');
+
+        if (request()->has('byDay') && request()->get('byDay') == 'true') {
+            $currentDate = Carbon::now();
+
+            // Đặt thời gian bắt đầu và kết thúc trong ngày hiện tại
+            $startOfDay = $currentDate->startOfDay()->format('Y-m-d H:i:s');
+            $endOfDay = $currentDate->endOfDay()->format('Y-m-d H:i:s');
+//            dd($startOfDay, $endOfDay);
+            $liststudentQuery->whereBetween('result_capacity.updated_at', [$startOfDay, $endOfDay]);
+        }
+        $liststudent = $liststudentQuery->get();
+        $data = [];
+        $key = 0;
+        foreach ($liststudent as $value) {
+            $start = Carbon::parse($value->created_at);
+            $end = Carbon::parse($value->updated_at);
+            if ($value->scores !== null) {
+                $data[] = [
+                    ++$key,
+                    $value->emailStudent,
+                    $value->scores,
+                    $end->diffForHumans($start),
+                    $end->format('H:i d-m-Y'),
+                ];
+            }
+        }
+        $spreadsheet = new Spreadsheet();
+        // Thực hiện xử lý dữ liệu
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'TT');
+        $sheet->setCellValue('B1', 'Email');
+        $sheet->setCellValue('C1', 'Điểm');
+        $sheet->setCellValue('D1', 'Thời gian làm bài');
+        $sheet->setCellValue('E1', 'Thời gian nôp bài');
+        $borderStyle = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['argb' => '000000'],
+                ],
+            ],
+        ];
+
+        $row = 2;
+        $column = 1;
+        foreach ($data as $recordata) {
+            foreach ($recordata as $value) {
+                $sheet->setCellValueByColumnAndRow($column, $row, $value);
+                $sheet->getStyleByColumnAndRow($column, $row)->applyFromArray($borderStyle);
+                $column++;
+            }
+            $row++;
+            $column = 1;
+        }
+        $sheet->getColumnDimension('A')->setWidth(15);
+        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(15);
+        $sheet->getColumnDimension('D')->setWidth(15);
+        $sheet->getColumnDimension('E')->setWidth(10);
+        // Định dạng căn giữa và màu nền cho hàng tiêu đề
+        $sheet->getStyle('A1:E1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:E1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
+
+        $writer = new Xlsx($spreadsheet);
+        $outputFileName = 'diem_thi.xlsx';
+        if (request()->has('byDay') && request()->get('byDay') == 'true') {
+            $outputFileName = 'diem_thi_' . Carbon::now()->format('d-m-Y') . '.xlsx';
+        }
+        $writer->save($outputFileName);
+        return response()->download($outputFileName)->deleteFileAfterSend(true, $outputFileName);
     }
 
     public function listUser($id)
@@ -159,6 +345,10 @@ class studentPoetryController extends Controller
             ->join('block_subject', 'poetry.id_block_subject', '=', 'block_subject.id')
             ->first()->id_subject;
 //        $data = null;
+        $user = User::query()->whereIn('email', $request->emailStudent)->get();
+//        foreach ($user as $item) {
+//            dd($item->roles);
+//        }
         $studentsQuery = User::query()
             ->with('poetry_student')
             ->select(['id', 'email'])
@@ -169,11 +359,14 @@ class studentPoetryController extends Controller
             ->whereDoesntHave('poetry_student', function ($query) use ($id_poetry) {
                 $query->where('id_poetry', $id_poetry);
             });
-        if (!auth()->user()->hasRole('super admin')) {
-            $studentsQuery->where('campus_id', auth()->user()->campus_id);
-        }
+//        if (!auth()->user()->hasRole('super admin')) {
+//            $studentsQuery->where('campus_id', auth()->user()->campus_id);
+//        }
         $students = $studentsQuery->get();
+//        dd($students);
         $emailFiltered = $students->pluck('email')->toArray();
+//        dd($emailFiltered);
+//        dd($request->emailStudent);
         $userSuccessCount = count($emailFiltered);
         $userFailedCount = count(array_diff($request->emailStudent, $emailFiltered));
         $poetriesId = [];
