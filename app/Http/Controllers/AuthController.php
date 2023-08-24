@@ -67,7 +67,14 @@ class AuthController extends Controller
                     'email' => $email
                 ])->first();
                 if ($user && $user->hasRole([config('util.SUPER_ADMIN_ROLE')])) {
-                    $this->handleLoginForEachRole($user);
+                    $this->loginUser($user);
+//                    Auth::login($user);
+//                    if (!session()->has('token')) {
+//                        auth()->user()->tokens()->delete();
+//                        $token = auth()->user()->createToken("token_admin")->plainTextToken;
+//                        session()->put('token', $token);
+//                    }
+                    return redirect()->route('admin.chart');
                 }
                 return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
             }
@@ -81,14 +88,14 @@ class AuthController extends Controller
         ])->first();
 
         if ($user && $user->hasRole([config('util.SUPER_ADMIN_ROLE')])) {
-            $this->handleLoginForEachRole($user);
+            $this->loginUser($user);
 //            Auth::login($user);
 //            if (!session()->has('token')) {
 //                auth()->user()->tokens()->delete();
 //                $token = auth()->user()->createToken("token_admin")->plainTextToken;
 //                session()->put('token', $token);
 //            }
-//            return redirect(route('admin.chart'));
+            return redirect()->route('admin.chart');
         }
 
         $validator = Validator::make(
@@ -106,26 +113,14 @@ class AuthController extends Controller
 
         if ($user->campus_id == session('data')['campus_id']) {
 
-            $this->handleLoginForEachRole($user);
-//            if ($user && $user->hasRole([config('util.ADMIN_ROLE')])) {
-//                Auth::login($user);
-//                if (!session()->has('token')) {
-//                    auth()->user()->tokens()->delete();
-//                    $token = auth()->user()->createToken("token_admin")->plainTextToken;
-//                    session()->put('token', $token);
-//                }
-//                return redirect(route('admin.chart'));
-//            }
-//
-//            if ($user && $user->hasRole([config('util.TEACHER_ROLE')])) {
-//                Auth::login($user);
-//                if (!session()->has('token')) {
-//                    auth()->user()->tokens()->delete();
-//                    $token = auth()->user()->createToken("token_admin")->plainTextToken;
-//                    session()->put('token', $token);
-//                }
-//                return redirect(route('admin.semeter.index'));
-//            }
+            $this->loginUser($user);
+            if ($user && $user->hasRole([config('util.ADMIN_ROLE')])) {
+                return redirect(route('admin.chart'));
+            }
+
+            if ($user && $user->hasRole([config('util.TEACHER_ROLE')])) {
+                return redirect(route('admin.semeter.index'));
+            }
         }
 //        return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
         return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
@@ -143,13 +138,24 @@ class AuthController extends Controller
                 $route = 'admin.semeter.index';
                 break;
         }
+//        dd(route($route));
         Auth::login($user);
         if (!session()->has('token')) {
             auth()->user()->tokens()->delete();
             $token = auth()->user()->createToken("token_admin")->plainTextToken;
             session()->put('token', $token);
         }
-        return redirect(route($route));
+        return redirect()->route($route);
+    }
+
+    private function loginUser($user)
+    {
+        Auth::login($user);
+        if (!session()->has('token')) {
+            auth()->user()->tokens()->delete();
+            $token = auth()->user()->createToken("token_admin")->plainTextToken;
+            session()->put('token', $token);
+        }
     }
 
     public function postLoginToken(Request $request)

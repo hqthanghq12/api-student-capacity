@@ -211,15 +211,15 @@ Route::prefix('accountStudent')->group(function () {
     Route::post('GetPoetryDetail', [PoetryController::class, 'ListPoetryResponedetail'])->name('manage.semeter.list');
     Route::get('ListUser/{id}', [studentPoetryController::class, 'listUser'])->name('admin.manage.semeter.index');
     Route::get('viewpoint/{id_user}', [UserController::class, 'Listpoint'])->name('manage.student.view');
-    Route::get('exportClass/{id_semeter}/{id_block}/{id_subject}/{id_class}', [UserController::class, 'ExportpointClass'])->name('manage.student.export');
+    Route::get('exportClass/{id_semeter}/{id_block}/{id_subject}/{id_class?}', [UserController::class, 'ExportpointClass'])->name('manage.student.export');
     Route::get('exportPoint/{id_user}', [UserController::class, 'Exportpoint'])->name('manage.student.export');
     Route::get('exportUserPoint/{id}', [studentPoetryController::class, 'UserExportpoint'])->name('manage.student.list.export');
 });
 
-Route::prefix('chart')->group(function(){
-    Route::get('',[chartController::class, 'index'])->middleware('role_admin')->name('admin.chart');
-    Route::get('getsemeter/{id_campus}',[chartController::class, 'semeter'])->name('admin.getsemter');
-    Route::get('getBlock/{id_semeter}',[chartController::class, 'block'])->name('admin.getsemter');
+Route::prefix('chart')->group(function () {
+    Route::get('', [chartController::class, 'index'])->middleware('role_admin')->name('admin.chart');
+    Route::get('getsemeter/{id_campus}', [chartController::class, 'semeter'])->name('admin.getsemter');
+    Route::get('getBlock/{id_semeter}', [chartController::class, 'block'])->name('admin.getsemter');
     Route::post('GetPoetryDetail', [PoetryController::class, 'ListPoetryResponedetailChart'])->name('manage.semeter.list');
     Route::get('detail', [chartController::class, 'detail'])->name('admin.chart.detail');
 });

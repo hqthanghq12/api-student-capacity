@@ -106,41 +106,42 @@ class poetry implements MPoetryInterface
     public function ListPoetryDetail($idSemeter, $idBlock, $id_subject, $id_class)
     {
         try {
-            $records = $this->modelPoetry->when(!empty($idSemeter), function ($query) use ($idSemeter) {
+            $query = $this->modelPoetry->query()
+                ->where('status', 1);
+
+            if ($idSemeter) {
                 $query->where('id_semeter', $idSemeter);
-            })
-                ->when(!empty($idBlock) && empty($id_subject), function ($query) use ($idBlock) {
-                    $query->whereHas('block_subject', function ($subQuery) use ($idBlock) {
-                        $subQuery->where('id_block', $idBlock);
-                    });
-                })
-                ->when(!empty($idBlock) && !empty($id_subject), function ($query) use ($idBlock, $id_subject) {
-                    $query->whereHas('block_subject', function ($subQuery) use ($idBlock, $id_subject) {
-                        $subQuery->where('id_block', $idBlock)->where('id_subject', $id_subject);
-                    });
-                })
-                ->when(!empty($id_subject) && !empty($id_class), function ($query) use ($id_class) {
-                    $query->where('id_class', $id_class);
-                })->pluck('id');
+            }
+
+
+            if ($idBlock && !$id_subject) {
+                $query->whereHas('block_subject', function ($subQuery) use ($idBlock) {
+                    $subQuery->where('id_block', $idBlock);
+                });
+            }
+
+            if ($idBlock && $id_subject) {
+                $query->whereHas('block_subject', function ($subQuery) use ($idBlock, $id_subject) {
+                    $subQuery->where('id_block', $idBlock)->where('id_subject', $id_subject);
+                });
+            }
+
+            if ($id_subject && $id_class) {
+                $query->where('id_class', $id_class);
+            }
+
+            $records = $query->pluck('id');
+
             $studentRecords = studentPoetry::whereIn('id_poetry', $records)
                 ->pluck('id_student')->unique()
                 ->values();
-            $student = User::whereIn('id', $studentRecords)->with('campus')->get();
 
-//            $records->load(['classsubject'  => function ($q) {
-//                return $q->select('id','name','code_class');
-//            }]);
-//            $records->load(['std_poetry'  => function ($q) {
-//                return $q->select('id_student');
-//            }]);
-//
-//            $records->load(['subject.block' => function ($q) {
-//                return $q->select('id','name');
-//            }]);
-//
-//            $records->load(['semeter' => function ($q) {
-//                return $q->select('id', 'name');
-//            }]);
+            $student = User::query()
+                ->select(['id', 'name', 'email', 'mssv', 'campus_id'])
+                ->whereIn('id', $studentRecords)
+                ->with(['campus'])
+                ->get();
+
             return $student;
         } catch (\Exception $e) {
             return $e;

@@ -16,25 +16,25 @@
             <div class="card card-flush p-4">
 
             <div class="row">
-                <div class="col-3">
+                <div class="col-4">
                     <select class="form-select"  id="semeters">
-                        <option value="0">--Chọn Kỳ--</option>
+                        <option value="">--Chọn Kỳ--</option>
                         @foreach($semeters as $value)
                         <option value="{{ $value->id }}">{{ $value->name }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-3">
-                    <select class="form-select" id="blocks">
-                        <option>-- Chọn Block --</option>
-                    </select>
-                </div>
-                <div class="col-3">
+{{--                <div class="col-4 d-none">--}}
+{{--                    <select class="form-select" id="blocks">--}}
+{{--                        <option>-- Chọn Block --</option>--}}
+{{--                    </select>--}}
+{{--                </div>--}}
+                <div class="col-4">
                     <select class="form-select" id="subjects">
                         <option>-- Chọn Môn --</option>
                     </select>
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                     <select class="form-select" id="classSubject">
                         <option>Lớp học</option>
                     </select>
