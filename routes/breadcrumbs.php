@@ -51,7 +51,7 @@ Breadcrumbs::for('Management.block', function (BreadcrumbTrail $trail,$id_semete
 });
 // Học Kỳ > Blocks > Quản lí ca thi
 Breadcrumbs::for('Management.poetry', function (BreadcrumbTrail $trail,$id,$idblock) {
-    $trail->parent('Management.block',$id);
+    $trail->parent('Semeter');
     $trail->push('Quản lí ca thi' , route('admin.poetry.index',['id' => $id,'id_block' => $idblock]));
 });
 
