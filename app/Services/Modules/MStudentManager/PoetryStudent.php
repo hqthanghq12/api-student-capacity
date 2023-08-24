@@ -23,37 +23,32 @@ class PoetryStudent implements MPoetryStudentsInterface
     public function GetStudents($id_poetry)
     {
         try {
-            $user = (new User())->getTable();
-            $poetry = (new poetry())->getTable();
-            $dataQuery = $this->model::query()
-                ->select(
-                    [
-                        "{$this->table}.id",
-                        "{$this->table}.id_student",
-                        "playtopic.exam_name",
-                        "{$this->table}.status",
-                        "playtopic.has_received_exam",
-                        "playtopic.exam_time",
-                        "{$user}.name as nameStudent",
-                        "{$user}.email as emailStudent",
-                        "{$user}.mssv",
-                        "{$poetry}.id_block_subject",
-                        'result_capacity.scores',
-                        'result_capacity.created_at',
-                        'result_capacity.updated_at',
-                    ]
-                )
-                ->leftJoin($user, "{$user}.id", '=', "{$this->table}.id_student")
-                ->leftJoin($poetry, "{$poetry}.id", '=', "{$this->table}.id_poetry")
-                ->leftJoin('playtopic', "playtopic.student_poetry_id", '=', "{$this->table}.id")
-                ->leftJoin('result_capacity', "result_capacity.playtopic_id", '=', "playtopic.id")
-                ->where("{$this->table}.id_poetry", $id_poetry)
-                ->orderBy("{$this->table}.id");
-
-            if (request()->has('email') && request('email') != '') {
-                $dataQuery->where("{$user}.email", 'like', '%' . request('email') . '%');
-            }
-
+          $user = (new User())->getTable();
+          $poetry = (new poetry())->getTable();
+          $data = $this->model::query()
+              ->select(
+                  [
+                      "{$this->table}.id",
+                      "{$this->table}.id_student",
+                      "playtopic.exam_name",
+                      "{$this->table}.status",
+                      "playtopic.has_received_exam",
+                      "playtopic.exam_time",
+                      "{$user}.name as nameStudent",
+                      "{$user}.email as emailStudent",
+                      "{$user}.mssv",
+                      "{$poetry}.id_block_subject",
+                      'result_capacity.scores',
+                      'result_capacity.updated_at',
+                  ]
+              )
+              ->leftJoin($user, "{$user}.id", '=', "{$this->table}.id_student")
+              ->leftJoin($poetry, "{$poetry}.id", '=', "{$this->table}.id_poetry")
+              ->leftJoin('playtopic', "playtopic.student_poetry_id", '=', "{$this->table}.id")
+              ->leftJoin('result_capacity', "result_capacity.playtopic_id", '=', "playtopic.id")
+              ->where("{$this->table}.id_poetry", $id_poetry)
+              ->orderBy("{$this->table}.id")
+              ->paginate(10);
             $data = $dataQuery->paginate(10);
             return $data;
         } catch (\Exception $e) {

@@ -129,6 +129,7 @@
                         </tr>
                         </thead>
                         <tbody>
+                            <p style="display: none">{{ $i=0 }}</p>
                         @foreach($setemer as $key => $value)
                             <tr>
                                 <td>
@@ -147,12 +148,12 @@
                                 <td>{{ $value->start_time == null ? 'Chưa có thời gian bắt đầu' :    date('d-m-Y', strtotime($value->start_time)) 	 }}</td>
                                 <td>{{ $value->end_time == null ? 'Chưa có thời gian kết thúc' :   date('d-m-Y', strtotime($value->end_time)) }}</td>
                                 <td>
+                                      <button class="btn btn-info"
+                                              onclick="location.href='{{ route('admin.poetry.index',[$value->id,$id[$i++]->min_id]) }}'"
+                                              type="button">
+                                          Quản lí ca thi
+                                      </button>
                                     @if (auth()->user()->hasRole([config('util.SUPER_ADMIN_ROLE'),config('util.ADMIN_ROLE')]))
-                                        <button class="btn btn-info"
-                                                onclick="location.href='{{ route('admin.semeter.block',$value->id) }}'"
-                                                type="button">
-                                            Block
-                                        </button>
                                         <button class="btn btn-info"
                                                 onclick="location.href='{{ route('admin.semeter.subject.index',$value->id) }}'"
                                                 type="button">
@@ -163,15 +164,6 @@
                                                 type="button">
                                             Chỉnh sửa
                                         </button>
-                                    @endif
-                                    @if(auth()->user()->hasRole('teacher'))
-                                        @foreach($value->blocks as $block)
-                                            <button class="btn btn-info"
-                                                    onclick="location.href='{{ route('admin.poetry.index',['id' => $value->id, 'id_block' => $block->id,]) }}'"
-                                                    type="button">
-                                                {{ $block->name }}
-                                            </button>
-                                        @endforeach
                                     @endif
 
                                     {{--                                    <button  class="btn-delete btn btn-danger" data-id="{{ $value->id }}">--}}
