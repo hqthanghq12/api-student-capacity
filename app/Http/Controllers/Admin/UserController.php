@@ -615,7 +615,7 @@ class UserController extends Controller
 
     public function listStudent()
     {
-        $listSemeter = $this->interfaceSemeter->GetSemeter();
+        $listSemeter = $this->interfaceSemeter->GetAllSemeter();
         return view('pages.Students.accountStudent.index', ['semeters' => $listSemeter]);
     }
 

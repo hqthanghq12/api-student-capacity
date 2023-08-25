@@ -31,9 +31,19 @@ class Semeter implements MSemeterInterface
         return $data;
     }
 
+    public function getAllSemeter()
+    {
+        $dataQuery = $this->modelSemeter::query();
+        if (!(auth()->user()->hasRole('super admin'))) {
+            $dataQuery->where('id_campus', auth()->user()->campus_id);
+        }
+        $data = $dataQuery->get();
+        return $data;
+    }
+
     public function GetSemeterAPI($codeCampus)
     {
-        $data = $this->modelSemeter->where('id_campus',$codeCampus)->get();
+        $data = $this->modelSemeter->where('id_campus', $codeCampus)->get();
         foreach ($data as $value) {
             $value['total_poetry'] = $this->modelPoetry->where('id_semeter', $value->id)->count();
         }
