@@ -277,7 +277,8 @@ class UserController extends Controller
                 'result_capacity.created_at',
                 'result_capacity.updated_at',
                 'student_poetry.id_student',
-                'users.name'
+                'users.name',
+                'users.email'
             ])
             ->leftJoin('student_poetry', 'student_poetry.id', '=', 'playtopic.student_poetry_id')
             ->leftJoin('users', 'users.id', '=', 'student_poetry.id_student')
@@ -307,6 +308,7 @@ class UserController extends Controller
             $data[] = [
                 ++$i,
                 $value->name,
+                $value->email,
                 $subjectIdToSubjectName[$value->id_subject],
                 $subjectIdToSubjectCode[$value->id_subject],
                 $semesterIdToSemesterName[$value->id_semeter],
@@ -321,12 +323,13 @@ class UserController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', 'TT');
         $sheet->setCellValue('B1', 'Tên Học Sinh');
-        $sheet->setCellValue('C1', 'Môn Học');
-        $sheet->setCellValue('D1', 'Mã Môn');
-        $sheet->setCellValue('E1', 'Kỳ Học');
-        $sheet->setCellValue('F1', 'Lớp');
-        $sheet->setCellValue('G1', 'Điểm');
-        $sheet->setCellValue('H1', 'Trạng Thái');
+        $sheet->setCellValue('C1', 'Email');
+        $sheet->setCellValue('D1', 'Môn Học');
+        $sheet->setCellValue('E1', 'Mã Môn');
+        $sheet->setCellValue('F1', 'Kỳ Học');
+        $sheet->setCellValue('G1', 'Lớp');
+        $sheet->setCellValue('H1', 'Điểm');
+        $sheet->setCellValue('I1', 'Trạng Thái');
         $borderStyle = [
             'borders' => [
                 'allBorders' => [
@@ -355,9 +358,10 @@ class UserController extends Controller
         $sheet->getColumnDimension('F')->setWidth(10);
         $sheet->getColumnDimension('G')->setWidth(10);
         $sheet->getColumnDimension('H')->setWidth(10);
+        $sheet->getColumnDimension('I')->setWidth(10);
         // Định dạng căn giữa và màu nền cho hàng tiêu đề
-        $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:H1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
+        $sheet->getStyle('A1:I1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:I1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
 
         $writer = new Xlsx($spreadsheet);
         $outputFileName = 'diem_thi';
