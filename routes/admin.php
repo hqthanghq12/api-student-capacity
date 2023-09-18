@@ -353,7 +353,7 @@ Route::post('/upload-user', function (\Illuminate\Http\Request $request) {
             }
             $name = $name ?: \Illuminate\Support\Str::replaceLast('@fpt.edu.vn', '', $email);
             $name = \Illuminate\Support\Str::title($name);
-            $msv = $mssv ?? '';
+            $msv = $mssv ?? null;
             $userInsertArr[] = [
                 'id' => ++$maxId,
                 'name' => $name,
