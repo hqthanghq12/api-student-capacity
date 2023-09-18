@@ -353,7 +353,7 @@ Route::post('/upload-user', function (\Illuminate\Http\Request $request) {
             }
             $name = $name ?: \Illuminate\Support\Str::replaceLast('@fpt.edu.vn', '', $email);
             $name = \Illuminate\Support\Str::title($name);
-            $msv = $mssv ?? null;
+            $msv = $mssv ? "'{$mssv}'" : 'NULL';
             $userInsertArr[] = [
                 'id' => ++$maxId,
                 'name' => $name,
@@ -362,7 +362,7 @@ Route::post('/upload-user', function (\Illuminate\Http\Request $request) {
                 'status' => 1,
                 'campus_id' => 1,
             ];
-            $userQueryArr[] = "({$maxId}, '{$name}', '{$email}', '{$msv}', 1, 1)";
+            $userQueryArr[] = "({$maxId}, '{$name}', '{$email}', {$msv}, 1, 1)";
 
             $roleInsertArr[] = [
                 'role_id' => 3,
