@@ -48,7 +48,7 @@ class Semeter implements MSemeterInterface
             ->selectRaw('poetry.id_semeter, count(student_poetry.id_student) as total_student')
             ->join('poetry', 'poetry.id', '=', 'student_poetry.id_poetry')
             ->where('poetry.exam_date', date('Y-m-d'))
-            ->where('student_poetry.id_student', auth()->user()->id)
+//            ->where('student_poetry.id_student', auth()->user()->id)
             ->groupBy(['poetry.id_semeter', 'student_poetry.id_student'])
             ->pluck('total_student', 'id_semeter');
 
