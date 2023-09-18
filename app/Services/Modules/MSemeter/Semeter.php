@@ -56,7 +56,7 @@ class Semeter implements MSemeterInterface
             ->where('id_campus', $codeCampus)
             ->whereIn('id', $semesterAndCount->keys()->toArray())
             ->get();
-        return $data;
+
         foreach ($data as $value) {
             $value->total_student = $semesterAndCount[$value->id];
         }
