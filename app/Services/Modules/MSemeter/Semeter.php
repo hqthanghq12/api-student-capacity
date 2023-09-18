@@ -45,20 +45,18 @@ class Semeter implements MSemeterInterface
     public function GetSemeterAPI($codeCampus)
     {
         $semesterAndCount = studentPoetry::query()
-            ->selectRaw('poetry.id_semeter, count(poetry.id_semeter) as total_student')
+            ->selectRaw('poetry.id_semeter, count(poetry.id_semeter) as total_poetry')
             ->join('poetry', 'poetry.id', '=', 'student_poetry.id_poetry')
             ->where('poetry.exam_date', date('Y-m-d'))
-//            ->where('student_poetry.id_student', auth()->user()->id)
             ->groupBy(['poetry.id_semeter', 'student_poetry.id_student'])
-            ->pluck('total_student', 'id_semeter');
+            ->pluck('total_poetry', 'id_semeter');
 
         $data = $this->modelSemeter
             ->where('id_campus', $codeCampus)
             ->whereIn('id', $semesterAndCount->keys()->toArray())
             ->get();
-
         foreach ($data as $value) {
-            $value->total_student = $semesterAndCount[$value->id];
+            $value['total_poetry'] = $semesterAndCount[$value->id] ?? 0;
         }
 
         return $data;
