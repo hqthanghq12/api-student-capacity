@@ -2,8 +2,12 @@
 if (!function_exists('renderQuesAndAns')) {
     function renderQuesAndAns($text, $imageCodeArr = [])
     {
+        $text = preg_replace("/</", "&lt;", $text);
+
+        $text = preg_replace("/>/", "&gt;", $text);
+
         $regImageCode = '/\[anh\d+\]/';
-//        $text = 'Hjhj [anh1] [anh5]';
+
         preg_match_all($regImageCode, $text, $matches);
         $imgCodeColArr = array_column($imageCodeArr, 'img_code');
         if (!empty($matches[0])) {
