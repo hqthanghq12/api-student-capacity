@@ -2,9 +2,9 @@
 if (!function_exists('renderQuesAndAns')) {
     function renderQuesAndAns($text, $imageCodeArr = [])
     {
-        $text = preg_replace("/</", "&lt;", $text);
-
-        $text = preg_replace("/>/", "&gt;", $text);
+//        $text = preg_replace("/</", "&lt;", $text);
+//
+//        $text = preg_replace("/>/", "&gt;", $text);
 
         $regImageCode = '/\[anh\d+\]/';
 
