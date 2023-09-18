@@ -548,7 +548,9 @@ class QuestionController extends Controller
                 $arr = [];
 
                 $arr['imgCode'] = [];
-                $arr['questions']['content'] = $this->catchError(preg_replace("/>/", "&gt;", $row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['QUESTION']]), "Thiếu câu hỏi dòng $line");
+                $content = $this->catchError(preg_replace("/>/", "&gt;", $row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['QUESTION']]), "Thiếu câu hỏi dòng $line");
+                $content = preg_replace("/</", "&lt;", $content);
+                $arr['questions']['content'] = $content;
                 $arr['imgCode'] = $this->getImgCode($arr['questions']['content'], $arr['imgCode']);
                 $arr['questions']['type'] = $row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['TYPE']] == config("util.EXCEL_QESTIONS")["TYPE"] ? 0 : 1;
                 $rank = $this->catchError($row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['RANK']], "Thiếu mức độ dòng $line");
@@ -557,8 +559,10 @@ class QuestionController extends Controller
                 if (isset($row[config("util.EXCEL_QESTIONS")['KEY_COLUMNS']['SKILL']]))
                     $arr['skill'] = explode(",", $row[config("util.EXCEL_QESTIONS")['KEY_COLUMNS']['SKILL']] ?? "");
 
+                $answerContent = $this->catchError(preg_replace("/>/", "&gt;", $row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['ANSWER']]), "Thiếu câu trả lời dòng $line");
+                $answerContent = preg_replace("/</", "&lt;", $answerContent);
                 $dataA = [
-                    "content" => $this->catchError(preg_replace("/>/", "&gt;", $row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['ANSWER']]), "Thiếu câu trả lời dòng $line"),
+                    "content" => $answerContent,
                     "is_correct" => $row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']["IS_CORRECT"]] == config("util.EXCEL_QESTIONS")["IS_CORRECT"] ? 1 : 0,
                 ];
                 $arr['imgCode'] = $this->getImgCode($dataA['content'], $arr['imgCode']);
@@ -566,8 +570,10 @@ class QuestionController extends Controller
                 array_push($arr['answers'], $dataA);
             } else {
                 if (($row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['ANSWER']] == null || trim($row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['ANSWER']]) == "")) continue;
+                $answerContent = $this->catchError(preg_replace("/>/", "&gt;", $row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['ANSWER']]), "Thiếu câu trả lời dòng $line");
+                $answerContent = preg_replace("/</", "&lt;", $answerContent);
                 $dataA = [
-                    "content" => preg_replace("/>/", "&gt;", $row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['ANSWER']]),
+                    "content" => $answerContent,
                     "is_correct" => $row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']["IS_CORRECT"]] == config("util.EXCEL_QESTIONS")["IS_CORRECT"] ? 1 : 0,
                 ];
                 $arr['imgCode'] = $this->getImgCode($dataA['content'], $arr['imgCode']);
