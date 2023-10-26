@@ -330,7 +330,7 @@ class PoetryController extends Controller
             }
 
         }
-        if ($request->finish_examination_id_update < $request->start_examination_id_update + 1) {
+        if ($request->finish_examination_id_update < $request->start_examination_id_update) {
             return response("Vui lòng chọn ca kết thúc sao cho hợp lý!", 404);
         }
         [$assigned_user_id_update, $assigned_user_campus_id_update] = explode('|', $request->assigned_user_update);

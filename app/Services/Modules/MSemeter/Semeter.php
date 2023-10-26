@@ -52,7 +52,7 @@ class Semeter implements MSemeterInterface
             ->pluck('total_poetry', 'id_semeter');
 
         $data = $this->modelSemeter
-            ->where('id_campus', $codeCampus)
+//            ->where('id_campus', $codeCampus)
             ->whereIn('id', $semesterAndCount->keys()->toArray())
             ->get();
         foreach ($data as $value) {
