@@ -214,8 +214,8 @@ class AuthController extends Controller
                 ->toString();
             $regexMSSV = "/^(\D*)(\D{2}\d*)$/";
             $MSSV = null;
-            if (Str::matchesPattern($regexMSSV, $username)) {
-                preg_match($regexMSSV, $username, $matches);
+            preg_match($regexMSSV, $username, $matches);
+            if ($matches) {
                 $MSSV = $matches[2];
             }
 //            $MSSV = \Str::lower($campus_code) . \Str::afterLast(
