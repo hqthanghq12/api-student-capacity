@@ -209,12 +209,22 @@ class AuthController extends Controller
         $campus_code = Campus::find($request->campus_code)->code;
         $campus_id = $request->campus_code;
         if (!$flagRoleAdmin) foreach (config('util.MS_SV') as $ks) {
-            $MSSV = \Str::lower($campus_code) . \Str::afterLast(
-                    \Str::of($googleUser->email)
-                        ->before(config('util.END_EMAIL_FPT'))
-                        ->toString(),
-                    \Str::lower($ks)
-                );
+            $username = \Str::of($googleUser->email)
+                ->before(config('util.END_EMAIL_FPT'))
+                ->toString();
+            $regexMSSV = "/^(\D*)(\D{2}\d*)$/";
+            $MSSV = null;
+            if (Str::matchesPattern($regexMSSV, $username)) {
+                preg_match($regexMSSV, $username, $matches);
+                $MSSV = $matches[2];
+            }
+//            $MSSV = \Str::lower($campus_code) . \Str::afterLast(
+//                    \Str::of($googleUser->email)
+//                        ->before(config('util.END_EMAIL_FPT'))
+//                        ->toString(),
+//                    \Str::lower($ks)
+//                );
+
             $campus_code = \Str::lower($campus_code);
         }
 //        return $campus_code;
