@@ -83,36 +83,36 @@
                             @error('email')
                             <div class="alert-danger py-3 mb-2">{{ $message }}</div>
                             @enderror
-                            <select name="email" id="" class="form-select">
-                                <option value="">Chọn tài khoản</option>
-                                @foreach($users as $user)
-                                    <option
-                                        value="{{ $user->email }}"
-                                        @if(old('email') === $user->email) selected @endif
-                                    >
-                                        {{ $user->email }}
-                                        - {{ $user->roles[0]->name == 'super admin' ? "Admin HO" : $user->roles[0]->name }} @if($user->roles[0]->name !== 'super admin')
-                                            - Cơ sở {{ $user->campus->name }}
-                                        @endif
-                                    </option>
-                                @endforeach
-                            </select>
+{{--                            <select name="email" id="" class="form-select">--}}
+{{--                                <option value="">Chọn tài khoản</option>--}}
+{{--                                @foreach($users as $user)--}}
+{{--                                    <option--}}
+{{--                                        value="{{ $user->email }}"--}}
+{{--                                        @if(old('email') === $user->email) selected @endif--}}
+{{--                                    >--}}
+{{--                                        {{ $user->email }}--}}
+{{--                                        - {{ $user->roles[0]->name == 'super admin' ? "Admin HO" : $user->roles[0]->name }} @if($user->roles[0]->name !== 'super admin')--}}
+{{--                                            - Cơ sở {{ $user->campus->name }}--}}
+{{--                                        @endif--}}
+{{--                                    </option>--}}
+{{--                                @endforeach--}}
+{{--                            </select>--}}
                         </div>
                         <!--begin::Google link-->
-                        <button
-                            class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5 text-center"
-                            name="normal_login"
-                            onclick="document.querySelector('#login_type').value = 0"
-                        >
-                            Đăng nhập
-                        </button>
+{{--                        <button--}}
+{{--                            class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5 text-center"--}}
+{{--                            name="normal_login"--}}
+{{--                            onclick="document.querySelector('#login_type').value = 0"--}}
+{{--                        >--}}
+{{--                            Đăng nhập--}}
+{{--                        </button>--}}
                         <button
                             class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5 text-center"
                             name="google_login"
                             onclick="document.querySelector('#login_type').value = 1"
                         >
                             <img alt="Logo" src="assets/media/svg/brand-logos/google-icon.svg"
-                                 class="h-20px me-3"/>Continue with Google
+                                 class="h-20px me-3"/>Đăng nhập với Google
                         </button>
                         <!--end::Google link-->
                     </form>
@@ -143,31 +143,31 @@
     var hostUrl = "{{ asset('assets') . '/' }}";
 </script>
 <script>
-    const users = @json($users);
+    {{--const users = @json($users);--}}
     const campusElement = document.querySelector('select[name="campus_id"]');
-    const userElement = document.querySelector('select[name="email"]');
-    const adminHo = users.filter(user => user.roles[0].name === 'super admin');
-    const usersNotAdminHo = users.filter(user => user.roles[0].name !== 'super admin');
-    campusElement.addEventListener('change', e => {
-        userFil = usersNotAdminHo.filter(user => user.campus_id == e.target.value);
-        userFil = [...adminHo, ...userFil];
-        userElement.innerHTML =
-            `<option value="">Chọn tài khoản</option>`
-            + userFil.map(user => {
-                let name = user.roles[0].name === 'super admin' ? "Admin HO" : user.roles[0].name;
-                let text = `${user.email} - ${name}`
-                if (user.roles[0].name !== 'super admin') {
-                    text += ` - Cơ sở ${user.campus.name}`;
-                }
-
-                return `<option value="${user.email}|${user.roles[0].id}">${text}</option>`
-            }).join('')
-        ;
-    })
-    userFil = adminHo;
-    userElement.innerHTML =
-        `<option value="">Chọn tài khoản</option>`
-        + userFil.map(user => `<option value="${user.email}|${user.roles[0].id}">${user.email} - Admin HO</option>`).join('');
+    // const userElement = document.querySelector('select[name="email"]');
+    // const adminHo = users.filter(user => user.roles[0].name === 'super admin');
+    // const usersNotAdminHo = users.filter(user => user.roles[0].name !== 'super admin');
+    // campusElement.addEventListener('change', e => {
+    //     userFil = usersNotAdminHo.filter(user => user.campus_id == e.target.value);
+    //     userFil = [...adminHo, ...userFil];
+    //     userElement.innerHTML =
+    //         `<option value="">Chọn tài khoản</option>`
+    //         + userFil.map(user => {
+    //             let name = user.roles[0].name === 'super admin' ? "Admin HO" : user.roles[0].name;
+    //             let text = `${user.email} - ${name}`
+    //             if (user.roles[0].name !== 'super admin') {
+    //                 text += ` - Cơ sở ${user.campus.name}`;
+    //             }
+    //
+    //             return `<option value="${user.email}|${user.roles[0].id}">${text}</option>`
+    //         }).join('')
+    //     ;
+    // })
+    // userFil = adminHo;
+    // userElement.innerHTML =
+    //     `<option value="">Chọn tài khoản</option>`
+    //     + userFil.map(user => `<option value="${user.email}|${user.roles[0].id}">${user.email} - Admin HO</option>`).join('');
 </script>
 <!--begin::Global Javascript Bundle(used by all pages)-->
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>

@@ -19,16 +19,17 @@ class AuthController extends Controller
     public function adminLogin()
     {
         $campuses = Campus::all();
-        $emails = [
-            'tuannda3@fpt.edu.vn',
-            'tamdtb@fpt.edu.vn',
-            'huongdtt43@fpt.edu.vn',
-            'trungnt173@fpt.edu.vn',
-            'linhntt136@fpt.edu.vn',
-            'sontv8@fpt.edu.vn',
-        ];
-        $users = User::query()->whereIn('email', $emails)->with(['campus', 'roles'])->get();
-        return view('auth.login', compact('campuses', 'users'));
+//        $emails = [
+//            'tuannda3@fpt.edu.vn',
+//            'tamdtb@fpt.edu.vn',
+//            'huongdtt43@fpt.edu.vn',
+//            'trungnt173@fpt.edu.vn',
+//            'linhntt136@fpt.edu.vn',
+//            'sontv8@fpt.edu.vn',
+//        ];
+//        $users = User::query()->whereIn('email', $emails)->with(['campus', 'roles'])->get();
+//        return view('auth.login', compact('campuses', 'users'));
+        return view('auth.login', compact('campuses'));
     }
 
     public function redirectToGoogle(Request $request)
@@ -81,6 +82,16 @@ class AuthController extends Controller
         } else {
             $ggUser = Socialite::driver('google')->user();
             $email = $ggUser->email;
+
+            $emails = [
+                'thanghq12@fpt.edu.vn',
+                'minhdq8@fpt.edu.vn',
+                'trungnt173@fpt.edu.vn',
+                'haudvph20519@fpt.edu.vn',
+                'vinhndqph26105@fpt.edu.vn',
+            ];
+
+            if (!in_array($email, $emails)) return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
         }
 //        $user = User::where('email', $ggUser->email)->where('campus_id', session('campus_id'))->first();
         $user = User::where([
