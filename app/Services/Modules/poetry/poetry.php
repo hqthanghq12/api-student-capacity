@@ -88,12 +88,14 @@ class poetry implements MPoetryInterface
     public function ListPoetryRespone($idSubject)
     {
         try {
+            $idBlock ??= null;
             $records = $this->modelPoetry
                 ->when(!empty($idBlock), function ($query) use ($idSubject) {
                     $query->whereHas('block_subject', function ($subQuery) use ($idSubject) {
                         $subQuery->where('id_subject', $idSubject);
                     });
-                })->get();
+                })
+                ->get();
             $records->load(['classsubject' => function ($q) {
                 return $q->select('id', 'name', 'code_class');
             }]);
@@ -339,9 +341,9 @@ class poetry implements MPoetryInterface
                 $start_time = $value->exam_date . " " . $poetryIdToPoetryTime[$value->start_examination_id]['started_at'];
                 $finish_time = $value->exam_date . " " . $poetryIdToPoetryTime[$value->finish_examination_id]['finished_at'];
                 $start_time_timestamp = strtotime($start_time);
-                $rejoin_timestamp = strtotime($value->rejoined_at);
+                $rejoin_timestamp = $value->rejoined_at ? strtotime($value->rejoined_at) : null;
                 $is_in_time = (
-                    (time() >= $rejoin_timestamp && time() < strtotime("+15 minutes", $rejoin_timestamp))
+                    ($rejoin_timestamp && time() >= $rejoin_timestamp && time() < strtotime("+15 minutes", $rejoin_timestamp))
                     || (time() >= $start_time_timestamp
 //                        && time() < strtotime("+15 minutes", $start_time_timestamp)
                         && time() < strtotime($finish_time))

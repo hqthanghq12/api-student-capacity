@@ -23,12 +23,12 @@ class SemeterController extends Controller
 
     public function index(){
         $data = $this->semeter->GetSemeter();
-        
+
         //Tao mang
         $ids=[];
         foreach($data as $key=>$value){
             $ids[]=$value->id;
-        } 
+        }
         $block_id= $this->block->getAllIdBlockOne($ids);
         $campusListQuery = Campus::query();
         if (!(auth()->user()->hasRole('super admin'))) {
@@ -192,7 +192,7 @@ class SemeterController extends Controller
         }
     }
 
-    function formatdate($dateformat){
+    public function formatdate($dateformat){
         $date_start = $dateformat;
         $timestamp = strtotime($date_start);
         return date('d-m-Y', $timestamp);

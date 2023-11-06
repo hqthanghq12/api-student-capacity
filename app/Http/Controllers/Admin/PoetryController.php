@@ -403,7 +403,7 @@ class PoetryController extends Controller
         return response(['message' => "Cập nhật thành công", 'data' => $data], 200);
     }
 
-    function formatdate($dateformat)
+    public function formatdate($dateformat)
     {
         $date_start = $dateformat;
         $timestamp = strtotime($date_start);
