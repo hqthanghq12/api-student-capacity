@@ -90,15 +90,13 @@ class poetry implements MPoetryInterface
         try {
             $idBlock ??= null;
             $records = $this->modelPoetry
-                ->when(!empty($idBlock), function ($query) use ($idSubject) {
-                    $query->whereHas('block_subject', function ($subQuery) use ($idSubject) {
+                ->with(['classsubject' => function ($q) {
+                    return $q->select('id', 'name', 'code_class');
+                }])
+                ->whereHas('block_subject', function ($subQuery) use ($idSubject) {
                         $subQuery->where('id_subject', $idSubject);
-                    });
-                })
+                    })
                 ->get();
-            $records->load(['classsubject' => function ($q) {
-                return $q->select('id', 'name', 'code_class');
-            }]);
             return $records;
         } catch (\Exception $e) {
             return $e;
