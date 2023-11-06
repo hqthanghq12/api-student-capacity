@@ -619,7 +619,7 @@ class QuestionController extends Controller
                             break;
                     }
                     // Tạo một tên file cho ảnh
-                    $filename = "image_question" . md5(time()) . '_' . uniqid() . "." . $format;
+                    $filename = "image_question" . hash('sha512', time()) . '_' . uniqid() . "." . $format;
 //                    $path = "questions/" . $filename;
                     $imgMemArr[$code] = [
                         'path' => $filename,
@@ -637,7 +637,7 @@ class QuestionController extends Controller
                     // Lấy định dạng của ảnh từ phương thức getExtension
                     $format = $drawing->getExtension();
                     // Tạo một tên file cho ảnh
-                    $filename = "image_question" . md5(time()) . '_' . uniqid() . "." . $format;
+                    $filename = "image_question" . hash('sha512', time()) . '_' . uniqid() . "." . $format;
 //                    $path = "" . $filename;
                     $imgArr[$code] = [
                         'path' => $filename,
