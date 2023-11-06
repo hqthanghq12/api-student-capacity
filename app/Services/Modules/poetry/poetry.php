@@ -88,7 +88,6 @@ class poetry implements MPoetryInterface
     public function ListPoetryRespone($idSubject)
     {
         try {
-            $idBlock ??= null;
             $records = $this->modelPoetry
                 ->with(['classsubject' => function ($q) {
                     return $q->select('id', 'name', 'code_class');
