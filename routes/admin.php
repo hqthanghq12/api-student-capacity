@@ -410,6 +410,8 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
     $email_contains = [];
     for ($i = 0; $i < $sheetCount; $i++) {
         $sheet = $spreadsheet->getSheet($i)->toArray();
+        $emailContains = [];
+        $campus_id = null;
         for ($j = 1, $jMax = count($sheet); $j < $jMax; $j++) {
 //            [$campus_code, $acc, $id, $name, , , ,] = $sheet[$j];
             $campus_code = \Illuminate\Support\Str::lower($sheet[$j][$campus_code_col]);
@@ -437,6 +439,7 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
 //            $campus_id = $campuses
             if ($emails->contains($email)) {
                 $email_contains[] = $email;
+                $emailContains[] = $email;
                 continue;
             }
 
@@ -465,6 +468,9 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
             ];
             $roleQueryArr[] = "({$role}, 'App\\\\Models\\\\User', {$maxId})";
         }
+
+        if (count($emailContains)) \App\Models\User::query()->whereIn('email', $emailContains)->update(['campus_id' => $campus_id]);
+
     }
 //    $userQueryInsert .= implode(',', $userQueryArr);
 //    $roleQueryInsert .= implode(',', $roleQueryArr);
