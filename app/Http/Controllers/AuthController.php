@@ -83,15 +83,15 @@ class AuthController extends Controller
             $ggUser = Socialite::driver('google')->user();
             $email = $ggUser->email;
 
-            $emails = [
-                'thanghq12@fpt.edu.vn',
-                'minhdq8@fpt.edu.vn',
-                'trungnt173@fpt.edu.vn',
-                'haudvph20519@fpt.edu.vn',
-                'vinhndqph26105@fpt.edu.vn',
-            ];
-
-            if (!in_array($email, $emails)) return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
+//            $emails = [
+//                'thanghq12@fpt.edu.vn',
+//                'minhdq8@fpt.edu.vn',
+//                'trungnt173@fpt.edu.vn',
+//                'haudvph20519@fpt.edu.vn',
+//                'vinhndqph26105@fpt.edu.vn',
+//            ];
+//
+//            if (!in_array($email, $emails)) return redirect(route('login'))->with('msg', "Tài khoản của bạn không có quyền truy cập!");
         }
 //        $user = User::where('email', $ggUser->email)->where('campus_id', session('campus_id'))->first();
         $user = User::where([

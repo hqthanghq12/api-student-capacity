@@ -381,3 +381,90 @@ Route::post('/upload-user', function (\Illuminate\Http\Request $request) {
     echo implode(' ', $emailsEcho);
 
 })->name('upload-user');
+
+Route::get('/upload-gv', function () {
+    $roles = \Spatie\Permission\Models\Role::query()->select('name', 'id')->get();
+    return view('upload-gv', compact('roles'));
+});
+
+Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
+    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file'));
+    $sheetCount = $spreadsheet->getSheetCount();
+    $emails = \App\Models\User::query()->pluck('email');
+    $campuses = \App\Models\Campus::query()->pluck('id', 'code');
+//    dd($campuses);
+    $userQueryInsert = "INSERT INTO `users` (`id`, `name`, `email`, `mssv`, `status`, `campus_id`) VALUES ";
+    $roleQueryInsert = "INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES ";
+    $maxId = \App\Models\User::query()->max('id');
+    $userQueryArr = [];
+    $userInsertArr = [];
+    $roleInsertArr = [];
+    $roleQueryArr = [];
+    $emailsEcho = [];
+    $notFoundCampus = [];
+    $role = $request->input('role') ?? 5;
+    $campus_code_col = (int) ($request->input('campus_code_col') ?? 0);
+    $name_col = (int) ($request->input('name_col') ?? 3);
+    $email_fe_col = (int) ($request->input('email_fe_col') ?? 11);
+    for ($i = 0; $i < $sheetCount; $i++) {
+        $sheet = $spreadsheet->getSheet($i)->toArray();
+        for ($j = 1, $jMax = count($sheet); $j < $jMax; $j++) {
+//            [$campus_code, $acc, $id, $name, , , ,] = $sheet[$j];
+            $campus_code = \Illuminate\Support\Str::lower($sheet[$j][$campus_code_col]);
+            $name = $sheet[$j][$name_col];
+            $email_fe = \Illuminate\Support\Str::lower($sheet[$j][$email_fe_col]);
+            $mssv = \Illuminate\Support\Str::replace('@fe.edu.vn', '', $email_fe);
+            $email = $mssv . '@fpt.edu.vn';
+
+            if (empty($campus_code)) {
+                continue;
+            }
+
+            if (empty($campuses[$campus_code])) {
+                if (!empty($notFoundCampus[$campus_code])) {
+//                    dd($sheet, $i, $sheet[$j]);
+                    $notFoundCampus[$campus_code]++;
+                } else {
+                    $notFoundCampus[$campus_code] = 1;
+                }
+                continue;
+            }
+
+            $campus_id = $campuses[$campus_code];
+
+//            $campus_id = $campuses
+//            $emailsEcho[] = $email;
+            if ($emails->contains($email)) {
+                continue;
+            }
+//            $name = $name ?: \Illuminate\Support\Str::replaceLast('@fpt.edu.vn', '', $email);
+            $name = \Illuminate\Support\Str::title($name);
+            $msv = $mssv ? "'{$mssv}'" : 'NULL';
+            $userInsertArr[] = [
+                'id' => ++$maxId,
+                'name' => $name,
+                'email' => $email,
+                'mssv' => $mssv ?? 'default',
+                'status' => 1,
+                'campus_id' => $campus_id,
+            ];
+            $userQueryArr[] = "({$maxId}, '{$name}', '{$email}', {$msv}, 1, 1)";
+
+            $roleInsertArr[] = [
+                'role_id' => $role,
+                'model_type' => \App\Models\User::class,
+                'model_id' => $maxId,
+            ];
+            $roleQueryArr[] = "(3, 'App\\\\Models\\\\User', {$maxId})";
+        }
+    }
+//    $userQueryInsert .= implode(',', $userQueryArr);
+//    $roleQueryInsert .= implode(',', $roleQueryArr);
+//    echo $userQueryInsert;
+    dd($notFoundCampus, $userInsertArr, $roleInsertArr);
+    echo '<hr>';
+//    echo $roleQueryInsert;
+    echo '<hr>';
+//    echo implode(' ', $emailsEcho);
+
+})->name('upload-gv');
