@@ -461,7 +461,7 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
 //    $userQueryInsert .= implode(',', $userQueryArr);
 //    $roleQueryInsert .= implode(',', $roleQueryArr);
 //    echo $userQueryInsert;
-    dd($notFoundCampus, $userInsertArr, $roleInsertArr);
+    dd($notFoundCampus);
     echo '<hr>';
 //    echo $roleQueryInsert;
     echo '<hr>';
