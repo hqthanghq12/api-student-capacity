@@ -475,6 +475,8 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
 //    $userQueryInsert .= implode(',', $userQueryArr);
 //    $roleQueryInsert .= implode(',', $roleQueryArr);
 //    echo $userQueryInsert;
+    dd($email_contains, $userInsertArr);
+
     \Illuminate\Support\Facades\DB::table('users')->insert($userInsertArr);
 //    sleep(2);
     \Illuminate\Support\Facades\DB::table('model_has_roles')->insert($roleInsertArr);
