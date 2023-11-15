@@ -388,7 +388,7 @@ Route::get('/upload-gv', function () {
 });
 
 Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
-    ini_set('memory_limit', '256M');
+    ini_set('memory_limit', '512M');
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file'));
     $sheetCount = $spreadsheet->getSheetCount();
     $emails = \App\Models\User::query()->pluck('email');
@@ -407,6 +407,7 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
     $campus_code_col = (int) ($request->input('campus_code_col') ?? 0);
     $name_col = (int) ($request->input('name_col') ?? 3);
     $email_fe_col = (int) ($request->input('email_fe_col') ?? 11);
+    $email_contains = [];
     for ($i = 0; $i < $sheetCount; $i++) {
         $sheet = $spreadsheet->getSheet($i)->toArray();
         for ($j = 1, $jMax = count($sheet); $j < $jMax; $j++) {
@@ -434,12 +435,18 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
             $campus_id = $campuses[$campus_code];
 
 //            $campus_id = $campuses
-//            $emailsEcho[] = $email;
             if ($emails->contains($email)) {
+                $email_contains[] = $email;
                 continue;
             }
+
+            if (in_array($email, $emailsEcho)) {
+                continue;
+            }
+
+            $emailsEcho[] = $email;
 //            $name = $name ?: \Illuminate\Support\Str::replaceLast('@fpt.edu.vn', '', $email);
-            $name = \Illuminate\Support\Str::title($name);
+//            $name = \Illuminate\Support\Str::title($name);
             $msv = $mssv ? "'{$mssv}'" : 'NULL';
             $userInsertArr[] = [
                 'id' => ++$maxId,
@@ -456,12 +463,19 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
                 'model_type' => \App\Models\User::class,
                 'model_id' => $maxId,
             ];
-            $roleQueryArr[] = "(3, 'App\\\\Models\\\\User', {$maxId})";
+            $roleQueryArr[] = "({$role}, 'App\\\\Models\\\\User', {$maxId})";
         }
     }
 //    $userQueryInsert .= implode(',', $userQueryArr);
 //    $roleQueryInsert .= implode(',', $roleQueryArr);
 //    echo $userQueryInsert;
+    \Illuminate\Support\Facades\DB::table('users')->insert($userInsertArr);
+//    sleep(2);
+    \Illuminate\Support\Facades\DB::table('model_has_roles')->insert($roleInsertArr);
+//    sleep(2);
+    $id_contains = \App\Models\User::query()->whereIn('email', $email_contains)->pluck('id');
+    \Illuminate\Support\Facades\DB::table('model_has_roles')->whereIn('model_id', $id_contains)->update(['role_id' => $role]);
+    dd('done');
     dd($notFoundCampus);
     echo '<hr>';
 //    echo $roleQueryInsert;
