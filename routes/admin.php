@@ -388,6 +388,7 @@ Route::get('/upload-gv', function () {
 });
 
 Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
+    ini_set('memory_limit', '256M');
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file'));
     $sheetCount = $spreadsheet->getSheetCount();
     $emails = \App\Models\User::query()->pluck('email');
