@@ -391,7 +391,9 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
     ini_set('memory_limit', '512M');
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file'));
     $sheetCount = $spreadsheet->getSheetCount();
-    $emails = \App\Models\User::query()->pluck('email');
+    $emails = \App\Models\User::query()->pluck('email')->map(function ($email) {
+        return \Illuminate\Support\Str::lower($email);
+    });
     $campuses = \App\Models\Campus::query()->pluck('id', 'code');
 //    dd($campuses);
     $userQueryInsert = "INSERT INTO `users` (`id`, `name`, `email`, `mssv`, `status`, `campus_id`) VALUES ";
