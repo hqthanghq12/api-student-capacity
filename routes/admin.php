@@ -439,7 +439,7 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
 //            $campus_id = $campuses
             if ($emails->contains($email)) {
                 $email_contains[] = $email;
-                $emailContains[] = $email;
+                \App\Models\User::query()->where('email', $email)->update(['campus_id' => $campus_id]);
                 continue;
             }
 
@@ -467,9 +467,9 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
                 'model_id' => $maxId,
             ];
             $roleQueryArr[] = "({$role}, 'App\\\\Models\\\\User', {$maxId})";
+
         }
 
-        if (count($emailContains)) \App\Models\User::query()->whereIn('email', $emailContains)->update(['campus_id' => $campus_id]);
 
     }
 //    $userQueryInsert .= implode(',', $userQueryArr);
