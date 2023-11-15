@@ -481,7 +481,9 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
 //    sleep(2);
     $id_contains = \App\Models\User::query()->whereIn('email', $email_contains)->pluck('id');
     \Illuminate\Support\Facades\DB::table('model_has_roles')->whereIn('model_id', $id_contains)->update(['role_id' => $role]);
-    dd('done');
+    $insertCount = count($userInsertArr);
+    $updateCount = count($email_contains);
+    dd("Insert {$insertCount}, update {$updateCount}");
     dd($notFoundCampus);
     echo '<hr>';
 //    echo $roleQueryInsert;
