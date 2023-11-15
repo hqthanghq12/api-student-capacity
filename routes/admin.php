@@ -327,10 +327,14 @@ Route::get("dev", function () {
 
 
 Route::get('/upload-user', function () {
+    return "<h1>Chức năng đang phát triển</h1> ";
+
     return view('upload-user');
 });
 
 Route::post('/upload-user', function (\Illuminate\Http\Request $request) {
+    return "<h1>Chức năng đang phát triển</h1> ";
+
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file'));
     $sheetCount = $spreadsheet->getSheetCount();
     $emails = \App\Models\User::query()->pluck('email');
@@ -383,11 +387,15 @@ Route::post('/upload-user', function (\Illuminate\Http\Request $request) {
 })->name('upload-user');
 
 Route::get('/upload-gv', function () {
+    return "<h1>Chức năng đang phát triển</h1> ";
+
     $roles = \Spatie\Permission\Models\Role::query()->select('name', 'id')->get();
     return view('upload-gv', compact('roles'));
 });
 
 Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
+    return "<h1>Chức năng đang phát triển</h1> ";
+
     ini_set('memory_limit', '512M');
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file'));
     $sheetCount = $spreadsheet->getSheetCount();
