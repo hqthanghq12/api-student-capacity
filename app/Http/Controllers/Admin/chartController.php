@@ -22,6 +22,9 @@ class chartController extends Controller
     {
     }
     public function index(){
+        if (auth()->user()->hasRole('teacher')) {
+            return redirect()->route('admin.semeter.index');
+        }
         $listCampusQuery = Campus::query();
         if (!(auth()->user()->hasRole('super admin'))) {
             $listCampusQuery->where('id', auth()->user()->campus_id);

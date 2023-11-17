@@ -23,7 +23,7 @@ use App\Http\Controllers\Admin\playtopicController;
 use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\chartController;
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::redirect('/', '/admin/chart');
 Route::prefix('dashboard')->group(function () {
     Route::get('api-cuoc-thi', [DashboardController::class, 'chartCompetity'])->name('dashboard.chart-competity');
     Route::get('rank-contest', [DashboardController::class, 'getRankContest']);
@@ -149,6 +149,8 @@ Route::prefix('subject')->group(function () {
         Route::delete('delete/{id}', [QuestionController::class, 'deletesubject'])->name('admin.subject.question.delete');
         Route::get('restore-delete/{id}', [QuestionController::class, 'restoreDelete'])->name('admin.subject.question.restore');
         Route::get('soft-delete', [QuestionController::class, 'softDeleteListSubject'])->name('admin.subject.question.soft.delete');
+//        Route::get('{id}/export', [QuestionController::class, 'exportQuestionDetail'])->name('admin.subject.question.excel.export');
+//        Route::post('{exam_id}/import/{base_id}', [QuestionController::class, 'importQuestionDetail'])->name('admin.subject.question.excel.import');
     });
 });
 Route::prefix('contests')->group(function () {
@@ -217,7 +219,7 @@ Route::prefix('accountStudent')->group(function () {
 });
 
 Route::prefix('chart')->group(function () {
-    Route::get('', [chartController::class, 'index'])->middleware('role_admin')->name('admin.chart');
+    Route::get('', [chartController::class, 'index'])->name('admin.chart');
     Route::get('getsemeter/{id_campus}', [chartController::class, 'semeter'])->name('admin.getsemter');
     Route::get('getBlock/{id_semeter}', [chartController::class, 'block'])->name('admin.getsemter');
     Route::post('GetPoetryDetail', [PoetryController::class, 'ListPoetryResponedetailChart'])->name('manage.semeter.list');

@@ -33,6 +33,7 @@ class PoetryStudent implements MPoetryStudentsInterface
                         "playtopic.exam_name",
                         "{$this->table}.status",
                         "playtopic.has_received_exam",
+                        "playtopic.rejoined_at",
                         "playtopic.exam_time",
                         "{$user}.name as nameStudent",
                         "{$user}.email as emailStudent",

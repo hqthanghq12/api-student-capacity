@@ -122,7 +122,7 @@ class AuthController extends Controller
             return redirect(route('login'))->withErrors($validator)->with(\session('data'));
         }
 
-        if ($user->campus_id == session('data')['campus_id']) {
+        if ($user?->campus_id == session('data')['campus_id']) {
 
             $this->loginUser($user);
             if ($user && $user->hasRole([config('util.ADMIN_ROLE')])) {
