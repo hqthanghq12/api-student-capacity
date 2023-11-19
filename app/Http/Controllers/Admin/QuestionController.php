@@ -243,6 +243,9 @@ class QuestionController extends Controller
                 array_push($arr['answers'], $dataA);
             }
         }
+        if (count($data) < 1) {
+            $data[] = $arr;
+        }
         // Lấy ra các đối tượng Drawing trong sheet
         if ($imagesSheet) {
 
