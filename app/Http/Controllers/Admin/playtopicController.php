@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ExamQuestion;
 use App\Models\studentPoetry;
 use App\Services\Modules\MStudentManager\PoetryStudent;
 use App\Services\Traits\TResponse;
@@ -209,9 +210,12 @@ class playtopicController extends Controller
         if ($request->receive_mode == 0) {
             $exam_id = $request->exam_id;
             $exam_name = $request->exam_name;
-            $questions = (array)DB::table('exam_questions')
-                ->select(['exam_questions.question_id'])
+            $questions = (array)ExamQuestion::query()
+                ->select(['question_id'])
                 ->where('exam_id', $exam_id)
+                ->whereHas('question', function ($q) {
+                    $q->where('status', 1)->where('is_current_version', 1);
+                })
                 ->pluck('question_id')->toArray();
             foreach ($poetriesId as $poetry_id) {
                 shuffle($questions);
@@ -253,9 +257,12 @@ class playtopicController extends Controller
                     'total' => $studentsGet,
                 ];
             }
-            $questionsByExamId = DB::table('exam_questions')
-                ->select(['exam_questions.question_id', 'exam_questions.id', 'exam_questions.exam_id'])
-                ->whereIn('exam_questions.exam_id', $examsId->pluck('id'))
+            $questionsByExamId = ExamQuestion::query()
+                ->select(['question_id', 'id', 'exam_id'])
+                ->whereIn('exam_id', $examsId->pluck('id'))
+                ->whereHas('question', function ($q) {
+                    $q->where('status', 1)->where('is_current_version', 1);
+                })
                 ->get()
                 ->groupBy('exam_id')
                 ->map(function ($item) {
@@ -282,11 +289,13 @@ class playtopicController extends Controller
             if (($request->diff_per_ques + $request->me_per_ques + $request->ez_per_ques) != 100) {
                 return response("Tổng % câu hỏi 3 mức độ phải bằng 100%", 404);
             }
-            $questions = DB::table('exam_questions')
+            $questions = ExamQuestion::query()
                 ->select(['exam_questions.question_id', 'exam_questions.id', 'questions.rank'])
                 ->leftJoin('questions', 'questions.id', '=', 'exam_questions.question_id')
                 ->leftJoin('exams', 'exams.id', '=', 'exam_questions.exam_id')
                 ->where('exams.subject_id', $request->id_subject)
+                ->where('questions.status', 1)
+                ->where('questions.is_current_version', 1)
                 ->get();
 
             if ($questions->count() == 0) {
@@ -298,8 +307,7 @@ class playtopicController extends Controller
                 ->map(function ($item) {
                     return $item->pluck('question_id')->toArray();
                 })
-                ->toArray()
-            ;
+                ->toArray();
 
             $diffQuesNum = round(($request->diff_per_ques / 100) * $request->questions_quantity);
             $meQuesNum = round(($request->me_per_ques / 100) * $request->questions_quantity);
@@ -414,9 +422,12 @@ class playtopicController extends Controller
 //        DB::table('playtopic')->where('id_poetry', $request->id_poetry)->delete();
 
         $is_receive_mode = $request->receive_mode == 1;
-        $questions = DB::table('exam_questions')
+        $questions = ExamQuestion::query()
             ->select('question_id')
             ->where('exam_id', $request->exam_id)
+            ->whereHas('question', function ($q) {
+                $q->where('status', 1)->where('is_current_version', 1);
+            })
             ->pluck('question_id')->toArray();
         $dataInsertArr = [];
         foreach ($liststudent as $object) {

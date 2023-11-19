@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ExamQuestion;
 use App\Models\playtopic;
 use App\Models\poetry;
 use App\Models\studentPoetry;
@@ -414,9 +415,12 @@ class studentPoetryController extends Controller
                     'total' => $studentsGet,
                 ];
             }
-            $questionsByExamId = DB::table('exam_questions')
+            $questionsByExamId = ExamQuestion::query()
                 ->select(['exam_questions.question_id', 'exam_questions.id', 'exam_questions.exam_id'])
                 ->whereIn('exam_questions.exam_id', $examsId->pluck('id'))
+                ->whereHas('question', function ($q) {
+                    $q->where('status', 1)->where('is_current_version', 1);
+                })
                 ->get()
                 ->groupBy('exam_id')
                 ->map(function ($item) {

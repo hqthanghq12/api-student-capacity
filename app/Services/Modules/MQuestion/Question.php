@@ -10,7 +10,8 @@ class Question implements MQuestionInterface
 
     public function __construct(
         private ModelsQuestion $model
-    ) {
+    )
+    {
     }
 
     public function findById($id, $with = [], $select = [])
@@ -33,8 +34,8 @@ class Question implements MQuestionInterface
 
     public function createQuestionsAndAttchSkill($question, $skill)
     {
-        $question =  $this->model::create($question);
-        if (count($skill) > 0)  $question->skills()->attach($skill);
+        $question = $this->model::create($question);
+        if (count($skill) > 0) $question->skills()->attach($skill);
         return $question;
     }
 
@@ -42,14 +43,20 @@ class Question implements MQuestionInterface
     {
         return $this->model::where('status', 1)->get();
     }
+
     public function getQuestionSkill()
     {
-        $data  = $this->model::whenWhereHasRelationship(
+        $data = $this->model::whenWhereHasRelationship(
             request('skill_id') ?? null,
             'skills',
             'skills.id',
             (request()->has('skill_id') && request('skill_id') == 0) ? true : false
         )->get();
         return $data;
+    }
+
+    public function getLastVersion($base_id)
+    {
+        return $this->model::where('base_id', $base_id)->orWhere('id', $base_id)->orderBy('version', 'desc')->first();
     }
 }

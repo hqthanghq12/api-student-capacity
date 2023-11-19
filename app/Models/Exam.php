@@ -5,13 +5,16 @@ namespace App\Models;
 use App\Casts\FormatDate;
 use App\Casts\FormatImageGet;
 use App\Services\Builder\Builder;
+use App\Services\Traits\UsesExamConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Exam extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, UsesExamConnection;
+
+//    protected $connection = 'exam';
 
     protected $table = 'exams';
     protected $fillable = ['name', 'description', 'max_ponit', 'ponit', 'external_url', 'round_id', 'time', 'time_type', "type", "status", "room_code", "room_token", "room_progress", "subject_id", "campus_id", "total_questions"];

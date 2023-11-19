@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Traits\UsesExamConnection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,14 +12,18 @@ use App\Services\Builder\Builder;
 
 class Question extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, UsesExamConnection;
     protected $table = 'questions';
     protected $primaryKey = "id";
     public $fillable = [
         'content',
         'status',
         'type',
-        'rank'
+        'rank',
+        'version',
+        'created_by',
+        'base_id',
+        'is_current_version',
     ];
     protected $casts = [
 //        'created_at' => FormatDate::class,
@@ -60,5 +65,15 @@ class Question extends Model
     public function images()
     {
         return $this->hasMany(QuestionImage::class, 'question_id');
+    }
+
+    public function versions()
+    {
+        return $this->where('base_id', $this->base_id)->orWhere('id', $this->base_id)->orderBy('version', 'desc')->get();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

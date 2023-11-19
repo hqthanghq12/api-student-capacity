@@ -249,14 +249,14 @@
                         <input type="email" class="form-control form-control" id="email_add"
                                placeholder="name@example.com"/>
                     </div>
-                    <div class="form-group m-10">
-                        <select class="form-select" name="subject" id="branches_id">
-                            <option selected value="">--Chi Nhánh--</option>
-                            @foreach($branches as $value)
-                                <option value="{{ $value->id }}">{{ $value->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+{{--                    <div class="form-group m-10">--}}
+{{--                        <select class="form-select" name="subject" id="branches_id">--}}
+{{--                            <option selected value="">--Chi Nhánh--</option>--}}
+{{--                            @foreach($branches as $value)--}}
+{{--                                <option value="{{ $value->id }}">{{ $value->name }}</option>--}}
+{{--                            @endforeach--}}
+{{--                        </select>--}}
+{{--                    </div>--}}
                     <div class="form-group m-10">
                         <select class="form-select" name="subject" id="campus_id">
                             <option selected value="">--Cơ sở--</option>
@@ -312,14 +312,14 @@
                         <input type="email" class="form-control form-control" disabled id="email_update"
                                placeholder="name@example.com"/>
                     </div>
-                    <div class="form-group m-10">
-                        <select class="form-select" name="subject" id="branches_id_update">
-                            <option value="0">--Chi Nhánh--</option>
-                            @foreach($branches as $value)
-                                <option value="{{ $value->id }}">{{ $value->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+{{--                    <div class="form-group m-10">--}}
+{{--                        <select class="form-select" name="subject" id="branches_id_update">--}}
+{{--                            <option value="0">--Chi Nhánh--</option>--}}
+{{--                            @foreach($branches as $value)--}}
+{{--                                <option value="{{ $value->id }}">{{ $value->name }}</option>--}}
+{{--                            @endforeach--}}
+{{--                        </select>--}}
+{{--                    </div>--}}
                     <div class="form-group m-10">
                         <select class="form-select" name="subject" id="campus_id_update">
                             <option selected value="">--Cơ sở--</option>

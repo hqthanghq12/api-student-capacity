@@ -13,4 +13,6 @@ interface MQuestionInterface
     public function getAllQuestion();
 
     public function getQuestionSkill();
+
+    public function getLastVersion($base_id);
 }

@@ -480,7 +480,7 @@ class UserController extends Controller
             [
                 'name_add' => 'required',
                 'email_add' => 'required|unique:users,email',
-                'branches_id' => 'required',
+//                'branches_id' => 'required',
                 'campus_id' => 'required',
                 'status' => 'required',
                 'roles_id' => 'required|numeric|min:1',
@@ -489,7 +489,7 @@ class UserController extends Controller
                 'name_add.required' => 'Không để trống tên tài khoản!',
                 'email_add.required' => 'Không để trống email!',
                 'email_add.unique' => 'Email này đã tồn tại',
-                'branches_id.required' => 'Vui lòng chọn Chi nhánh!',
+//                'branches_id.required' => 'Vui lòng chọn Chi nhánh!',
                 'campus_id.required' => 'Vui lòng chọn cơ sở!',
                 'roles_id.required' => 'Vui lòng chọn chức vụ cho tài khoản!',
                 'status.required' => 'Vui lòng chọn trạng thái!',
@@ -498,7 +498,7 @@ class UserController extends Controller
         );
         if ($validator->fails() == 1) {
             $errors = $validator->errors();
-            $fields = ['name_add', 'email_add', 'branches_id', 'campus_id', 'roles_id', 'status'];
+            $fields = ['name_add', 'email_add', 'campus_id', 'roles_id', 'status'];
             foreach ($fields as $field) {
                 $fieldErrors = $errors->get($field);
 
@@ -524,7 +524,7 @@ class UserController extends Controller
             'avatar' => NULL,
             'status' => $request->status,
             'mssv' => NULL,
-            'branch_id' => $request->branches_id,
+//            'branch_id' => $request->branches_id,
             'campus_id' => $request->campus_id
         ];
         DB::table('users')->insert($data);
@@ -546,7 +546,7 @@ class UserController extends Controller
             [
                 'name_update' => 'required',
                 'email_update' => 'required',
-                'branches_id_update' => 'required',
+//                'branches_id_update' => 'required',
                 'campus_id_update' => 'required',
                 'status_update_update' => 'required',
                 'roles_id_update' => 'required|numeric|min:1',
@@ -554,7 +554,7 @@ class UserController extends Controller
             [
                 'name_update.required' => 'Không để trống tên tài khoản!',
                 'email_update.required' => 'Không để trống email!',
-                'branches_id_update.required' => 'Vui lòng chọn Chi nhánh!',
+//                'branches_id_update.required' => 'Vui lòng chọn Chi nhánh!',
                 'campus_id_update.required' => 'Vui lòng chọn cơ sở!',
                 'roles_id_update.required' => 'Vui lòng chọn chức vụ cho tài khoản!',
                 'status_update_update.required' => 'Vui lòng chọn trạng thái!',
@@ -564,7 +564,7 @@ class UserController extends Controller
 
         if ($validator->fails() == 1) {
             $errors = $validator->errors();
-            $fields = ['name_update', 'email_update', 'branches_id_update', 'campus_id_update', 'roles_id_update', 'status_update_update'];
+            $fields = ['name_update', 'email_update', 'campus_id_update', 'roles_id_update', 'status_update_update'];
             foreach ($fields as $field) {
                 $fieldErrors = $errors->get($field);
 
@@ -588,7 +588,7 @@ class UserController extends Controller
         $user->name = $request->name_update;
         $user->email = $request->email_update;
         $user->status = $request->status_update_update;
-        $user->branch_id = $request->branches_id_update;
+//        $user->branch_id = $request->branches_id_update;
         $user->campus_id = $request->campus_id_update;
         $user->save();
 
@@ -626,7 +626,7 @@ class UserController extends Controller
     public function listAdmin()
     {
         if (!$users = $this->getUser()) return abort(404);
-        $branches = $this->branches::all();
+//        $branches = $this->branches::all();
         $rolesModel = $this->role->query();
         $CampusModel = $this->campus->query();
         if (!auth()->user()->hasRole('super admin')) {
@@ -638,7 +638,7 @@ class UserController extends Controller
         $campusIdToCampusName = $Campus->mapWithKeys(function ($item) {
             return [$item['id'] => $item['name']];
         })->all();
-        return view('pages.auth.index', ['users' => $users, 'roles' => $roles, 'branches' => $branches, 'campus' => $Campus, 'campusIdToCampusName' => $campusIdToCampusName,]);
+        return view('pages.auth.index', ['users' => $users, 'roles' => $roles, 'campus' => $Campus, 'campusIdToCampusName' => $campusIdToCampusName,]);
     }
 
     public function stdManagement()
