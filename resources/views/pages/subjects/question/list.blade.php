@@ -617,12 +617,12 @@
                     $(".upload-file").html("Tải lên")
                     notify("Tải lên thành công !");
                     $('.up-file').val('');
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                    setTimeout(() => {
-                        $('.modal').modal('hide');
-                    }, 500);
+                    // setTimeout(() => {
+                    //     window.location.reload();
+                    // }, 1000);
+                    // setTimeout(() => {
+                    //     $('.modal').modal('hide');
+                    // }, 500);
                 },
                 error: function (xhr, status, error) {
                     $(".upload-file").html("Tải lên")
