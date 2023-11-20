@@ -512,7 +512,7 @@ class TakeExamController extends Controller
             );
         } catch (\Throwable $th) {
             $db::rollBack();
-            $msg = "{$th->getMessage()}";
+            $msg = "Lỗi nộp bài: {$th->getMessage()}";
             Log::error($msg);
             return $th->getMessage();
         }
