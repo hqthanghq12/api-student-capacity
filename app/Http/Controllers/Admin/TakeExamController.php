@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Answer as AnswerAlias;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -36,6 +37,7 @@ class TakeExamController extends Controller
         private MResultCapacityInterface       $resultCapacity,
         private Question                       $question,
         private Answer                         $answer,
+        private AnswerAlias                    $answerModel,
         private MResultCapacityDetailInterface $resultCapacityDetail,
         private playtopic                      $playtopic,
     )
@@ -386,64 +388,80 @@ class TakeExamController extends Controller
      */
     public function takeExamStudentCapacitySubmit(Request $request, DB $db)
     {
-        $falseAnswer = 0;
-        $trueAnswer = 0;
-        $score = 0;
-        $user_id = auth('sanctum')->user()->id;
-//        $exam = $this->exam->findById($request->exam_id, ['questions'], ['max_ponit', 'ponit'], false);
-        $playtopic = $this->playtopic->query()->where(['id' => $request->playtopic_id])->first();
-        $questions_count = collect(json_decode($playtopic->questions_order))->count();
-//        $score_one_question = $exam->max_ponit / $exam->questions_count;
-        $score_one_question = config('util.MAX_POINT') / $questions_count;
-//        $donotAnswer = $exam->questions_count - count($request->data);
-        $donotAnswer = $questions_count - count($request->data);
-        foreach ($request->data as $key => $data) {
-            if ($data['type'] == 0) {
-                if ($data['answerId'] == null) {
-                    $donotAnswer += 1;
-                } else {
-                    $answer = $this->answer->findById(
-                        $data['answerId'],
-                        [
-                            'question_id' => $data['questionId'],
-                            'is_correct' => config('util.ANSWER_TRUE'),
-                        ]
-                    );
-                    if ($answer && $data['answerId'] === $answer->id) {
-                        $score += $score_one_question;
-                        $trueAnswer += 1;
-                    } else {
-                        $falseAnswer += 1;
-                    }
-                }
-            } else {
-                if (count($data['answerIds']) > 0 && count($data['answerIds']) <= 1) {
-                    $falseAnswer += 1;
-                } else if (count($data['answerIds']) <= 0) {
-                    $donotAnswer += 1;
-                } else {
-                    $answer = $this->answer->whereInId(
-                        $data['answerIds'],
-                        [
-                            'question_id' => $data['questionId'],
-                            'is_correct' => config('util.ANSWER_TRUE'),
-                        ]
-                    );
-                    if (count($data['answerIds']) === count($answer)) {
-                        $score += $score_one_question;
-                        $trueAnswer += 1;
-                    } else {
-                        $falseAnswer += 1;
-                    }
-                }
-            }
-
-        }
-//        $resultCapacity = $this->resultCapacity->findByUserExam($user_id, $request->exam_id);
-        $resultCapacity = $this->resultCapacity->findByUserPlaytopic($user_id, $request->playtopic_id);
-//        return $score;
         $db::beginTransaction();
         try {
+            $falseAnswer = 0;
+            $trueAnswer = 0;
+            $score = 0;
+            $user_id = auth('sanctum')->user()->id;
+//        $exam = $this->exam->findById($request->exam_id, ['questions'], ['max_ponit', 'ponit'], false);
+            $playtopic = $this->playtopic->query()->where(['id' => $request->playtopic_id])->first();
+            $questions_count = collect(json_decode($playtopic->questions_order))->count();
+//        $score_one_question = $exam->max_ponit / $exam->questions_count;
+            $score_one_question = config('util.MAX_POINT') / $questions_count;
+//        $donotAnswer = $exam->questions_count - count($request->data);
+            $donotAnswer = $questions_count - count($request->data);
+
+//            $answerIds = collect($request->data)->map(function ($data) {
+//                return $data['type'] == 1 ? $data['answerIds'] : $data['answerId'];
+//            })->flatten()->filter()->toArray();
+//
+//            $answers = $this->answerModel->query()->whereIn('id', $answerIds)->get()->keyBy('id');
+
+            foreach ($request->data as $key => $data) {
+                if ($data['type'] == 0) {
+                    if ($data['answerId'] == null) {
+                        $donotAnswer += 1;
+                    } else {
+                        $answer = $this->answer->findById(
+                            $data['answerId'],
+                            [
+                                'question_id' => $data['questionId'],
+                                'is_correct' => config('util.ANSWER_TRUE'),
+                            ]
+                        );
+                        if ($answer && $data['answerId'] === $answer->id) {
+                            $score += $score_one_question;
+                            $trueAnswer += 1;
+                        } else {
+                            $falseAnswer += 1;
+                        }
+//                        $answer = $answers[$data['answerId']] ?? null;
+//                        if ($answer && $data['questionId'] === $answer->question_id && $answer->is_correct === config('util.ANSWER_TRUE')) {
+//                            $score += $score_one_question;
+//                            $trueAnswer += 1;
+//                        } else {
+//                            $falseAnswer += 1;
+//                        }
+                    }
+                } else {
+                    if (count($data['answerIds']) > 0 && count($data['answerIds']) <= 1) {
+                        $falseAnswer += 1;
+                    } else if (count($data['answerIds']) <= 0) {
+                        $donotAnswer += 1;
+                    } else {
+                        $answer = $this->answer->whereInId(
+                            $data['answerIds'],
+                            [
+                                'question_id' => $data['questionId'],
+                                'is_correct' => config('util.ANSWER_TRUE'),
+                            ]
+                        );
+//                        $answer = $answers->only($data['answerIds']);
+                        if (count($data['answerIds']) === count($answer)) {
+                            $score += $score_one_question;
+                            $trueAnswer += 1;
+                        } else {
+                            $falseAnswer += 1;
+                        }
+                    }
+                }
+
+            }
+//        $resultCapacity = $this->resultCapacity->findByUserExam($user_id, $request->exam_id);
+            $resultCapacity = $this->resultCapacity->findByUserPlaytopic($user_id, $request->playtopic_id);
+//        return $score;
+
             $resultCapacity->update([
                 'scores' => $score,
                 'status' => config('util.STATUS_RESULT_CAPACITY_DONE'),
@@ -495,7 +513,7 @@ class TakeExamController extends Controller
         } catch (\Throwable $th) {
             $db::rollBack();
             $msg = "{$th->getMessage()}";
-            Log::error();
+            Log::error($msg);
             return $th->getMessage();
         }
     }
