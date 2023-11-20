@@ -512,8 +512,14 @@ class TakeExamController extends Controller
             );
         } catch (\Throwable $th) {
             $db::rollBack();
-            $msg = "Lỗi nộp bài: {$th->getMessage()}";
-            Log::error($msg);
+            $err = "Lỗi nộp bài: " . json_encode([
+                    'msg' => "{$th->getMessage()}",
+                    'line' => $th->getLine(),
+                    'file' => $th->getFile(),
+                    'user_id' => auth('sanctum')->user()->id,
+                    'data' => $request->all(),
+                ]);
+            Log::error($err);
             return $th->getMessage();
         }
     }
