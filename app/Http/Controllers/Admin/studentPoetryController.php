@@ -387,7 +387,7 @@ class studentPoetryController extends Controller
         }
         $dataInsertPlaytopicArr = [];
         if (!empty($poetriesId)) {
-            $examsId = DB::table('exams')
+            $examsId = \App\Models\Exam::query()
                 ->select('id', 'name')
                 ->where('subject_id', $subject_id)
                 ->where('total_questions', ">", 0)

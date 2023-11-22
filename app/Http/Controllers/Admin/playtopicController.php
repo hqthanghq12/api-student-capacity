@@ -326,11 +326,17 @@ class playtopicController extends Controller
                     'num' => (int)$diffQuesNum
                 ],
             ];
+
             foreach ($quesNumArr as $rank => $ques) {
+                if ($ques['num'] <= 0) {
+                    continue;
+                }
+
                 if ($ques['num'] > count($questions[$rank])) {
                     return response("Số lượng câu hỏi mức độ {$ques['rank']} không đủ, vui lòng điều chỉnh lại", 404);
                 }
             }
+
             foreach ($poetriesId as $poetry_id) {
                 $dataInsertArr[] = [
                     'student_poetry_id' => $poetry_id,
