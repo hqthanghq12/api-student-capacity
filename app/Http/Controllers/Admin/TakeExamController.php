@@ -402,37 +402,37 @@ class TakeExamController extends Controller
 //        $donotAnswer = $exam->questions_count - count($request->data);
             $donotAnswer = $questions_count - count($request->data);
 
-//            $answerIds = collect($request->data)->map(function ($data) {
-//                return $data['type'] == 1 ? $data['answerIds'] : $data['answerId'];
-//            })->flatten()->filter()->toArray();
-//
-//            $answers = $this->answerModel->query()->whereIn('id', $answerIds)->get()->keyBy('id');
+            $answerIds = collect($request->data)->map(function ($data) {
+                return $data['type'] == 1 ? $data['answerIds'] : $data['answerId'];
+            })->flatten()->filter()->toArray();
+
+            $answers = $this->answerModel->query()->whereIn('id', $answerIds)->get()->keyBy('id');
 
             foreach ($request->data as $key => $data) {
                 if ($data['type'] == 0) {
                     if ($data['answerId'] == null) {
                         $donotAnswer += 1;
                     } else {
-                        $answer = $this->answer->findById(
-                            $data['answerId'],
-                            [
-                                'question_id' => $data['questionId'],
-                                'is_correct' => config('util.ANSWER_TRUE'),
-                            ]
-                        );
-                        if ($answer && $data['answerId'] === $answer->id) {
-                            $score += $score_one_question;
-                            $trueAnswer += 1;
-                        } else {
-                            $falseAnswer += 1;
-                        }
-//                        $answer = $answers[$data['answerId']] ?? null;
-//                        if ($answer && $data['questionId'] === $answer->question_id && $answer->is_correct === config('util.ANSWER_TRUE')) {
+//                        $answer = $this->answer->findById(
+//                            $data['answerId'],
+//                            [
+//                                'question_id' => $data['questionId'],
+//                                'is_correct' => config('util.ANSWER_TRUE'),
+//                            ]
+//                        );
+//                        if ($answer && $data['answerId'] === $answer->id) {
 //                            $score += $score_one_question;
 //                            $trueAnswer += 1;
 //                        } else {
 //                            $falseAnswer += 1;
 //                        }
+                        $answer = $answers[$data['answerId']] ?? null;
+                        if ($answer && $data['questionId'] === $answer->question_id && $answer->is_correct === config('util.ANSWER_TRUE')) {
+                            $score += $score_one_question;
+                            $trueAnswer += 1;
+                        } else {
+                            $falseAnswer += 1;
+                        }
                     }
                 } else {
                     if (count($data['answerIds']) > 0 && count($data['answerIds']) <= 1) {
@@ -440,14 +440,14 @@ class TakeExamController extends Controller
                     } else if (count($data['answerIds']) <= 0) {
                         $donotAnswer += 1;
                     } else {
-                        $answer = $this->answer->whereInId(
-                            $data['answerIds'],
-                            [
-                                'question_id' => $data['questionId'],
-                                'is_correct' => config('util.ANSWER_TRUE'),
-                            ]
-                        );
-//                        $answer = $answers->only($data['answerIds']);
+//                        $answer = $this->answer->whereInId(
+//                            $data['answerIds'],
+//                            [
+//                                'question_id' => $data['questionId'],
+//                                'is_correct' => config('util.ANSWER_TRUE'),
+//                            ]
+//                        );
+                        $answer = $answers->only($data['answerIds']);
                         if (count($data['answerIds']) === count($answer)) {
                             $score += $score_one_question;
                             $trueAnswer += 1;
