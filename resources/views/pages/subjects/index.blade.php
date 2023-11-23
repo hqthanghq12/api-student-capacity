@@ -14,6 +14,26 @@
                 {{ Breadcrumbs::render('ManagementStudent') }}
             </div>
             <div class="card card-flush p-4">
+
+                <form action="" class="my-5 p-3">
+                    <div class="row align-items-end">
+                        <div class="form-group col-3">
+                            <label for="t" class="form-label">Tìm kiếm theo</label>
+                            <select name="t" id="t" class="form-select">
+                                <option value="code">Mã môn</option>
+                                <option value="name" @selected(request('t') == 'name')>Tên môn</option>
+                            </select>
+                        </div>
+                        <div class="col-7">
+                            <input type="search" name="s" id="" class="form-control col-9"
+                                   value="{{ request('s') ?? '' }}" placeholder="Nhập giá trị muốn tìm">
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-secondary">Tìm kiếm</button>
+                        </div>
+                    </div>
+                </form>
+
                 <div class="row">
                     <div class=" col-lg-6">
 

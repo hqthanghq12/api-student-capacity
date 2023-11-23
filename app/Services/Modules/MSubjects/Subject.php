@@ -39,8 +39,8 @@ class Subject
     public function ListSubjectRespone($id)
     {
         try {
-            $records = $this->mSubject->whereHas('block_subject',function($q) use ($id){
-                return $q->where('id_block',$id);
+            $records = $this->mSubject->whereHas('block_subject', function ($q) use ($id) {
+                return $q->where('id_block', $id);
             })->get();
             return $records;
         } catch (\Exception $e) {
@@ -51,8 +51,19 @@ class Subject
     public function ListSubject()
     {
         try {
-            return $this->getListSb()
-                ->paginate(5);
+            $subjectsQuery = $this->getListSb()->query();
+
+            if (request()->has('s') && request('s') != '') {
+                $type = request('t') !== 'name' ? 'code_subject' : 'name';
+
+                $subjectsQuery->where($type, 'like', '%' . request('s') . '%');
+            }
+
+            $result = $subjectsQuery->paginate(5);
+
+            $result->appends(request()->all());
+
+            return $result;
         } catch (\Exception $e) {
             return false;
         }
@@ -83,9 +94,16 @@ class Subject
     {
         {
             try {
-                $subjects = $this->mSubject::whereHas('semester_subject', function ($query) use ($id) {
+                $subjectsQuery = $this->mSubject::whereHas('semester_subject', function ($query) use ($id) {
                     $query->where('semester_subject.id_semeter', $id);
-                })->paginate(5);
+                });
+                if (request()->has('s') && request('s') != '') {
+                    $type = request('t') !== 'name' ? 'code_subject' : 'name';
+                    $subjectsQuery->where($type, 'like', '%' . request('s') . '%');
+                }
+
+                $subjects = $subjectsQuery->paginate(5);
+                $subjects->appends(request()->all());
                 foreach ($subjects as $value) {
                     $semeterSubject = semeter_subject::where('id_semeter', '=', $id)->where('id_subject', '=', $value->id)->first();
                     $value->id_subject_semeter = $semeterSubject->id;

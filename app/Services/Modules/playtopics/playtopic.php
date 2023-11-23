@@ -53,9 +53,9 @@ class playtopic
             $start_time = $records->exam_date . " " . $poetryIdToPoetryTime[$records->start_examination_id]['started_at'];
             $finish_time = $records->exam_date . " " . $poetryIdToPoetryTime[$records->finish_examination_id]['finished_at'];
             $start_time_timestamp = strtotime($start_time);
-            $rejoin_timestamp = strtotime($records->rejoined_at);
+            $rejoin_timestamp = $records->rejoined_at ? strtotime($records->rejoined_at) : null;
             $records->is_in_time = (
-                (time() >= $rejoin_timestamp && time() < strtotime("+15 minutes", $rejoin_timestamp))
+                ($rejoin_timestamp && time() >= $rejoin_timestamp && time() < strtotime("+15 minutes", $rejoin_timestamp))
                 || (time() >= $start_time_timestamp
 //                    && time() < strtotime("+15 minutes", $start_time_timestamp)
                     && time() < strtotime($finish_time))
