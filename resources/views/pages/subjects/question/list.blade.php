@@ -575,7 +575,7 @@
             }
         };
 
-        let url = "/admin/subject/question/{{$id}}?";
+        let url = "/admin/subject/question/{{$id}}/{{ $id_subject }}/{{ $name }}?";
         const _token = "{{ csrf_token() }}";
         let btnHistory = document.querySelectorAll('.history-btn');
         const sort = '{{ request()->has('sort') ? (request('sort') == 'desc' ? 'asc' : 'desc') : 'asc' }}';
