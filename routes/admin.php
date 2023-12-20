@@ -181,9 +181,9 @@ Route::group([
         Route::post('add-account', [UserController::class, 'create'])->name('admin.acount.add');
         Route::get('edit/{id}', [UserController::class, 'edit'])->name('admin.acount.edit');
         Route::put('update/{id}', [UserController::class, 'update'])->name('admin.acount.update');
-//        Route::post('un-status/{id}', [UserController::class, 'un_status'])->name('admin.acount.un.status');
-//        Route::post('re-status/{id}', [UserController::class, 're_status'])->name('admin.acount.re.status');
-//        Route::post('change-role', [UserController::class, 'changeRole'])->name('admin.acount.change.role');
+        Route::post('un-status/{id}', [UserController::class, 'un_status'])->name('admin.acount.un.status');
+        Route::post('re-status/{id}', [UserController::class, 're_status'])->name('admin.acount.re.status');
+        Route::post('change-role', [UserController::class, 'changeRole'])->name('admin.acount.change.role');
     });
 
     Route::prefix('basis')->middleware(['role_super_admin'])->group(function () {

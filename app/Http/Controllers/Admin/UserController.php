@@ -592,15 +592,17 @@ class UserController extends Controller
         $user->campus_id = $request->campus_id_update;
         $user->save();
 
-        $role = modelroles::query()
-            ->updateOrCreate(
-                ['model_id' => $id],
-                [
-                    'role_id' => $request->roles_id_update,
-                    'model_type' => 'App\Models\User',
-                    'model_id' => $id,
-                ]
-            );
+        $user->syncRoles([$request->roles_id_update]);
+
+//        $role = modelroles::query()
+//            ->updateOrCreate(
+//                ['model_id' => $id],
+//                [
+//                    'role_id' => $request->roles_id_update,
+//                    'model_type' => 'App\Models\User',
+//                    'model_id' => $id,
+//                ]
+//            );
         return response(['message' => "Thành công <br>Vui lòng chờ 5s để làm mới dữ liệu"], 200);
     }
 
@@ -627,7 +629,7 @@ class UserController extends Controller
     {
         if (!$users = $this->getUser()) return abort(404);
 //        $branches = $this->branches::all();
-        $rolesModel = $this->role->query();
+        $rolesModel = $this->role->query()->where('name', '<>', 'student');
         $CampusModel = $this->campus->query();
         if (!auth()->user()->hasRole('super admin')) {
             $rolesModel->where('id', '<>', config('util.SUPER_ADMIN_ROLE'));

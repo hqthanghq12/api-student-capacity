@@ -423,7 +423,7 @@
                                                 class="btn btn-success"
                                                 href="{{ route('admin.subject.question.excel.export', $question->id) }}"
                                             >
-                                                Tải file câu hỏi số <strong>{{ $question->id }}</strong>
+                                                Tải xuống file câu hỏi này</strong>
                                             </a>
                                             <button type="submit"
                                                     class="upload-file btn btn-primary">Tải

@@ -23,7 +23,7 @@
                                         fill="black"></path>
                                 </svg>
                             </span>
-                            Tải Mẫu Đề</a>
+                            Tải mẫu bộ câu hỏi</a>
                     </div>
                     <a href="{{ route('admin.exam.create',['id' => $id,'name' => $name->name]) }}" class="btn btn-primary">Thêm mới
                         đề</a>

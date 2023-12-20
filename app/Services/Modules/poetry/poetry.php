@@ -357,6 +357,8 @@ class poetry implements MPoetryInterface
                     "exam_type" => 0,
                     'is_in_time' => $is_in_time,
                     'have_done' => $have_done,
+                    'start_time' => $poetryIdToPoetryTime[$value->start_examination_id]['started_at'],
+                    'finish_time' => $poetryIdToPoetryTime[$value->finish_examination_id]['finished_at'],
                 ];
             }
             return $data;
