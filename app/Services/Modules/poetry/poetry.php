@@ -67,6 +67,9 @@ class poetry implements MPoetryInterface
             }
 
             $data = $records->orderBy('id', 'desc')->paginate(10);
+
+            dd($data);
+
             foreach ($data as $poetry) {
                 $poetry->examination = 'Ca ' . $poetry->start_examination_id;
                 if ($poetry->child_poetry->count() > 0) {
