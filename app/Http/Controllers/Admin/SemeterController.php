@@ -29,7 +29,7 @@ class SemeterController extends Controller
         foreach($data as $key=>$value){
             $ids[]=$value->id;
         }
-        $block_id= $this->block->getAllIdBlockOne($ids);
+        $block_id= $this->block->getAllIdBlockOne($ids)->pluck('id', 'id_semeter');
         $campusListQuery = Campus::query();
         if (!(auth()->user()->hasRole('super admin'))) {
             $campusListQuery->where('id', auth()->user()->campus_id);
