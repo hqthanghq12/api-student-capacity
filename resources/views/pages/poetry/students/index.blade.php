@@ -99,20 +99,20 @@
                                 </a>
                             </div>
                         </div>
-{{--                        <div class="">--}}
-{{--                            <div class=" d-flex flex-row-reverse bd-highlight">--}}
-{{--                                <a class="btn btn-light-info me-3" id=""--}}
-{{--                                   href="{{ route('admin.poetry.manage.export', ['id' => $id, 'id_poetry' => $id_poetry, 'id_block' => $idBlock, 'byDay' => 'true']) }}">--}}
-{{--                                    Xuất điểm trong ngày--}}
-{{--                                </a>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
+                        {{--                        <div class="">--}}
+                        {{--                            <div class=" d-flex flex-row-reverse bd-highlight">--}}
+                        {{--                                <a class="btn btn-light-info me-3" id=""--}}
+                        {{--                                   href="{{ route('admin.poetry.manage.export', ['id' => $id, 'id_poetry' => $id_poetry, 'id_block' => $idBlock, 'byDay' => 'true']) }}">--}}
+                        {{--                                    Xuất điểm trong ngày--}}
+                        {{--                                </a>--}}
+                        {{--                            </div>--}}
+                        {{--                        </div>--}}
                     </div>
                 </div>
 
 
-                <div class="table-responsive table-responsive-md">
-                    <table id="table-data" class="table table-row-bordered table-row-gray-300 gy-7  table-hover ">
+                <div class="table-responsive table-responsive">
+                    <table id="table-data" class="table table-row-bordered table-row-gray-300 gy-7  table-hover">
                         <thead>
                         <tr>
                             @if ($is_allow)
@@ -195,7 +195,8 @@
                                     <td>
                                         {{ trim($value->exam_time) === "" ? "Chưa có thời gian" : $value->exam_time . " phút" }}
                                     </td>
-                                    @if ($value->has_received_exam == 1  && (auth()->user()->hasAnyRole(config('util.ROLE_ADMINS')) || (auth()->user()->hasRole('teacher') && $value->rejoined_at === null))))
+                                    @if ($value->has_received_exam == 1  && (auth()->user()->hasAnyRole(config('util.ROLE_ADMINS')) || (auth()->user()->hasRole('teacher') && $value->rejoined_at === null))
+                                        )
                                         <td class="text-end">
                                             <button href="#"
                                                     class="btn-rejoin menu-link border border-0 bg-transparent px-3 btn btn-sm btn-outline-primary"
@@ -205,9 +206,10 @@
                                         </td>
                                     @endif
                                     @if(isset($value->scores))
-                                            <td class="text-end">
-                                                <a href="{{ route('admin.poetry.result.index', $value->playtopic_id) }}" target="_blank">Lịch sử làm bài</a>
-                                            </td>
+                                        <td class="text-end">
+                                            <a href="{{ route('admin.poetry.result.index', $value->playtopic_id) }}"
+                                               target="_blank">Lịch sử làm bài</a>
+                                        </td>
                                     @endif
                                 </tr>
                             @endforeach
@@ -358,11 +360,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        {{--                        @if($total >= 1)--}}
-                        {{--                            <button type="button" id="reloadPlaytopic" class=" btn btn-primary">Phát Lại</button>--}}
-                        {{--                        @else--}}
                         <button type="button" id="upload-basis" class=" btn btn-primary">Phát</button>
-                        {{--                        @endif--}}
                     </div>
                 </form>
             </div>
