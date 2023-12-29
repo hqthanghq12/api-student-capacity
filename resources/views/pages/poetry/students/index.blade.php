@@ -195,7 +195,7 @@
                                     <td>
                                         {{ trim($value->exam_time) === "" ? "Chưa có thời gian" : $value->exam_time . " phút" }}
                                     </td>
-                                    @if ((auth()->user()->hasAnyRole(config('util.ROLE_ADMINS')) || (auth()->user()->hasRole('teacher') && $value->rejoined_at === null)))
+                                    @if ($value->has_received_exam == 0  && (auth()->user()->hasAnyRole(config('util.ROLE_ADMINS')) || (auth()->user()->hasRole('teacher') && $value->rejoined_at === null))))
                                         <td class="text-end">
                                             <button href="#"
                                                     class="btn-rejoin menu-link border border-0 bg-transparent px-3 btn btn-sm btn-outline-primary"
