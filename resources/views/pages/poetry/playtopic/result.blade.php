@@ -189,7 +189,7 @@
                                                 $stt = 'A';
                                                 $question = $questions->where('id', $questionId)->first();
                                                 if (!$question){
-                                                    dd($questionsId);
+                                                    continue;
                                                 }
                                                 $images = $question->images ? $question->images->toArray() : [];
                                                 $index = $key + 1;
