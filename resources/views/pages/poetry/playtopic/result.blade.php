@@ -6,6 +6,7 @@
         #result::-webkit-scrollbar {
             width: 15px; /* Chiều rộng của thanh scrollbar */
         }
+
         #result::-webkit-scrollbar-thumb {
             background-color: #999; /* Màu của thanh cuộn */
             border-radius: 15px; /* Đường viền cong của thanh cuộn */
@@ -187,8 +188,8 @@
                                             @php
                                                 $stt = 'A';
                                                 $question = $questions->where('id', $questionId)->first();
-                                                if (empty($question->images)) {
-                                                    dd($question->images);
+                                                if (!$question){
+                                                    dd($questionsId);
                                                 }
                                                 $images = $question->images ? $question->images->toArray() : [];
                                                 $index = $key + 1;
