@@ -206,7 +206,7 @@
                                     @endif
                                     @if(isset($value->scores))
                                             <td class="text-end">
-                                                <a href="{{ route('admin.poetry.result.index', $value->playtopic_id) }}">Lịch sử làm bài</a>
+                                                <a href="{{ route('admin.poetry.result.index', $value->playtopic_id) }}" target="_blank">Lịch sử làm bài</a>
                                             </td>
                                     @endif
                                 </tr>
