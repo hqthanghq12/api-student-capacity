@@ -206,7 +206,7 @@
                                             <div id="question-{{ $index }}" class="my-5">
                                                 <div class="question-content">
                                                     <strong class="{{ $color }}">Câu {{ $index }}:</strong>
-                                                    {!! renderQuesAndAns($question->content, $images, 25) !!}
+                                                    {!! renderQuesAndAns($question->content, $images, 50) !!}
                                                 </div>
                                                 <div class="answers ps-5">
                                                     @foreach($question->answers as $answer)
@@ -220,7 +220,7 @@
                                                         @endphp
                                                         <div class="answer ps-3 py-1 rounded my-2 {{ $color }}">
                                                             <strong>{{ $stt++ }}</strong>.
-                                                            {!! renderQuesAndAns($answer->content, $images, 25) !!}
+                                                            {!! renderQuesAndAns($answer->content, $images, 50) !!}
                                                         </div>
                                                     @endforeach
                                                 </div>
