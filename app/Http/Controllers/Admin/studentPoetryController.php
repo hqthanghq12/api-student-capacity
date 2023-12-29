@@ -134,7 +134,7 @@ class studentPoetryController extends Controller
                 $result_status,
                 $value->scores ?? "Chưa thi",
                 !$value->scores ? "Chưa thi" : $end->longAbsoluteDiffForHumans($start, 3),
-                $end->format('H:i d-m-Y'),
+                !$value->scores ? "Chưa thi" : $end->format('H:i d-m-Y'),
             ];
 //            }
         }
