@@ -187,8 +187,8 @@
                                             @php
                                                 $stt = 'A';
                                                 $question = $questions->where('id', $questionId)->first();
-                                                @dd($question->images);
                                                 $images = $question->images ? $question->images->toArray() : [];
+                                                @dd($images);
                                                 $index = $key + 1;
                                                 $correctAnswer = $question->answers->where('is_correct', 1)->first();
                                                     $resultDetail = $resultCapacityDetail->where('question_id', $question->id)->first();
