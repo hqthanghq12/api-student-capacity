@@ -4,7 +4,7 @@
 
 <head>
     <base href="/">
-    <title>PTCĐ FPT Polytechnic</title>
+    <title>@yield('title', 'PTCĐ FPT Polytechnic')</title>
     <meta charset="utf-8" />
     <meta name="description" content="" />
     <meta name="keywords" content="" />

@@ -61,6 +61,12 @@ Breadcrumbs::for('manageSemeter', function (BreadcrumbTrail $trail,$args) {
     $trail->push('Danh sách ca thi' , route('admin.poetry.manage.index',$args));
 });
 
+// Học Kỳ > Quản lí ca thi > Danh sách ca thi > Kết quả làm bài
+Breadcrumbs::for('resultCapacity', function (BreadcrumbTrail $trail,$args) {
+    $trail->parent('manageSemeter',$args);
+    $trail->push('Kết quả làm bài' , route('admin.poetry.result.index',$args));
+});
+
 
 
 //Breadcrumbs::for(

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\playtopic;
+use App\Models\studentPoetry;
 use App\Models\User;
 use App\Services\Modules\MClass\classModel;
 use App\Services\Modules\MClassSubject\ClassSubject;
@@ -38,12 +40,13 @@ class PoetryController extends Controller
     {
         $sort = $request->sort;
         $data = $this->poetry->ListPoetry($id, $idblock, $request, $sort);
-//        dd($data);
+
         if (!empty($sort)) {
             $sort = $sort == 'asc' ? 'desc' : 'asc';
         } else {
             $sort = 'asc';
         }
+
         $data->appends($request->query());
         $semeter = $this->semeter->ListSemeter();
         $campus = (new Campus())->query()->find($semeter->find($id)->id_campus);
@@ -57,17 +60,16 @@ class PoetryController extends Controller
             ->withWhereHas('roles', function ($query) {
                 $query->where('id', config('util.TEACHER_ROLE'));
             });
-//        $listCampusQuery = (new Campus())->query();
+
         if (auth()->user()->hasRole('admin')) {
-//            $listCampusQuery->where('id', auth()->user()->campus_id);
             $usersQuery->where('campus_id', auth()->user()->campus_id);
         }
+
         if (auth()->user()->hasRole('teacher')) {
-//            $listCampusQuery->where('id', auth()->user()->campus_id);
             $usersQuery->where('id', auth()->user()->id);
         }
-//            dd(1);
-//        $listCampus = $listCampusQuery->get();
+
+
         $teachers = $usersQuery->get();
         return view('pages.poetry.index', [
             'poetry' => $data,
@@ -330,6 +332,15 @@ class PoetryController extends Controller
             }
 
         }
+
+        $poetryModel = new \App\Models\poetry();
+
+        $poetry = $poetryModel->query()->where('id', $id)->first();
+
+        if (checkTime($poetry)) {
+            return response("Không thể cập nhật thông tin ca thi đã diễn ra", 404);
+        }
+
         if ($request->finish_examination_id_update < $request->start_examination_id_update) {
             return response("Vui lòng chọn ca kết thúc sao cho hợp lý!", 404);
         }
@@ -378,28 +389,13 @@ class PoetryController extends Controller
             'exam_date' => $request->exam_date_update,
             'parent_poetry_id' => $id,
         ];
-        $poetryModel = new \App\Models\poetry();
+
         $poetryModel->query()->where('id', $id)->update($data);
         $poetryModel->query()->where('parent_poetry_id', $id)->update($data2);
-//        dd($data);
-//        $poetry = $this->poetry->getItempoetry($id);
-//        if (!$poetry) {
-//            return response()->json(['message' => 'Không tìm thấy'], 404);
-//        }
-//        $poetry->id_semeter = $request->semeter_id_update;
-//        $poetry->id_subject = $request->subject_id_update;
-//        $poetry->id_class = $request->class_id_update;
-//        $poetry->id_examination = $request->examination_id_update;
-//        $poetry->id_campus = $request->campus_id_update;
-//        $poetry->status = $request->status_update;
-//        $poetry->start_time = $request->start_time_semeter;
-//        $poetry->end_time = $request->end_time_semeter;
-//        $poetry->updated_at = now();
-
-//        $poetry->save();
-//        $data = $request->all();
-//        $data['id'] = $id;
-//        $data = array_merge($data, $this->poetry->getItem($id));
+        if ($request->isChangeSubject) {
+            $studentPoetry = studentPoetry::query()->where('id_poetry', $id)->pluck('id')->toArray();
+            playtopic::query()->whereIn('student_poetry_id', $studentPoetry)->delete();
+        }
         return response(['message' => "Cập nhật thành công", 'data' => $data], 200);
     }
 

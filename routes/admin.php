@@ -64,7 +64,7 @@ Route::prefix('subject')->group(function () {
         Route::get('{id}/export', [QuestionController::class, 'exportQuestionDetail'])->name('admin.subject.question.excel.export');
         Route::post('{exam_id}/import/{base_id}', [QuestionController::class, 'importQuestionDetail'])->name('admin.subject.question.excel.import');
         Route::get('{base_id}/versions', [QuestionController::class, 'versions'])->name('admin.subject.question.versions');
-            Route::post('current', [QuestionController::class, 'setCurrentVersion'])->name('admin.subject.question.current');
+        Route::post('current', [QuestionController::class, 'setCurrentVersion'])->name('admin.subject.question.current');
     });
 });
 Route::prefix('contests')->group(function () {
@@ -141,7 +141,7 @@ Route::prefix('chart')->group(function () {
 });
 //Ca học =>done
 Route::prefix('poetry')->group(function () {
-    Route::get('/{id}/{id_block}', [PoetryController::class, 'index'])->name('admin.poetry.index');
+    Route::get('{id}/{id_block}', [PoetryController::class, 'index'])->name('admin.poetry.index');
     Route::post('form-add-poetry', [PoetryController::class, 'create'])->name('admin.poetry.create');
     Route::put('now-status/{id}', [PoetryController::class, 'now_status'])->name('admin.poetry.un.status');
     Route::delete('delete/{id}', [PoetryController::class, 'delete'])->name('admin.poetry.delete');
@@ -158,12 +158,14 @@ Route::prefix('poetry')->group(function () {
         Route::get('{id}/{id_poetry}/{id_block}/export', [studentPoetryController::class, 'export'])->name('admin.poetry.manage.export');
     });
     Route::prefix('playTopic')->group(function () {
-        Route::get('/{id_peotry}/{id_subject}', [playtopicController::class, 'index'])->name('admin.poetry.playtopic.index');
+        Route::get('{id_peotry}/{id_subject}', [playtopicController::class, 'index'])->name('admin.poetry.playtopic.index')->where('id_peotry', '[0-9]+');
         Route::get('getExam/{id_subject}', [playtopicController::class, 'listExam']);
         Route::post('addTopics', [playtopicController::class, 'AddTopic'])->name('admin.poetry.playtopic.create');
         Route::post('addTopicsReload', [playtopicController::class, 'AddTopicReload'])->name('admin.poetry.playtopic.create.reload');
+        Route::get('result/{id}', [ResultController::class, 'resultCapacity'])->name('admin.poetry.result.index');
     });
 });
+
 // Middleware phân quyền ban giám khảo chấm thi , khi nào gộp code sẽ chỉnh sửa lại route để phân quyền route
 Route::group([
     'middleware' => 'role_admin:judge|admin|super admin'
@@ -330,9 +332,9 @@ Route::post('/upload-gv', function (\Illuminate\Http\Request $request) {
     $emailsEcho = [];
     $notFoundCampus = [];
     $role = $request->input('role') ?? 5;
-    $campus_code_col = (int) ($request->input('campus_code_col') ?? 0);
-    $name_col = (int) ($request->input('name_col') ?? 3);
-    $email_fe_col = (int) ($request->input('email_fe_col') ?? 11);
+    $campus_code_col = (int)($request->input('campus_code_col') ?? 0);
+    $name_col = (int)($request->input('name_col') ?? 3);
+    $email_fe_col = (int)($request->input('email_fe_col') ?? 11);
     $email_contains = [];
     for ($i = 0; $i < $sheetCount; $i++) {
         $sheet = $spreadsheet->getSheet($i)->toArray();

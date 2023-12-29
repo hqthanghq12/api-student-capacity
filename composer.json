@@ -10,6 +10,7 @@
         "darkaonline/l5-swagger": "^8.3",
         "diglactic/laravel-breadcrumbs": "^8.1",
         "doctrine/dbal": "^3.4",
+        "google/apiclient": "^2.15",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^2.7",
         "laravel/framework": "^9.2",

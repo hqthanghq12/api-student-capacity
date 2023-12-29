@@ -39,7 +39,7 @@ class studentPoetryController extends Controller
     public function index($id, $id_poetry, $idBlock)
     {
         $liststudent = $this->PoetryStudent->GetStudents($id);
-        $poetry = $this->poetry->query()->where('id', $id)->first();
+        $poetry = $this->poetry->query()->with(['classsubject', 'block_subject'])->where('id', $id)->first();
         $start = DB::table('examination')->where('id', $poetry->start_examination_id)->first()->started_at;
         $end = DB::table('examination')->where('id', $poetry->finish_examination_id)->first()->finished_at;
         $start_time = $poetry->exam_date . ' ' . $start;
@@ -52,9 +52,7 @@ class studentPoetryController extends Controller
         }
         $id_block_subject = $poetry->id_block_subject;
         $id_subject = DB::table('block_subject')->where('id', $id_block_subject)->first()->id_subject;
-//        if (!$liststudent) return abort(404);
         $examsList = $this->exam->getListExam($id_subject);
-//        dd($liststudent);
         return view('pages.poetry.students.index', [
             'student' => $liststudent,
             'id' => $id,
@@ -65,6 +63,7 @@ class studentPoetryController extends Controller
             'id_block_subject' => $id_block_subject,
             'is_allow' => $isAllow,
             'is_in_time' => $is_in_time,
+            'poetry' => $poetry,
         ]);
     }
 
@@ -74,86 +73,11 @@ class studentPoetryController extends Controller
         $poetry = (new poetry())->getTable();
         $model = new studentPoetry();
         $table = $model->getTable();
-        if (request()->has('full')) {
-            $poetries = poetry::query()
-                ->where('id', '>', 16)
-                ->where('id', '<', 27)
-                ->where('parent_poetry_id', 0)->get();
-            $studentPoetry = studentPoetry::query()->whereIn('id_poetry', $poetries->pluck('id'))->get();
-            $resultCapacity = DB::table('result_capacity')
-                ->select(['result_capacity.scores', 'result_capacity.user_id', 'student_poetry.id_poetry'])
-                ->join('playtopic', 'playtopic.id', '=', 'result_capacity.playtopic_id')
-                ->join('student_poetry', 'student_poetry.id', '=', 'playtopic.student_poetry_id')
-                ->whereIn('student_poetry_id', $studentPoetry->pluck('id'))
-                ->get();
-            $users = User::query()->whereIn('id', $studentPoetry->pluck('id_student'))->get();
-            $data = [];
-            $key = 0;
-            foreach ($users as $value) {
-                $score1 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 17)->first();
-                $score2 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 19)->first();
-                $score3 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 21)->first();
-                $score4 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 23)->first();
-                $score5 = $resultCapacity->where('user_id', $value->id)->where('id_poetry', 25)->first();
-                $data[] = [
-                    ++$key,
-                    $value->name ? $value->name : Str::replaceLast('@fpt.edu.vn', '', $value->email),
-                    $value->email,
-                    $score1 ? $score1->scores : "Chưa thi",
-                    $score2 ? $score2->scores : "Chưa thi",
-                    $score3 ? $score3->scores : "Chưa thi",
-                    $score4 ? $score4->scores : "Chưa thi",
-                    $score5 ? $score5->scores : "Chưa thi",
-                ];
-            }
-            $spreadsheet = new Spreadsheet();
-            // Thực hiện xử lý dữ liệu
-            $sheet = $spreadsheet->getActiveSheet();
-            $sheet->setCellValue('A1', 'TT');
-            $sheet->setCellValue('B1', 'Họ tên');
-            $sheet->setCellValue('C1', 'Email');
-            $sheet->setCellValue('D1', 'CTSV');
-            $sheet->setCellValue('E1', 'Hành chính');
-            $sheet->setCellValue('F1', 'Quản lý phí');
-            $sheet->setCellValue('G1', 'DVSV');
-            $sheet->setCellValue('H1', 'Giám thị');
-            $borderStyle = [
-                'borders' => [
-                    'allBorders' => [
-                        'borderStyle' => Border::BORDER_THIN,
-                        'color' => ['argb' => '000000'],
-                    ],
-                ],
-            ];
+        $poetryRecord = $this->poetry->query()->with(['classsubject', 'block_subject'])->where('id', $id)->first();
+        $subject = $poetryRecord->block_subject->subject->name;
+        $class = $poetryRecord->classsubject->name;
+        $room = $poetryRecord->room;
 
-            $row = 2;
-            $column = 1;
-            foreach ($data as $recordata) {
-                foreach ($recordata as $value) {
-                    $sheet->setCellValueByColumnAndRow($column, $row, $value);
-                    $sheet->getStyleByColumnAndRow($column, $row)->applyFromArray($borderStyle);
-                    $column++;
-                }
-                $row++;
-                $column = 1;
-            }
-            $sheet->getColumnDimension('A')->setWidth(15);
-            $sheet->getColumnDimension('B')->setWidth(20);
-            $sheet->getColumnDimension('C')->setWidth(15);
-            $sheet->getColumnDimension('D')->setWidth(15);
-            $sheet->getColumnDimension('E')->setWidth(15);
-            $sheet->getColumnDimension('F')->setWidth(15);
-            $sheet->getColumnDimension('G')->setWidth(15);
-            $sheet->getColumnDimension('H')->setWidth(15);
-            // Định dạng căn giữa và màu nền cho hàng tiêu đề
-            $sheet->getStyle('A1:H1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('A1:H1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
-
-            $writer = new Xlsx($spreadsheet);
-            $outputFileName = 'diem_thi.xlsx';
-            $writer->save($outputFileName);
-            return response()->download($outputFileName)->deleteFileAfterSend(true, $outputFileName);
-        }
         $liststudentQuery = $model::query()
             ->select(
                 [
@@ -170,6 +94,7 @@ class studentPoetryController extends Controller
                     'result_capacity.scores',
                     'result_capacity.created_at',
                     'result_capacity.updated_at',
+                    'result_capacity.status as result_status',
                 ]
             )
             ->leftJoin($user, "{$user}.id", '=', "{$table}.id_student")
@@ -195,24 +120,33 @@ class studentPoetryController extends Controller
         foreach ($liststudent as $value) {
             $start = Carbon::parse($value->created_at);
             $end = Carbon::parse($value->updated_at);
-            if ($value->scores !== null) {
-                $data[] = [
-                    ++$key,
-                    $value->emailStudent,
-                    $value->scores,
-                    $end->diffForHumans($start),
-                    $end->format('H:i d-m-Y'),
-                ];
+            if ($value->scores) {
+                $result_status = 'Chưa thi';
+            } elseif ($value->result_status == 1) {
+                $result_status = 'Đã thi';
+            } elseif ($value->result_status == 0) {
+                $result_status = 'Đang thi';
             }
+//            if ($value->scores !== null) {
+            $data[] = [
+                ++$key,
+                $value->emailStudent,
+                $result_status,
+                $value->scores ?? "Chưa thi",
+                $end->longAbsoluteDiffForHumans($start, 3),
+                $end->format('H:i d-m-Y'),
+            ];
+//            }
         }
         $spreadsheet = new Spreadsheet();
         // Thực hiện xử lý dữ liệu
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', 'TT');
         $sheet->setCellValue('B1', 'Email');
-        $sheet->setCellValue('C1', 'Điểm');
-        $sheet->setCellValue('D1', 'Thời gian làm bài');
-        $sheet->setCellValue('E1', 'Thời gian nôp bài');
+        $sheet->setCellValue('C1', 'Trạng thái');
+        $sheet->setCellValue('D1', 'Điểm');
+        $sheet->setCellValue('E1', 'Thời gian làm bài');
+        $sheet->setCellValue('F1', 'Thời gian nôp bài');
         $borderStyle = [
             'borders' => [
                 'allBorders' => [
@@ -238,14 +172,16 @@ class studentPoetryController extends Controller
         $sheet->getColumnDimension('C')->setWidth(15);
         $sheet->getColumnDimension('D')->setWidth(15);
         $sheet->getColumnDimension('E')->setWidth(10);
+        $sheet->getColumnDimension('F')->setWidth(10);
         // Định dạng căn giữa và màu nền cho hàng tiêu đề
-        $sheet->getStyle('A1:E1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:E1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
+        $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:F1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
 
         $writer = new Xlsx($spreadsheet);
-        $outputFileName = 'diem_thi.xlsx';
+        $fileName = 'Điểm thi ca ' . $poetryRecord->start_examination_id . ' - ' . $room . ' - ' . $subject . ' - ' . $class;
+        $outputFileName = $fileName . '.xlsx';
         if (request()->has('byDay') && request()->get('byDay') == 'true') {
-            $outputFileName = 'diem_thi_' . Carbon::now()->format('d-m-Y') . '.xlsx';
+            $outputFileName = Carbon::now()->format('d-m-Y') . ' _ ' . $fileName . '.xlsx';
         }
         $writer->save($outputFileName);
         return response()->download($outputFileName)->deleteFileAfterSend(true, $outputFileName);
@@ -341,15 +277,6 @@ class studentPoetryController extends Controller
 
         }
         $id_poetry = $request->id_poetry;
-        $subject_id = DB::table('poetry')
-            ->where('poetry.id', $id_poetry)
-            ->join('block_subject', 'poetry.id_block_subject', '=', 'block_subject.id')
-            ->first()->id_subject;
-//        $data = null;
-        $user = User::query()->whereIn('email', $request->emailStudent)->get();
-//        foreach ($user as $item) {
-//            dd($item->roles);
-//        }
         $studentsQuery = User::query()
             ->with('poetry_student')
             ->select(['id', 'email'])
@@ -360,94 +287,29 @@ class studentPoetryController extends Controller
             ->whereDoesntHave('poetry_student', function ($query) use ($id_poetry) {
                 $query->where('id_poetry', $id_poetry);
             });
-//        if (!auth()->user()->hasRole('super admin')) {
-//            $studentsQuery->where('campus_id', auth()->user()->campus_id);
-//        }
+
         $students = $studentsQuery->get();
-//        dd($students);
+
         $emailFiltered = $students->pluck('email')->toArray();
-//        dd($emailFiltered);
-//        dd($request->emailStudent);
+
         $userSuccessCount = count($emailFiltered);
+
         $userFailedCount = count(array_diff($request->emailStudent, $emailFiltered));
-        $poetriesId = [];
-        $maxStudentPoetryId = DB::table('student_poetry')->max('id');
+
         $dataInsertArr = [];
+
         foreach ($students as $object) {
             $dataInsert = [
-                'id' => ++$maxStudentPoetryId,
                 'id_poetry' => $id_poetry,
                 'id_student' => $object->id,
                 'status' => $request->status,
                 'created_at' => now(),
                 'updated_at' => null
             ];
-            $poetriesId[] = $maxStudentPoetryId;
             $dataInsertArr[] = $dataInsert;
         }
-        $dataInsertPlaytopicArr = [];
-        if (!empty($poetriesId)) {
-            $examsId = \App\Models\Exam::query()
-                ->select('id', 'name')
-                ->where('subject_id', $subject_id)
-                ->where('total_questions', ">", 0)
-                ->where('status', 1)
-                ->get();
-            if ($examsId->count() == 0) {
-                return response("Không có đề trong ngân hàng đề", 404);
-            }
-            $exams = [];
-            $examsCount = $examsId->count();
-            $studentsCount = collect($poetriesId)->count();
-            if ($studentsCount < $examsCount) {
-                $examsId = $examsId->random($studentsCount);
-                $examsCount = $studentsCount;
-            }
-            $studentPerExam = (int)floor($studentsCount / $examsCount);
-            $examsIdArr = $examsId->toArray();
-            for ($i = 0; $i < $examsCount; $i++) {
-                $exam = (array)$examsIdArr[$i];
-                $studentsGet = ($i == $examsCount - 1) ? $studentsCount : $studentPerExam;
-                $studentsCount -= $studentsGet;
-                $exams[$exam['id']] = [
-                    'id' => $exam['id'],
-                    'name' => $exam['name'],
-                    'total' => $studentsGet,
-                ];
-            }
-            $questionsByExamId = ExamQuestion::query()
-                ->select(['exam_questions.question_id', 'exam_questions.id', 'exam_questions.exam_id'])
-                ->whereIn('exam_questions.exam_id', $examsId->pluck('id'))
-                ->whereHas('question', function ($q) {
-                    $q->where('status', 1)->where('is_current_version', 1);
-                })
-                ->get()
-                ->groupBy('exam_id')
-                ->map(function ($item) {
-                    return $item->pluck('question_id')->toArray();
-                });
-            shuffle($poetriesId);
-            foreach ($poetriesId as $poetry_id) {
-                $randomExamId = array_rand($exams, 1);
-                $questions = $questionsByExamId[$randomExamId];
-                $exam_name = $exams[$randomExamId]['name'];
-                if (--$exams[$randomExamId]['total'] <= 0) {
-                    unset($exams[$randomExamId]);
-                }
-                shuffle($questions);
-                $dataInsertPlaytopicArr[] = [
-                    'student_poetry_id' => $poetry_id,
-                    'has_received_exam' => 1,
-                    'exam_name' => $exam_name,
-                    'questions_order' => json_encode($questions),
-                    'exam_time' => 90,
-                ];
-            }
-        }
         DB::table('student_poetry')->insert($dataInsertArr);
-        if (!empty($dataInsertPlaytopicArr)) {
-            DB::table('playtopic')->insert($dataInsertPlaytopicArr);
-        }
+
         return response(['message' => "Thành công " . $userSuccessCount . '<br> Thất bại ' . $userFailedCount . '<br>Vui lòng chờ 5s để làm mới dữ liệu', 'data' => $students], 200);
     }
 

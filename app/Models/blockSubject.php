@@ -14,4 +14,8 @@ class blockSubject extends Model
     public function block(){
         return $this->hasOne(block::class, 'id','id_block');
     }
+
+    public function subject(){
+        return $this->hasOne(subject::class, 'id','id_subject');
+    }
 }

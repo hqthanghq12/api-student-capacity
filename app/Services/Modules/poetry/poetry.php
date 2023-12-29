@@ -65,13 +65,9 @@ class poetry implements MPoetryInterface
             if (auth()->user()->hasRole('teacher')) {
                 $records->where('poetry.assigned_user_id', auth()->user()->id);
             }
-//        foreach ($records->paginate(10) as $item) {
-//            dd($item->block_subject);
-//        }
-//        dd($records->paginate(10));
+
             $data = $records->orderBy('id', 'desc')->paginate(10);
             foreach ($data as $poetry) {
-//                dd($poetry->child_poetry);
                 $poetry->examination = 'Ca ' . $poetry->start_examination_id;
                 if ($poetry->child_poetry->count() > 0) {
                     $examinationChildArr = $poetry->child_poetry->pluck('start_examination_id')->toArray();

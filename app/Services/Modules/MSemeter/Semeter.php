@@ -28,7 +28,7 @@ class Semeter implements MSemeterInterface
         if (auth()->user()->hasRole('teacher')) {
             $dataQuery->with('blocks');
         }
-        $data = $dataQuery->paginate(5);
+        $data = $dataQuery->orderBy('id', 'desc')->paginate(5);
         return $data;
     }
 

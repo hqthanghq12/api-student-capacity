@@ -12,6 +12,7 @@ class ResultCapacity extends Model
     use HasFactory, SoftDeletes;
     use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
     use \Znck\Eloquent\Traits\BelongsToThrough;
+
     protected $table = "result_capacity";
     protected $primaryKey = "id";
     public $fillable = [
@@ -54,8 +55,14 @@ class ResultCapacity extends Model
             ]
         );
     }
+
     public function exam()
     {
         return $this->hasMany(Exam::class, 'id', 'exam_id');
+    }
+
+    public function playtopic()
+    {
+        return $this->belongsTo(playtopic::class, 'playtopic_id');
     }
 }

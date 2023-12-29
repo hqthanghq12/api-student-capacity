@@ -35,11 +35,13 @@ class PoetryStudent implements MPoetryStudentsInterface
                         "playtopic.has_received_exam",
                         "playtopic.rejoined_at",
                         "playtopic.exam_time",
+                        "playtopic.id as playtopic_id",
                         "{$user}.name as nameStudent",
                         "{$user}.email as emailStudent",
                         "{$user}.mssv",
                         "{$poetry}.id_block_subject",
                         'result_capacity.scores',
+                        'result_capacity.id as result_capacity_id',
                         'result_capacity.created_at',
                         'result_capacity.updated_at',
                     ]

@@ -463,13 +463,7 @@
                     $('#kt_modal_1').modal('hide');
                 },
                 error: function (response) {
-                    // console.log(response.responseText)
                     errors(response.responseText);
-                    // $('#ajax-form').find(".print-error-msg").find("ul").html('');
-                    // $('#ajax-form').find(".print-error-msg").css('display','block');
-                    // $.each( response.responseJSON.errors, function( key, value ) {
-                    //     $('#ajax-form').find(".print-error-msg").find("ul").append('<li>'+value+'</li>');
-                    // });
 
                 }
             });
@@ -498,23 +492,6 @@
                             $('#roles_id_update').val(response.data.roles?.[0]?.id ?? 0);
                             $('#status_update_update').val(response.data.status);
                             $('#id_update').val(response.data.id)
-                            console.log(response.data);
-                            // const selectSubject = document.getElementById("subject_id_update");
-                            // let html = "";
-                            // const btnEnvent = document.getElementById("semeter_id_update");
-                            // if(response.data.subject.length > 0){
-                            //     html = response.data.subject.map((value)=>{
-                            //         return `<option value="${value.id}" ${response.data.poetry.id_subject == value.id ? 'selected' : ''} >${value.name}</option>`
-                            //     }).join(' ')
-                            // }else {
-                            //     html = '<option value="">Không có data</option>';
-                            // }
-                            // selectSubject.innerHTML = html
-                            // eventSubject(btnEnvent,selectSubject)
-                            // $('#subject_id_update').val(response.data.id_subject);
-
-                            // $('#status_update').val(response.data.poetry.status);
-                            // $('#id_update').val(response.data.poetry.id)
 
                             // Gán các giá trị dữ liệu lấy được vào các trường tương ứng trong modal
                             $('#edit_modal').modal('show');
@@ -557,40 +534,15 @@
                         console.log(response)
                         $('#form-submit')[0].reset();
                         notify(response.message);
-                        // const idup =  `data-id='${response.data.id}'`;
-                        // // console.log(idup);
-                        // var buttons = document.querySelector('button.btn-edit['+idup+']');
-                        // const elembtn = buttons.parentNode.parentNode.parentNode.parentNode.childNodes ;
-                        // // console.log(elembtn)
-                        // elembtn[1].innerText = response.data.name_semeter;
-                        // elembtn[3].innerText = response.data.name_subject;
-                        // elembtn[5].innerText = response.data.nameClass;
-                        // elembtn[7].innerText = response.data.nameExamtion;
-                        // const output = response.data.status_update == 1 ? true : false;
-                        // // console.log(elembtn[5].childNodes[1].childNodes[1]);
-                        // elembtn[9].childNodes[1].childNodes[1].checked= output
-                        // elembtn[11].innerText =  response.data.start_time1;
-                        // elembtn[13].innerText =  response.data.end_time2;
-                        //
-                        // btnEdit = document.querySelectorAll('.btn-edit');
-                        // update(btnEdit)
-                        // btnDelete = document.querySelectorAll('.btn-delete');
-                        // dele(btnDelete)
+
                         notify(response.message);
                         wanrning('Đang tải dữ liệu mới ...');
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
-                        // $('#edit_modal').modal('hide');
                     },
                     error: function (response) {
-                        // console.log(response.responseText)
                         errors(response.responseText);
-                        // $('#ajax-form').find(".print-error-msg").find("ul").html('');
-                        // $('#ajax-form').find(".print-error-msg").css('display','block');
-                        // $.each( response.responseJSON.errors, function( key, value ) {
-                        //     $('#ajax-form').find(".print-error-msg").find("ul").append('<li>'+value+'</li>');
-                        // });
 
                     }
                 });

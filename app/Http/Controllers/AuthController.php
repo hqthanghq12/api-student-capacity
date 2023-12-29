@@ -172,7 +172,18 @@ class AuthController extends Controller
     public function postLoginToken(Request $request)
     {
         try {
-            $googleUser = Socialite::driver('google')->userFromToken($request->token);
+
+            $client = new \Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+
+            $googleUser = $client->verifyIdToken($request->token);
+
+            if (!$googleUser) {
+                return response()->json([
+                    'status' => false,
+                    'payload' => "Tài khoản không tồn tại hoặc xác thực thất bại",
+                ]);
+            }
+
         } catch (Exception $ex) {
             Log::info("=================================");
             Log::error("Lỗi đăng nhập: " . $ex->getMessage());
@@ -189,7 +200,7 @@ class AuthController extends Controller
         //     'payload' => "Tài khoản không tồn tại hoặc xác thực thất bại",
         // ]);
 
-        $user = User::with(['roles', 'campus'])->where('email', $googleUser->email)->first();
+        $user = User::with(['roles', 'campus'])->where('email', $googleUser['email'])->first();
 //        return response()->json(
 //            [
 //                'status' => false,
@@ -216,11 +227,11 @@ class AuthController extends Controller
         }
         $flagRoleAdmin = false;
         $MSSV = null;
-        if (strlen($googleUser->email) < 8) $flagRoleAdmin = true;
+        if (strlen($googleUser['email']) < 8) $flagRoleAdmin = true;
         $campus_code = Campus::find($request->campus_code)->code;
         $campus_id = $request->campus_code;
         if (!$flagRoleAdmin) foreach (config('util.MS_SV') as $ks) {
-            $username = \Str::of($googleUser->email)
+            $username = \Str::of($googleUser['email'])
                 ->before(config('util.END_EMAIL_FPT'))
                 ->toString();
             $regexMSSV = "/^(\D*)(\D{2}\d*)$/";
@@ -244,8 +255,8 @@ class AuthController extends Controller
             DB::transaction(function () use ($MSSV, $googleUser, &$user, $campus_id) {
                 $user = User::create([
                     'mssv' => $MSSV,
-                    'name' => $googleUser->name ?? 'no name',
-                    'email' => $googleUser->email,
+                    'name' => $googleUser['name'] ?? 'no name',
+                    'email' => $googleUser['email'],
                     'status' => 1,
                     'avatar' => null,
                     'campus_id' => $campus_id,
