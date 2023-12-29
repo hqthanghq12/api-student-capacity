@@ -6,6 +6,7 @@
         #result::-webkit-scrollbar {
             width: 15px; /* Chiều rộng của thanh scrollbar */
         }
+
         #result::-webkit-scrollbar-thumb {
             background-color: #999; /* Màu của thanh cuộn */
             border-radius: 15px; /* Đường viền cong của thanh cuộn */
@@ -185,22 +186,23 @@
                                          style="max-height: 600px;">
                                         @foreach($questionsId as $key => $questionId)
                                             @php
-                                                $stt = 'A';
-                                                $question = $questions->where('id', $questionId)->first();
-                                                if (empty($question->images)) {
-                                                    dd($question->images);
-                                                }
-                                                $images = $question->images ? $question->images->toArray() : [];
-                                                $index = $key + 1;
-                                                $correctAnswer = $question->answers->where('is_correct', 1)->first();
-                                                    $resultDetail = $resultCapacityDetail->where('question_id', $question->id)->first();
-                                                    if (empty($resultDetail->answer_id)) {
-                                                        $color = 'text-warning';
-                                                    } elseif ($resultDetail->answer_id == $correctAnswer->id) {
-                                                        $color = 'text-success';
-                                                    } else {
-                                                        $color = 'text-danger';
+                                                @dd($questions);
+                                                    $stt = 'A';
+                                                    $question = $questions->where('id', $questionId)->first();
+                                                    if (empty($question->images)) {
+                                                        dd($question->images);
                                                     }
+                                                    $images = $question->images ? $question->images->toArray() : [];
+                                                    $index = $key + 1;
+                                                    $correctAnswer = $question->answers->where('is_correct', 1)->first();
+                                                        $resultDetail = $resultCapacityDetail->where('question_id', $question->id)->first();
+                                                        if (empty($resultDetail->answer_id)) {
+                                                            $color = 'text-warning';
+                                                        } elseif ($resultDetail->answer_id == $correctAnswer->id) {
+                                                            $color = 'text-success';
+                                                        } else {
+                                                            $color = 'text-danger';
+                                                        }
                                             @endphp
                                             <div id="question-{{ $index }}" class="my-5">
                                                 <div class="question-content">
