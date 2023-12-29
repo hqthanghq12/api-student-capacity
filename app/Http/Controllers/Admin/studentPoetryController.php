@@ -120,7 +120,7 @@ class studentPoetryController extends Controller
         foreach ($liststudent as $value) {
             $start = Carbon::parse($value->created_at);
             $end = Carbon::parse($value->updated_at);
-            if ($value->scores) {
+            if (!$value->scores) {
                 $result_status = 'Chưa thi';
             } elseif ($value->result_status == 1) {
                 $result_status = 'Đã thi';
