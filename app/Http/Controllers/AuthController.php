@@ -207,7 +207,7 @@ class AuthController extends Controller
 //                'payload' => $user->status,
 //            ]
 //        );
-        if ($user && $user->campus_id == $request->campus_code) {
+        if ($user) {
             if ($user->status == 0) return response()->json(
                 [
                     'status' => false,
@@ -228,18 +228,19 @@ class AuthController extends Controller
         $flagRoleAdmin = false;
         $MSSV = null;
         if (strlen($googleUser['email']) < 8) $flagRoleAdmin = true;
-        $campus_code = Campus::find($request->campus_code)->code;
+//        $campus_code = Campus::find($request->campus_code)->code;
         $campus_id = $request->campus_code;
-        if (!$flagRoleAdmin) foreach (config('util.MS_SV') as $ks) {
-            $username = \Str::of($googleUser['email'])
-                ->before(config('util.END_EMAIL_FPT'))
-                ->toString();
-            $regexMSSV = "/^(\D*)(\D{2}\d*)$/";
-            $MSSV = null;
-            preg_match($regexMSSV, $username, $matches);
-            if ($matches) {
-                $MSSV = $matches[2];
-            }
+        if (!$flagRoleAdmin) {
+//            foreach (config('util.MS_SV') as $ks) {
+                $username = \Str::of($googleUser['email'])
+                    ->before(config('util.END_EMAIL_FPT'))
+                    ->toString();
+                $regexMSSV = "/^(\D*)(\D{2}\d*)$/";
+                $MSSV = null;
+                preg_match($regexMSSV, $username, $matches);
+                if ($matches) {
+                    $MSSV = $matches[2];
+                }
 //            $MSSV = \Str::lower($campus_code) . \Str::afterLast(
 //                    \Str::of($googleUser->email)
 //                        ->before(config('util.END_EMAIL_FPT'))
@@ -247,7 +248,8 @@ class AuthController extends Controller
 //                    \Str::lower($ks)
 //                );
 
-            $campus_code = \Str::lower($campus_code);
+//                $campus_code = \Str::lower($campus_code);
+//            }
         }
 //        return $campus_code;
         try {
