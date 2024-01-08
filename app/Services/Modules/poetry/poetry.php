@@ -10,6 +10,7 @@ use App\Models\semeter;
 use App\Models\studentPoetry;
 use App\Models\subject;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class poetry implements MPoetryInterface
@@ -90,8 +91,8 @@ class poetry implements MPoetryInterface
                     return $q->select('id', 'name', 'code_class');
                 }])
                 ->whereHas('block_subject', function ($subQuery) use ($idSubject) {
-                        $subQuery->where('id_subject', $idSubject);
-                    })
+                    $subQuery->where('id_subject', $idSubject);
+                })
                 ->get();
             return $records;
         } catch (\Exception $e) {
@@ -321,27 +322,30 @@ class poetry implements MPoetryInterface
                 ->select('subject.name', 'block_subject.id')
                 ->join('subject', 'subject.id', 'block_subject.id_subject')
                 ->whereIn('block_subject.id', $blockSubjectIds)->get()->pluck('name', 'id');
-            $poetryIdToPoetryTime = examination::query()
+            $examinations = examination::query()
                 ->select('id', 'started_at', 'finished_at')
-                ->get()->mapWithKeys(function ($item) {
-                    return [$item['id'] => ['started_at' => $item['started_at'], 'finished_at' => $item['finished_at']]];
-                })->toArray();
+                ->get();
             $data = [];
             $data['name_item'] = $records[0]->name_semeter;
             foreach ($records as $value) {
 //                if ($value->playtopic === null) {
 //                    continue;
 //                }
-                $start_time = $value->exam_date . " " . $poetryIdToPoetryTime[$value->start_examination_id]['started_at'];
-                $finish_time = $value->exam_date . " " . $poetryIdToPoetryTime[$value->finish_examination_id]['finished_at'];
-                $start_time_timestamp = strtotime($start_time);
-                $rejoin_timestamp = $value->rejoined_at ? strtotime($value->rejoined_at) : null;
+                $start = $examinations->where('id', $value->start_examination_id)->first();
+
+                $finish = $examinations->where('id', $value->finish_examination_id)->first();
+
+                $start_time = Carbon::make($value->exam_date . " " . $start->started_at);
+
+                $finish_time = Carbon::make($value->exam_date . " " . $finish->finished_at);
+
+                $rejoin = $value->rejoined_at ? Carbon::make($value->rejoined_at) : null;
+
                 $is_in_time = (
-                    ($rejoin_timestamp && time() >= $rejoin_timestamp && time() < strtotime("+15 minutes", $rejoin_timestamp))
-                    || (time() >= $start_time_timestamp
-//                        && time() < strtotime("+15 minutes", $start_time_timestamp)
-                        && time() < strtotime($finish_time))
+                    ($rejoin && now()->isBetween($rejoin, $rejoin->addMinutes(15)))
+                    || (now()->isBetween($start_time, $finish_time))
                 );
+
                 $have_done = (!empty($value->created_at) && $value->status == 1);
                 $data['data'][] = [
                     "id" => $value->id,
@@ -354,8 +358,8 @@ class poetry implements MPoetryInterface
                     "exam_type" => 0,
                     'is_in_time' => $is_in_time,
                     'have_done' => $have_done,
-                    'start_time' => $poetryIdToPoetryTime[$value->start_examination_id]['started_at'],
-                    'finish_time' => $poetryIdToPoetryTime[$value->finish_examination_id]['finished_at'],
+                    'start_time' => $start->started_at,
+                    'finish_time' => $finish->finished_at,
                 ];
             }
             return $data;

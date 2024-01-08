@@ -876,10 +876,11 @@
                         return $(this).attr("aria-valuenow", percentage) + "%";
                     })
                 },
-                success: function () {
+                success: function (data) {
                     $(".progress").hide();
                     $(".upload-file").html("Tải lên")
-                    toastr.success("Tải lên thành công !");
+                    // toastr.success("Tải lên thành công !");
+                    toastr.success(data.payload);
                     $('.up-file').val('');
                     setTimeout(() => {
                         window.location.reload();

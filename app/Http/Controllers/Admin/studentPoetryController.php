@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\examination;
 use App\Models\ExamQuestion;
 use App\Models\playtopic;
 use App\Models\poetry;
@@ -42,9 +43,10 @@ class studentPoetryController extends Controller
         $poetry = $this->poetry->query()->with(['classsubject', 'block_subject'])->where('id', $id)->first();
         $start = DB::table('examination')->where('id', $poetry->start_examination_id)->first()->started_at;
         $end = DB::table('examination')->where('id', $poetry->finish_examination_id)->first()->finished_at;
-        $start_time = $poetry->exam_date . ' ' . $start;
-        $end_time = $poetry->exam_date . ' ' . $end;
-        $is_in_time = time() >= strtotime($start_time) && time() < strtotime($end_time);
+        $start_time = Carbon::make($poetry->exam_date . ' ' . $start);
+        $end_time = Carbon::make($poetry->exam_date . ' ' . $end);
+        $has_started = $start_time->isPast();
+        $is_in_time = now()->isBetween($start_time, $end_time);
         if (auth()->user()->hasRole('teacher')) {
             $isAllow = time() < strtotime($start_time) && $liststudent->count() == 0;
         } else {
@@ -64,6 +66,7 @@ class studentPoetryController extends Controller
             'is_allow' => $isAllow,
             'is_in_time' => $is_in_time,
             'poetry' => $poetry,
+            'has_started' => $has_started,
         ]);
     }
 
@@ -277,6 +280,25 @@ class studentPoetryController extends Controller
 
         }
         $id_poetry = $request->id_poetry;
+
+        $poetry = $this->poetry->query()->where('id', $id_poetry)->first();
+
+        $examination = examination::query()
+            ->select(['id', 'started_at', 'finished_at'])
+            ->whereIn('id', [$poetry->start_examination_id, $poetry->finish_examination_id])
+            ->get();
+
+        $start = $examination->where('id', $poetry->start_examination_id)->first()->started_at;
+        $end = $examination->where('id', $poetry->finish_examination_id)->first()->finished_at;
+
+        $start_time = Carbon::make($poetry->exam_date . ' ' . $start);
+        $end_time = Carbon::make($poetry->exam_date . ' ' . $end);
+
+        if ($start_time->isPast()) {
+            $msg = $end_time->isPast() ? 'Đã kết thúc thi' : 'Đã bắt đầu thi';
+            return response("{$msg}, không thể thêm sinh viên", 404);
+        }
+
         $studentsQuery = User::query()
             ->with('poetry_student')
             ->select(['id', 'email'])

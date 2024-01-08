@@ -8,14 +8,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Question\ImportQuestion;
 use App\Imports\QuestionsImport;
 use App\Models\Answer;
+use App\Models\ClassModel;
 use App\Models\Exam;
+use App\Models\examination;
+use App\Models\poetry;
 use App\Models\Question;
 use App\Models\QuestionImage;
+use App\Models\semeter_subject;
 use App\Models\Skill;
 use App\Models\subject;
-use App\Models\ClassModel;
-use App\Models\poetry;
-use App\Models\semeter_subject;
 use App\Models\User;
 use App\Services\Modules\MAnswer\MAnswerInterface;
 use App\Services\Modules\MExam\MExamInterface;
@@ -25,15 +26,12 @@ use App\Services\Traits\TStatus;
 use App\Services\Traits\TUploadImage;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class QuestionController extends Controller
@@ -198,7 +196,7 @@ class QuestionController extends Controller
             if (
                 count($data) < 1
                 && ($row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['TYPE']] != null
-                || trim($row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['TYPE']]) != "")
+                    || trim($row[config('util.EXCEL_QESTIONS')['KEY_COLUMNS']['TYPE']]) != "")
             ) {
                 $count = $count + 1;
                 if ($count > 1) {
@@ -758,7 +756,12 @@ class QuestionController extends Controller
             } else {
                 $id_campus = $request->campus_id;
             }
-            $this->readExClass($request->ex_file, $semeter_id, $idBlock, $id_campus);
+//            return $this->responseApi(true, "HIHI", [], 201);
+            $result = $this->readExClass($request->ex_file, $semeter_id, $idBlock, $id_campus);
+
+            if ($result['status']) {
+                return $this->responseApi(true, $result['msg'], [], 201);
+            }
 //            $import = new QuestionsImport($exam_id);
 //            Excel::import($import, $request->ex_file);
 //            dd();
@@ -766,7 +769,7 @@ class QuestionController extends Controller
 //                "status" => true,
 //                "payload" => "Thành công "
 //            ]);
-            return redirect()->route('admin.poetry.index', ['id' => $semeter_id, 'id_block' => $idBlock]);
+//            return redirect()->route('admin.poetry.index', ['id' => $semeter_id, 'id_block' => $idBlock]);
 
         } catch (\Throwable $th) {
             return response()->json([
@@ -989,40 +992,80 @@ class QuestionController extends Controller
         $subjects = [];
         $classes = [];
         $checkTrungArr = [];
+        $invalidLines = [];
+
+        $invalidExaminationLines = [];
+
+        $examinations = examination::query()->select('id', 'started_at', 'finished_at')->get();
+
+        $line = 1;
+
         foreach ($infoSubject as $value) {
+            $line++;
+
             if (empty($value[1])) {
                 break;
             }
+
+            [, $ngay_thi, $ca_thi, $phong_thi, $ten_mon, $ma_mon, , , , $lop, $giang_vien] = $value;
+
+            $examination = $examinations->where('id', $ca_thi)->first();
+
+            if (!$examination) {
+                $invalidExaminationLines[] = $line;
+                continue;
+            }
+
+            $giang_vien = Str::lower($giang_vien);
+
             $date = date('Y-m-d', strtotime($value[1]));
+
+            if (Carbon::make($date . ' ' . $examination->started_at)->isPast()) {
+                $invalidLines[] = $line;
+                continue;
+            }
+
             $is_child_poetry = false;
+
             $key = implode('|', [
-                $value[1],
-                $value[3],
-                $value[5],
-                $value[9],
-                Str::lower($value[10]),
+                $ngay_thi,
+                $phong_thi,
+                $ma_mon,
+                $lop,
+                $giang_vien,
             ]);
             $priKey = $key;
             if (!empty($arrItem[$key])) {
-                $priKey .= '/' . $value[2];
+                $priKey .= '/' . $ca_thi;
                 $is_child_poetry = true;
             }
             $arrItem[$priKey] = [
                 'ngay_thi' => $date,
-                'ca_thi' => $value[2],
-                'room' => $value[3],
-                'subject_name' => $value[4],
-                'subject_code' => $value[5],
-                'start_examination_id' => $value[2],
-                'class' => $value[9],
-                'assigned_user_email' => Str::lower($value[10]) . config('util.END_EMAIL_FPT'),
+                'ca_thi' => $ca_thi,
+                'room' => $phong_thi,
+                'subject_name' => $ten_mon,
+                'subject_code' => $ma_mon,
+                'start_examination_id' => $ca_thi,
+                'class' => $lop,
+                'assigned_user_email' => $giang_vien . config('util.END_EMAIL_FPT'),
             ];
             $arrItem[$priKey]['parent_poetry_examination'] = $is_child_poetry ? $arrItem[$key]['ca_thi'] : 0;
             $ngayThiArr[] = $date;
-            $emails[] = Str::lower($value[10]) . config('util.END_EMAIL_FPT');
-            $subjects[$value[5]] = $value[4];
-            $classes[] = $value[9];
+            $emails[] = $giang_vien . config('util.END_EMAIL_FPT');
+            $subjects[$ma_mon] = $ten_mon;
+            $classes[] = $lop;
         }
+
+        if (!empty($invalidExaminationLines)) {
+            $msg = 'Các dòng sau có ca thi không hợp lệ: ' . implode(', ', $invalidExaminationLines) . '. Trong hệ thống chỉ có tối đa ' . $examinations->count() . ' ca thi. Vui lòng điều chỉnh lại.';
+            throw new Exception($msg);
+        }
+
+        if (!empty($invalidLines)) {
+            $msg = 'Các dòng sau đã quá thời gian thi: ' . implode(', ', $invalidLines) . '. Vui lòng điều chỉnh lại.';
+            throw new Exception($msg);
+        }
+
 
         $emails = array_unique($emails);
         $classes = array_unique($classes);
@@ -1203,6 +1246,7 @@ class QuestionController extends Controller
 //            ->map(function ($poetry_item) {
 //                return implode('|', (array)$poetry_item);
 //            })->toArray();
+//        dd($poetryByDay);
         $poetryDataArr = [];
         foreach ($arrItem as $key => $item) {
             $id_block_subject = $subjectCodeToBlockSubjectId[$item['subject_code']];
@@ -1252,7 +1296,6 @@ class QuestionController extends Controller
             ];
         }
 
-//        dd($poetryDataArr);
         $poetryKeyValidArr = array_diff(array_keys($poetryDataArr), $poetryByDay);
         $poetryKeyInvalidArr = array_diff(array_keys($poetryDataArr), $poetryKeyValidArr);
         if (count(($poetryKeyValidArr)) !== 0) {
@@ -1286,12 +1329,16 @@ class QuestionController extends Controller
                 }
                 DB::table('poetry')->insert($poetryInsertArr);
                 $poetryInsertCount = count($poetryInsertArr);
-                return response("Tạo thành công {$poetryInsertCount} ca thi, " . count($poetryDataArr) - $poetryInsertCount . " bị trùng", 201);
+                return [
+                    'success' => true,
+                    'status' => 201,
+                    'msg' => "Tạo thành công {$poetryInsertCount} ca thi, " . count($poetryDataArr) - $poetryInsertCount . " ca thi bị trùng"
+                ];
             }
-            return response("Bạn đã nhập file ca thi này trước đây rồi", 404);
+            throw new Exception("Bạn đã nhập file ca thi này trước đây rồi");
         }
 
-        return response("Bạn đã nhập file ca thi này trước đây rồi", 404);
+        throw new Exception("Bạn đã nhập file ca thi này trước đây rồi");
 
     }
 

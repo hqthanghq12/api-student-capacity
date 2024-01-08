@@ -13,6 +13,7 @@ use App\Services\Modules\MStudentManager\PoetryStudent;
 use App\Services\Modules\MSubjects\Subject;
 use App\Services\Traits\TResponse;
 use App\Services\Traits\TUploadImage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -183,6 +184,18 @@ class PoetryController extends Controller
         if ($request->finish_examination_id < $request->start_examination_id + 1) {
             return response("Vui lòng chọn ca kết thúc sao cho hợp lý!", 404);
         }
+
+        $examination = $this->examination->getList();
+
+        $startExamination = $examination->where('id', $request->start_examination_id)->first();
+        $finishExamination = $examination->where('id', $request->finish_examination_id)->first();
+        $start = Carbon::make($request->exam_date . ' ' . $startExamination->start_time);
+        $finish = Carbon::make($request->exam_date . ' ' . $finishExamination->finish_time);
+
+        if ($start->isPast() || $finish->isPast()) {
+            return response("Không thể tạo ca thi đã hoặc đang diễn ra", 404);
+        }
+
         [$assigned_user_id, $assigned_user_campus_id] = explode('|', $request->assigned_user);
         if ($request->campus_id != $assigned_user_campus_id) {
             return response("Vui lòng chọn giảng viên phù hợp với cơ sở", 404);

@@ -68,29 +68,31 @@
                         </h1>
                     </div>
                     <div class="col-lg-9 btn-group justify-content-end">
-                        <div class="">
-                            @if($student->count() > 0 && $is_allow)
-                                <div class=" d-flex flex-row-reverse bd-highlight">
-                                    <label data-bs-toggle="modal" data-bs-target="#kt_modal_2" type="button"
-                                           class="btn btn-primary me-3">
+                        @if(!$has_started)
+                            <div class="">
+                                @if($student->count() > 0 && $is_allow)
+                                    <div class=" d-flex flex-row-reverse bd-highlight">
+                                        <label data-bs-toggle="modal" data-bs-target="#kt_modal_2" type="button"
+                                               class="btn btn-primary me-3">
 
-                                        <!--end::Svg Icon-->Phát đề thi
-                                    </label>
+                                            <!--end::Svg Icon-->Phát đề thi
+                                        </label>
+                                    </div>
+                                @endif
+                            </div>
+                            @if ($is_allow)
+                                <div class="">
+                                    <div class=" d-flex flex-row-reverse bd-highlight">
+                                        <label data-bs-toggle="modal" data-bs-target="#kt_modal_1" type="button"
+                                               class="btn btn-light-primary me-3" id="kt_file_manager_new_folder">
+
+                                            <!--end::Svg Icon-->Thêm sinh viên
+                                        </label>
+                                    </div>
                                 </div>
                             @endif
-                        </div>
-                        @if ($is_allow)
-                            <div class="">
-                                <div class=" d-flex flex-row-reverse bd-highlight">
-                                    <label data-bs-toggle="modal" data-bs-target="#kt_modal_1" type="button"
-                                           class="btn btn-light-primary me-3" id="kt_file_manager_new_folder">
 
-                                        <!--end::Svg Icon-->Thêm sinh viên
-                                    </label>
-                                </div>
-                            </div>
                         @endif
-
                         <div class="">
                             <div class=" d-flex flex-row-reverse bd-highlight">
                                 <a class="btn btn-light-success me-3" id=""
