@@ -341,8 +341,12 @@ class poetry implements MPoetryInterface
 
                 $rejoin = $value->rejoined_at ? Carbon::make($value->rejoined_at) : null;
 
+                $rejoinFifteen = clone $rejoin;
+
+                if ($rejoinFifteen) $rejoinFifteen->addMinutes(15);
+
                 $is_in_time = (
-                    ($rejoin && now()->isBetween($rejoin, $rejoin->addMinutes(15)))
+                    ($rejoin && now()->isBetween($rejoin, $rejoinFifteen))
                     || (now()->isBetween($start_time, $finish_time))
                 );
 
