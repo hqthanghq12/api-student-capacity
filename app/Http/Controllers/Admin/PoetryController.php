@@ -189,8 +189,8 @@ class PoetryController extends Controller
 
         $startExamination = $examination->where('id', $request->start_examination_id)->first();
         $finishExamination = $examination->where('id', $request->finish_examination_id)->first();
-        $start = Carbon::make($request->exam_date . ' ' . $startExamination->start_time);
-        $finish = Carbon::make($request->exam_date . ' ' . $finishExamination->finish_time);
+        $start = Carbon::make($request->exam_date . ' ' . $startExamination->started_at);
+        $finish = Carbon::make($request->exam_date . ' ' . $finishExamination->finished_at);
 
         if ($start->isPast() || $finish->isPast()) {
             return response("Không thể tạo ca thi đã hoặc đang diễn ra", 404);

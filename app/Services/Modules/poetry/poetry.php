@@ -341,7 +341,7 @@ class poetry implements MPoetryInterface
 
                 $rejoin = $value->rejoined_at ? Carbon::make($value->rejoined_at) : null;
 
-                $rejoinFifteen = clone $rejoin;
+                $rejoinFifteen = $rejoin ? clone $rejoin : null;
 
                 if ($rejoinFifteen) $rejoinFifteen->addMinutes(15);
 
