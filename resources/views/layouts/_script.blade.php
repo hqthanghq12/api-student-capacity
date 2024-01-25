@@ -20,7 +20,7 @@
     <script src="{{ mix('js/echo.js') }}"></script>
     <script>
 
-        console.log(window.Echo);
+        // console.log(window.Echo);
 
         let statusRequests;
 
