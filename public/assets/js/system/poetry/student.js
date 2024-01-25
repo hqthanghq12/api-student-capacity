@@ -74,8 +74,11 @@ for (const ckElement of cks) {
                 dele(btnDelete)
             },
             error: function (response) {
-                // console.log(response.responseText)
-                errors(response.responseText);
+                // console.log(response)
+                errors(response.responseJSON.message);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3500);
                 // $('#ajax-form').find(".print-error-msg").find("ul").html('');
                 // $('#ajax-form').find(".print-error-msg").css('display','block');
                 // $.each( response.responseJSON.errors, function( key, value ) {

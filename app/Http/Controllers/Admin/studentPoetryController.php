@@ -48,12 +48,23 @@ class studentPoetryController extends Controller
         $has_started = $start_time->isPast();
         $is_in_time = now()->isBetween($start_time, $end_time);
         $isAllow = !(auth()->user()->hasRole('teacher'));
+        $startTimeTen = clone $start_time;
 //        if (auth()->user()->hasRole('teacher')) {
 //            $isAllow = $start_time->isFuture() && $liststudent->count() == 0;
 //        } else {
 //            $isAllow = true;
 //        }
-        $canActive = !(auth()->user()->hasRole('super admin') && now()->isBefore($start_time->addMinutes(10))) || (!auth()->user()->hasRole('super admin') && $is_in_time);
+
+//        dd($start_time->isFuture(), now()->format('Y-m-d H:i:s'));
+
+        if (!auth()->user()->hasRole('super admin')) {
+            $canActive = !$start_time->isFuture();
+        } else {
+            $canActive = !(now()->isBefore($startTimeTen->addMinutes(10)));
+        }
+
+//        $canActive = !(auth()->user()->hasRole('super admin') && now()->isBefore($start_time->addMinutes(10))) || (!auth()->user()->hasRole('super admin') && $is_in_time);
+//        dd($canActive);
         $id_block_subject = $poetry->id_block_subject;
         $id_subject = DB::table('block_subject')->where('id', $id_block_subject)->first()->id_subject;
         $examsList = $this->exam->getListExam($id_subject);
@@ -69,7 +80,6 @@ class studentPoetryController extends Controller
             'is_in_time' => $is_in_time,
             'poetry' => $poetry,
             'has_started' => $has_started,
-            'start_time' => $start_time,
             'can_active' => $canActive,
         ]);
     }
@@ -345,6 +355,22 @@ class studentPoetryController extends Controller
         if (!$studentPoetry) {
             return response()->json(['message' => 'Không tìm thấy'], 404);
         }
+
+        $poetry = $this->poetry::query()->find($studentPoetry->id_poetry);
+
+        $examination = examination::query()
+            ->select(['id', 'started_at', 'finished_at'])
+            ->whereIn('id', [$poetry->start_examination_id, $poetry->finish_examination_id])
+            ->get();
+
+        $start = $examination->where('id', $poetry->start_examination_id)->first()->started_at;
+
+        $start_time = Carbon::make($poetry->exam_date . ' ' . $start);
+
+        if ($start_time->isPast()) {
+            return response()->json(['message' => 'Đã bắt đầu thi, không thể thay đổi trạng thái, hãy gửi yêu cầu tới admin cơ sở hoặc khảo thí để có thể mở trạng thái thi cho sinh viên'], 404);
+        }
+
         $studentPoetry->status = $request->status;
         $studentPoetry->updated_at = now();
         $studentPoetry->save();
