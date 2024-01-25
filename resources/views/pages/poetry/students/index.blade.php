@@ -68,9 +68,9 @@
                         </h1>
                     </div>
                     <div class="col-lg-9 btn-group justify-content-end">
-                        @if(!$has_started)
+                        @if(!$has_started && $is_allow)
                             <div class="">
-                                @if($student->count() > 0 && $is_allow)
+                                @if($student->count() > 0)
                                     <div class=" d-flex flex-row-reverse bd-highlight">
                                         <label data-bs-toggle="modal" data-bs-target="#kt_modal_2" type="button"
                                                class="btn btn-primary me-3">
@@ -80,18 +80,87 @@
                                     </div>
                                 @endif
                             </div>
-                            @if ($is_allow)
-                                <div class="">
-                                    <div class=" d-flex flex-row-reverse bd-highlight">
-                                        <label data-bs-toggle="modal" data-bs-target="#kt_modal_1" type="button"
-                                               class="btn btn-light-primary me-3" id="kt_file_manager_new_folder">
+                            <div class="">
+                                <div class=" d-flex flex-row-reverse bd-highlight">
+                                    <label data-bs-toggle="modal" data-bs-target="#kt_modal_1" type="button"
+                                           class="btn btn-light-primary me-3" id="kt_file_manager_new_folder">
 
-                                            <!--end::Svg Icon-->Thêm sinh viên
-                                        </label>
+                                        <!--end::Svg Icon-->Thêm sinh viên
+                                    </label>
+                                </div>
+                            </div>
+                        @elseif($has_started && !$is_allow && $student->where('status', 0)->count() > 0)
+                            <div class="">
+                                <div class=" d-flex flex-row-reverse bd-highlight">
+                                    <label data-bs-toggle="modal" data-bs-target="#kt_modal_status_request"
+                                           type="button"
+                                           class="btn btn-light-primary me-3" id="kt_file_manager_new_folder">
+
+                                        <!--end::Svg Icon-->Gửi yêu cầu mở trạng thái
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="modal fade" tabindex="-1" id="kt_modal_status_request" style="display: none;"
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-xl">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">
+                                                Chọn sinh viên cần yêu cầu mở
+                                            </h5>
+
+                                            <!--begin::Close-->
+                                            <button class="btn btn-sm btn-primary ms-2" id="btn_send_request">
+                                                Gửi yêu cầu
+                                            </button>
+                                            <!--end::Close-->
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="p-3">
+                                                <input type="text" class="form-control" placeholder="Ghi chú chung"
+                                                       id="note">
+                                            </div>
+                                            <table id="table-data"
+                                                   class="table table-row-bordered table-row-gray-300 gy-7 table-hover">
+                                                <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Tên</th>
+                                                    <th>Email</th>
+                                                    <th>Mã sinh viên</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach($student as $value)
+                                                    @if($value->status == 0)
+                                                        <tr>
+                                                            <td>
+                                                                <input type="checkbox" checked
+                                                                       class="form-check-input checkbox-student-request"
+                                                                       data-id="{{ $value->id }}" name="" id="">
+                                                            </td>
+                                                            <td>
+                                                                {{ $value->nameStudent }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $value->emailStudent }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $value->mssv }}
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control student-note"
+                                                                       placeholder="Ghi chú riêng">
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            @endif
-
+                            </div>
                         @endif
                         <div class="">
                             <div class=" d-flex flex-row-reverse bd-highlight">
@@ -182,7 +251,7 @@
                                                    data-id="{{ $value->id }}" type="checkbox"
                                                    {{ $value->status == 1 ? 'checked' : '' }} role="switch"
                                                    id="flexSwitchCheckDefault"
-                                                @disabled($is_in_time)
+                                                @disabled($can_active)
                                             >
                                         </div>
                                     </td>
@@ -197,8 +266,9 @@
                                     <td>
                                         {{ trim($value->exam_time) === "" ? "Chưa có thời gian" : $value->exam_time . " phút" }}
                                     </td>
-                                    @if ($value->has_received_exam == 1  && (auth()->user()->hasAnyRole(config('util.ROLE_ADMINS')) || (auth()->user()->hasRole('teacher') && $value->rejoined_at === null))
-                                        )
+                                    {{--                                    @if ($value->has_received_exam == 1  && (auth()->user()->hasAnyRole(config('util.ROLE_ADMINS')) || (auth()->user()->hasRole('teacher') && $value->rejoined_at === null)))--}}
+
+                                    @if($value->has_received_exam == 1 && (auth()->user()->hasAnyRole(config('util.ROLE_ADMINS'))))
                                         <td class="text-end">
                                             <button href="#"
                                                     class="btn-rejoin menu-link border border-0 bg-transparent px-3 btn btn-sm btn-outline-primary"
@@ -670,6 +740,64 @@
                 time_text_element.css('display', 'none');
             }
         });
+
+        let btnSendRequest = $('#btn_send_request');
+
+        if (btnSendRequest) {
+            btnSendRequest.click(function (e) {
+                e.preventDefault();
+                let note = $('#note').val();
+                let url = "{{ route('admin.status-requests.create') }}";
+                let statusRequestDetail = $('.checkbox-student-request:checked').map(function () {
+                    return {
+                        student_poetry_id: $(this).attr('data-id'),
+                        note: $(this).parent().parent().find('.student-note').val()
+                    };
+                }).get();
+
+                if (statusRequestDetail.length === 0) {
+                    errors("Vui lòng chọn sinh viên");
+                    return;
+                }
+
+                if (note === "") {
+                    errors("Vui lòng nhập ghi chú chung");
+                    return;
+                }
+
+                let dataAll = {
+                    '_token': _token,
+                    'statusRequestDetail': statusRequestDetail,
+                    'semester_id': {{ $poetry->id_semeter }},
+                    'campus_id': {{ $poetry->id_campus }},
+                    'poetry_id': {{ $poetry->id }},
+                    'note': note,
+                    'created_by': {{ auth()->user()->id }},
+                }
+                // console.log(dataAll);
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: dataAll,
+                    success: (response) => {
+                        console.log(response)
+                        // $('#form-submit')[0].reset();
+                        notify(response.payload);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                        $('#kt_modal_status_request').modal('hide');
+                    },
+                    error: function (response) {
+                        let res = JSON.parse(response.responseText);
+                        errors(res.message);
+
+                    }
+                });
+
+            });
+        }
+
         $('#upload-basis').click(function (e) {
             e.preventDefault();
             let url = $('#form-submit').attr("action");

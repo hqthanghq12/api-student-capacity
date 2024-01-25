@@ -47,11 +47,13 @@ class studentPoetryController extends Controller
         $end_time = Carbon::make($poetry->exam_date . ' ' . $end);
         $has_started = $start_time->isPast();
         $is_in_time = now()->isBetween($start_time, $end_time);
-        if (auth()->user()->hasRole('teacher')) {
-            $isAllow = time() < strtotime($start_time) && $liststudent->count() == 0;
-        } else {
-            $isAllow = true;
-        }
+        $isAllow = !(auth()->user()->hasRole('teacher'));
+//        if (auth()->user()->hasRole('teacher')) {
+//            $isAllow = $start_time->isFuture() && $liststudent->count() == 0;
+//        } else {
+//            $isAllow = true;
+//        }
+        $canActive = !(auth()->user()->hasRole('super admin') && now()->isBefore($start_time->addMinutes(10))) || (!auth()->user()->hasRole('super admin') && $is_in_time);
         $id_block_subject = $poetry->id_block_subject;
         $id_subject = DB::table('block_subject')->where('id', $id_block_subject)->first()->id_subject;
         $examsList = $this->exam->getListExam($id_subject);
@@ -67,6 +69,8 @@ class studentPoetryController extends Controller
             'is_in_time' => $is_in_time,
             'poetry' => $poetry,
             'has_started' => $has_started,
+            'start_time' => $start_time,
+            'can_active' => $canActive,
         ]);
     }
 

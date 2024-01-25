@@ -21,15 +21,22 @@ class Semeter implements MSemeterInterface
 
     public function GetSemeter()
     {
+        return $this->getList()->paginate(5);
+    }
+
+    public function getList()
+    {
         $dataQuery = $this->modelSemeter::query();
+
         if (!(auth()->user()->hasRole('super admin'))) {
             $dataQuery->where('id_campus', auth()->user()->campus_id);
         }
+
         if (auth()->user()->hasRole('teacher')) {
             $dataQuery->with('blocks');
         }
-        $data = $dataQuery->orderBy('id', 'desc')->paginate(5);
-        return $data;
+
+        return $dataQuery->orderBy('id', 'desc');
     }
 
     public function getAllSemeter()
@@ -86,6 +93,15 @@ class Semeter implements MSemeterInterface
             return $this->modelSemeter->where('id_campus', $id_campus)->get();
         } catch (\Exception $e) {
             return $e;
+        }
+    }
+
+    public function find($id)
+    {
+        try {
+            return $this->modelSemeter->find($id);
+        } catch (\Exception $e) {
+            return false;
         }
     }
 

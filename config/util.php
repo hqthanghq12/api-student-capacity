@@ -82,6 +82,18 @@ return [
         ],
         "IS_CORRECT" => "Đáp án đúng"
     ],
+    "STATUS_REQUEST" => [
+        "HISTORY" => [
+            "TYPE_KEYS" => [
+                "CREATE" => "create",
+                "APPROVE" => "approve"
+            ],
+            "TYPES" => [
+                "create" => "Tạo yêu cầu",
+                "approve" => "Xác nhận"
+            ],
+        ]
+    ],
     "post-contest" => "post-contest",
     "post-capacity" => "post-capacity",
     "post-round" => "post-round",

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CkeditorController;
 use App\Http\Controllers\Admin\RoundController;
+use App\Http\Controllers\Admin\StatusRequestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\UserController;
@@ -24,6 +25,11 @@ use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\chartController;
 
 Route::redirect('/', '/admin/chart');
+
+//Route::get('test', function () {
+//    return view('pages.test');
+//});
+
 Route::prefix('dashboard')->group(function () {
     Route::get('api-cuoc-thi', [DashboardController::class, 'chartCompetity'])->name('dashboard.chart-competity');
     Route::get('rank-contest', [DashboardController::class, 'getRankContest']);
@@ -164,6 +170,14 @@ Route::prefix('poetry')->group(function () {
         Route::post('addTopicsReload', [playtopicController::class, 'AddTopicReload'])->name('admin.poetry.playtopic.create.reload');
         Route::get('result/{id}', [ResultController::class, 'resultCapacity'])->name('admin.poetry.result.index');
     });
+});
+
+Route::prefix('status-requests')->group(function () {
+    Route::get('/list', [StatusRequestController::class, 'listApi'])->name('admin.status-requests.list-api');
+    Route::get('', [StatusRequestController::class, 'index'])->name('admin.status-requests.list');
+    Route::get('{id}', [StatusRequestController::class, 'detail'])->name('admin.status-requests.detail');
+    Route::post('', [StatusRequestController::class, 'create'])->name('admin.status-requests.create');
+    Route::post('{id}/approve', [StatusRequestController::class, 'approve'])->name('admin.status-requests.approve');
 });
 
 // Middleware phân quyền ban giám khảo chấm thi , khi nào gộp code sẽ chỉnh sửa lại route để phân quyền route
