@@ -57,7 +57,7 @@ class studentPoetryController extends Controller
 
 //        dd($start_time->isFuture(), now()->format('Y-m-d H:i:s'));
 
-        if (!auth()->user()->hasRole('super admin')) {
+        if (auth()->user()->hasRole('teacher')) {
             $canActive = !$start_time->isFuture();
         } else {
             $canActive = !(now()->isBefore($startTimeTen->addMinutes(10)));
@@ -366,6 +366,10 @@ class studentPoetryController extends Controller
         $start = $examination->where('id', $poetry->start_examination_id)->first()->started_at;
 
         $start_time = Carbon::make($poetry->exam_date . ' ' . $start);
+
+        if (!auth()->user()->hasRole('teacher')) {
+            $start_time->addMinutes(10);
+        }
 
         if ($start_time->isPast()) {
             return response()->json(['message' => 'Đã bắt đầu thi, không thể thay đổi trạng thái, hãy gửi yêu cầu tới admin cơ sở hoặc khảo thí để có thể mở trạng thái thi cho sinh viên'], 404);
