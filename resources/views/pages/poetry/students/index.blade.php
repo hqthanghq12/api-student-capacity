@@ -277,7 +277,7 @@
                                             </button>
                                         </td>
                                     @endif
-                                    @if(isset($value->scores))
+                                    @if(!auth()->user()->hasRole('teacher') && isset($value->scores))
                                         <td class="text-end">
                                             <a href="{{ route('admin.poetry.result.index', $value->playtopic_id) }}"
                                                target="_blank">Lịch sử làm bài</a>
