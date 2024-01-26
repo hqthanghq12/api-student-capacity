@@ -76,6 +76,7 @@ for (const ckElement of cks) {
             error: function (response) {
                 // console.log(response)
                 errors(response.responseJSON.message);
+                console.log(response);
                 setTimeout(() => {
                     window.location.reload();
                 }, 3500);
