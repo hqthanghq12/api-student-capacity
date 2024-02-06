@@ -31,6 +31,11 @@
             </div>
             <div class="row">
                 <div class="col-12 text-end">
+                    <label data-bs-toggle="modal" data-bs-target="#kt_modal_upload_user_by_excel" type="button"
+                           class="btn btn-light-success me-3" id="kt_file_manager_new_folder">
+
+                        <!--end::Svg Icon-->Thêm tài khoản bằng file excel
+                    </label>
                     <label data-bs-toggle="modal" data-bs-target="#kt_modal_1" type="button"
                            class="btn btn-light-primary me-3" id="kt_file_manager_new_folder">
 
@@ -249,16 +254,9 @@
                         <input type="email" class="form-control form-control" id="email_add"
                                placeholder="name@example.com"/>
                     </div>
-{{--                    <div class="form-group m-10">--}}
-{{--                        <select class="form-select" name="subject" id="branches_id">--}}
-{{--                            <option selected value="">--Chi Nhánh--</option>--}}
-{{--                            @foreach($branches as $value)--}}
-{{--                                <option value="{{ $value->id }}">{{ $value->name }}</option>--}}
-{{--                            @endforeach--}}
-{{--                        </select>--}}
-{{--                    </div>--}}
                     <div class="form-group m-10">
-                        <select class="form-select" name="subject" id="campus_id">
+                        <select class="form-select form-select mb-2 select2-hidden-accessible" data-control="select2"
+                                name="subject" id="campus_id">
                             <option selected value="">--Cơ sở--</option>
                             @foreach($campus as $value)
                                 <option value="{{ $value->id }}">{{ $value->name }}</option>
@@ -266,17 +264,17 @@
                         </select>
                     </div>
                     <div class="form-group m-10">
-                        <select class="form-select" id="roles_id">
+                        <select class="form-select" data-control="select2" id="roles_id">
                             <option selected value="0">--Chức vụ--</option>
                             @foreach($roles as $value)
-                                @if(auth()->user()->roles[0]->id != $value->id)
+                                @if(auth()->user()->roles[0]->id != $value->id && $value->name != 'student')
                                     <option value="{{ $value->id }}">{{ $value->name }}</option>
                                 @endif
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group m-10">
-                        <select class="form-select" name="status" id="status_add">
+                        <select class="form-select" data-control="select2" name="status" id="status_add">
                             <option selected value="">Trạng thái</option>
                             <option value="1">Kích hoạt</option>
                             <option value="0">Chưa kích hoạt</option>
@@ -312,14 +310,6 @@
                         <input type="email" class="form-control form-control" disabled id="email_update"
                                placeholder="name@example.com"/>
                     </div>
-{{--                    <div class="form-group m-10">--}}
-{{--                        <select class="form-select" name="subject" id="branches_id_update">--}}
-{{--                            <option value="0">--Chi Nhánh--</option>--}}
-{{--                            @foreach($branches as $value)--}}
-{{--                                <option value="{{ $value->id }}">{{ $value->name }}</option>--}}
-{{--                            @endforeach--}}
-{{--                        </select>--}}
-{{--                    </div>--}}
                     <div class="form-group m-10">
                         <select class="form-select" name="subject" id="campus_id_update">
                             <option selected value="">--Cơ sở--</option>
@@ -332,7 +322,7 @@
                         <select class="form-select" id="roles_id_update">
                             <option selected value="0">--Chức vụ--</option>
                             @foreach($roles as $value)
-                                @if(auth()->user()->roles[0]->id != $value->id)
+                                @if(auth()->user()->roles[0]->id != $value->id && $value->name != 'student')
                                     <option value="{{ $value->id }}">{{ $value->name }}</option>
                                 @endif
                             @endforeach
@@ -353,8 +343,86 @@
         </div>
     </div>
 
+    <div class="modal fade" tabindex="-1"
+         id="kt_modal_upload_user_by_excel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Tải lên excel để thêm tài khoản
+                    </h5>
+
+                    <!--begin::Close-->
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2"
+                         data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-2x"></span>
+                        Thoát
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <form class="form-submit"
+                      action="{{ route('admin.acount.excel.import') }}"
+                      method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body text-center">
+                        <div class="HDSD">
+                        </div>
+                        <div class="row m-3">
+                            <div class="form-group col-12">
+                                <p class="text-danger error_roles_id_add_excel mb-2" style="text-align: left"></p>
+                                <select class="form-select" name="roles_id_add_excel" id="roles_id_add_excel" data-control="select2"
+                                        data-placeholder="Chọn chức vụ">
+                                    <option selected value=""></option>
+                                    @foreach($roles as $value)
+                                        @if(auth()->user()->roles[0]->id != $value->id)
+                                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group m-3">
+                            <label for="up-file"
+                                   class="">
+                                <i data-bs-toggle="tooltip"
+                                   title="Click để upload file"
+                                   style="font-size: 100px;"
+                                   role="button"
+                                   class="bi bi-cloud-plus-fill"></i>
+                            </label>
+                            <input style="display: none" type="file"
+                                   name="ex_file" class="up-file"
+                                   id="up-file">
+                        </div>
+                        <div style="display: none"
+                             class="progress show-p mt-3 h-25px w-100">
+                            <div
+                                class="progress-bar bg-primary progress-bar-striped progress-bar-animated"
+                                role="progressbar" style="width: 0%"
+                                aria-valuenow="0" aria-valuemin="0"
+                                aria-valuemax="100">
+                            </div>
+                        </div>
+                        <p class="show-name">
+                        </p>
+                        <p class="text-danger error_ex_file">
+                        </p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit"
+                                class="upload-file btn btn-primary">Tải
+                            lên
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
 @section('page-script')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
     <script>
         function notify(message) {
             new Notify({
@@ -548,5 +616,66 @@
                 });
             })
         }
+
+        $('.up-file').on("change", function () {
+            $('.show-name').html($(this)[0].files[0].name);
+        })
+
+        const roleImportExcelErr = $(".error_roles_id_add_excel");
+
+        const exFileErr = $(".error_ex_file");
+
+        $('.form-submit').ajaxForm({
+            beforeSend: function () {
+                $(".error_ex_file").html("");
+                $(".upload-file").html("Đang tải dữ liệu ..")
+                $(".progress").show();
+                var percentage = '0';
+            },
+            uploadProgress: function (event, position, total, percentComplete) {
+                var percentage = percentComplete;
+                $('.progress .progress-bar').css("width", percentage + '%', function () {
+                    return $(this).attr("aria-valuenow", percentage) + "%";
+                })
+            },
+            success: function (response) {
+                let data = response.payload;
+
+                let containMsg  = data.contain_count > 0 ? `Có ${data.contain_count} tài khoản đã tồn tại. ` : '';
+
+                let insertMsg = `Thêm thành công ${data.insert_count} tài khoản. `;
+
+                let notFoundCampus = data.not_found_campus.length > 0 ? `Không tìm thấy cơ sở ${data.not_found_campus.join(", ")}. ` : '';
+
+                let msg = `${insertMsg} ${containMsg} ${notFoundCampus}`;
+
+                $(".progress").hide();
+                $(".upload-file").html("Tải lên")
+                toastr.success(`${msg}`, 'Thành công');
+                $('.up-file').val('');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+                setTimeout(() => {
+                    $('.modal').modal('hide');
+                }, 500);
+                // window.location.reload();
+            },
+            error: function (xhr, status, error) {
+                $(".upload-file").html("Tải lên")
+                $('.progress .progress-bar').css("width", 0 + '%', function () {
+                    return $(this).attr("aria-valuenow", 0) + "%";
+                })
+                $(".progress").hide();
+                var err = xhr.responseJSON;
+                exFileErr.html("")
+                roleImportExcelErr.html("");
+                if (err.message.ex_file) exFileErr.html(err.message.ex_file[0]);
+                if (err.message.roles_id_add_excel) roleImportExcelErr.html(err.message.roles_id_add_excel[0]);
+                if (typeof err.message === 'string') {
+                    toastr.error(err.message, 'Lỗi');
+                }
+            }
+        });
     </script>
 @endsection

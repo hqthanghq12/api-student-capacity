@@ -63,6 +63,12 @@ class studentPoetryController extends Controller
             $canActive = !(now()->isBefore($startTimeTen->addMinutes(10)));
         }
 
+        $exam_date = Carbon::parse($poetry->exam_date)->format('d-m-Y');
+
+        $today = Carbon::now()->format('d-m-Y');
+
+        $isInDate = $exam_date == $today;
+
 //        $canActive = !(auth()->user()->hasRole('super admin') && now()->isBefore($start_time->addMinutes(10))) || (!auth()->user()->hasRole('super admin') && $is_in_time);
 //        dd($canActive);
         $id_block_subject = $poetry->id_block_subject;
@@ -81,6 +87,7 @@ class studentPoetryController extends Controller
             'poetry' => $poetry,
             'has_started' => $has_started,
             'can_active' => $canActive,
+            'is_in_date' => $isInDate,
         ]);
     }
 
@@ -396,9 +403,16 @@ class studentPoetryController extends Controller
     public function rejoin($id)
     {
         try {
-            $playtopic = playtopic::query()
-                ->where('student_poetry_id', $id)
-                ->first();
+            if (!$playtopic = playtopic::query()->where('student_poetry_id', $id)->first()) abort(404);
+
+            $poetry = $playtopic->studentPoetry->poetry;
+
+            $is_in_date = Carbon::parse($poetry->exam_date)->format('d-m-Y') == Carbon::now()->format('d-m-Y');
+
+            if (!$is_in_date) {
+                return response(['message' => 'Ca thi này đã qua hoặc chưa tới ngày thi, không thể cho sinh viên thi lại'], 404);
+            };
+
             $playtopic->update(['rejoined_at' => now()]);
             DB::table('result_capacity')->where('playtopic_id', $playtopic->id)->delete();
             return response(['message' => "Thành công cho sinh viên thi lại"], 200);

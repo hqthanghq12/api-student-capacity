@@ -81,4 +81,14 @@ class User implements MUserInterface
                 $q->where('id', config('util.STUDENT_ROLE'));
             })->count();
     }
+
+    public function getModelQuery()
+    {
+        return $this->user::query();
+    }
+
+    public function getModelClass()
+    {
+        return $this->user::class;
+    }
 }

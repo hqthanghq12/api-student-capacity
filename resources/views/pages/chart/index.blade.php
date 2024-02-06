@@ -8,8 +8,8 @@
 {{--<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>--}}
 {{--<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>--}}
 {{--    <!-- CSS -->--}}
-<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
-<script src="assets/plugins/global/plugins.bundle.js"></script>
+{{--<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>--}}
+{{--<script src="assets/plugins/global/plugins.bundle.js"></script>--}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css"/>
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
@@ -20,23 +20,23 @@
             <div class="card card-flush p-4">
                 <div class="row py-4">
                     <div class="col-4">
-                        <select class="form-select"  id="campus">
-                            <option value="0">--Chọn Cơ sở--</option>
+                        <select class="form-select" id="campus" data-control="select2" data-placeholder="Chọn cơ sở">
+                            <option value=""></option>
                             @foreach($listcampus as $value)
                                 <option value="{{ $value->id }}">{{ $value->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-4">
-                        <select class="form-select" id="semeter">
-                            <option>-- Chọn Kỳ --</option>
+                        <select class="form-select" id="semeter" data-placeholder="Chọn kỳ">
+                            <option>Chọn kỳ</option>
                         </select>
                     </div>
-                    <div class="col-4">
-                        <select class="form-select" id="block">
-                            <option>-- Chọn Block --</option>
-                        </select>
-                    </div>
+{{--                    <div class="col-4">--}}
+{{--                        <select class="form-select" id="block" data-placeholder="Chọn block">--}}
+{{--                            <option>Chọn Block</option>--}}
+{{--                        </select>--}}
+{{--                    </div>--}}
 {{--                    <div class="col-3">--}}
 {{--                        <select class="form-select" id="classSubject">--}}
 {{--                            <option>Lớp học</option>--}}

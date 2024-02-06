@@ -82,6 +82,13 @@ return [
         ],
         "IS_CORRECT" => "Đáp án đúng"
     ],
+    "EXCEL_ACCOUNT" => [
+        "KEY_COLUMNS" => [
+            "MSSV" => 1,
+            "NAME" => 2,
+            "EMAIL" => 3,
+        ],
+    ],
     "STATUS_REQUEST" => [
         "HISTORY" => [
             "TYPE_KEYS" => [

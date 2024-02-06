@@ -160,7 +160,7 @@ Route::prefix('poetry')->group(function () {
         Route::post('/form-add-student', [studentPoetryController::class, 'create'])->name('admin.poetry.manage.create');
         Route::put('now-status/{id}', [studentPoetryController::class, 'now_status'])->name('admin.poetry.un.status');
         Route::delete('delete/{id}', [studentPoetryController::class, 'delete'])->name('admin.poetry.delete');
-        Route::post('rejoin/{id}', [studentPoetryController::class, 'rejoin'])->name('admin.poetry.delete');
+        Route::post('rejoin/{id}', [studentPoetryController::class, 'rejoin'])->name('admin.poetry.rejoin')->middleware('role_admin');
         Route::get('{id}/{id_poetry}/{id_block}/export', [studentPoetryController::class, 'export'])->name('admin.poetry.manage.export');
     });
     Route::prefix('playTopic')->group(function () {
@@ -173,11 +173,13 @@ Route::prefix('poetry')->group(function () {
 });
 
 Route::prefix('status-requests')->group(function () {
-    Route::get('/list', [StatusRequestController::class, 'listApi'])->name('admin.status-requests.list-api');
-    Route::get('', [StatusRequestController::class, 'index'])->name('admin.status-requests.list');
-    Route::get('{id}', [StatusRequestController::class, 'detail'])->name('admin.status-requests.detail');
+    Route::middleware(['role_admin'])->group(function () {
+        Route::get('/list', [StatusRequestController::class, 'listApi'])->name('admin.status-requests.list-api');
+        Route::get('', [StatusRequestController::class, 'index'])->name('admin.status-requests.list');
+        Route::get('{id}', [StatusRequestController::class, 'detail'])->name('admin.status-requests.detail');
+        Route::post('{id}/approve', [StatusRequestController::class, 'approve'])->name('admin.status-requests.approve');
+    });
     Route::post('', [StatusRequestController::class, 'create'])->name('admin.status-requests.create');
-    Route::post('{id}/approve', [StatusRequestController::class, 'approve'])->name('admin.status-requests.approve');
 });
 
 // Middleware phân quyền ban giám khảo chấm thi , khi nào gộp code sẽ chỉnh sửa lại route để phân quyền route
@@ -200,6 +202,10 @@ Route::group([
         Route::post('un-status/{id}', [UserController::class, 'un_status'])->name('admin.acount.un.status');
         Route::post('re-status/{id}', [UserController::class, 're_status'])->name('admin.acount.re.status');
         Route::post('change-role', [UserController::class, 'changeRole'])->name('admin.acount.change.role');
+        Route::prefix('excel')->group(function () {
+            Route::post('import', [UserController::class, 'import'])->name('admin.acount.excel.import');
+//            Route::get('export', [UserController::class, 'export'])->name('admin.acount.excel.export');
+        });
     });
 
     Route::prefix('basis')->middleware(['role_super_admin'])->group(function () {

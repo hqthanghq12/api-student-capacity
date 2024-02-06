@@ -109,8 +109,8 @@
                                     <tr>
                                         <td colspan="7">
                                         <span class="fw-bold">
-                                            {{ Carbon\Carbon::parse($note->created_at)->format('H:i d-m-Y') }}:
-                                            {{ $note->note }}
+                                            {{ Carbon\Carbon::parse($note->created_at)->format('H:i d-m-Y') }}
+                                            {{ $note->note ? ': ' . $note->note : '' }}
                                         </span>
                                         </td>
                                     </tr>

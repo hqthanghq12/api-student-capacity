@@ -3,10 +3,8 @@
 @section('content')
     <!-- CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css"/>
-    <link rel="stylesheet" href="assets/plugins/global/plugins.bundle.css">
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
-    <script src="assets/plugins/global/plugins.bundle.js"></script>
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <!--begin::Container-->
         <div id="kt_content_container" class="container-xxl">
@@ -88,9 +86,10 @@
 
                 <form method="get" class="row my-5">
                     <div class="col-3">
-                        <select class="form-select" data-control="select2" data-placeholder="Select an option"
-                                name="gv">
-                            <option value="">--Chọn giảng viên--</option>
+                        <select class="form-select select2-hidden-accessible" data-control="select2"
+                                data-placeholder="Chọn giảng viên"
+                                name="gv" id="gv">
+                            <option value=""></option>
                             @foreach($teachers as $teacher)
                                 <option
                                     value="{{ $teacher->id }}"
@@ -102,8 +101,9 @@
                         </select>
                     </div>
                     <div class="col-2">
-                        <select class="form-select" name="ct">
-                            <option value="">-- Ca thi --</option>
+                        <select class="form-select select2-hidden-accessible" data-control="select2" name="ct"
+                                data-placeholder="Chọn ca thi" id="ct">
+                            <option value=""></option>
                             @foreach($listExamination as $examination)
                                 <option
                                     value="{{ $examination->id }}"
@@ -115,8 +115,9 @@
                         </select>
                     </div>
                     <div class="col-2">
-                        <select class="form-select" name="s" id="">
-                            <option value="">-- Chọn Môn --</option>
+                        <select class="form-select select2-hidden-accessible" data-control="select2" name="s" id="s"
+                                data-placeholder="Chọn môn">
+                            <option value=""></option>
                             @foreach($blockSubjectIdToName as $id => $name)
                                 <option
                                     value="{{ $id }}"
@@ -128,8 +129,9 @@
                         </select>
                     </div>
                     <div class="col-2">
-                        <select class="form-select" name="c" id="">
-                            <option value="">Lớp học</option>
+                        <select class="form-select select2-hidden-accessible" data-control="select2" name="c" id="c"
+                                data-placeholder="Chọn lớp học">
+                            <option value=""></option>
                             @foreach($listClass as $class)
                                 <option
                                     value="{{ $class->id }}"
@@ -345,7 +347,7 @@
         </div>
         {{--    form add--}}
 
-        <div class="modal fade" tabindex="-1" id="kt_modal_1" style="display: none;" aria-hidden="true">
+        <div class="modal fade" id="kt_modal_1" style="display: none;" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -362,52 +364,67 @@
                         @csrf
                         <input type="hidden" id="semeter_id" value="{{ $id_poetry }}">
                         <input type="hidden" id="id_block" value="{{ $idBlock }}">
-                        <div class="form-group m-10">
-                            <select class="form-select" name="subject" id="block_subject_id">
-                                <option selected value="">--Chọn môn học--</option>
+                        <div class="form-group my-5 mx-10">
+                            <label for="" class="form-label">Môn học</label>
+                            <select class="form-select select2-hidden-accessible" name="subject"
+                                    id="block_subject_id" data-placeholder="Chọn môn học">
+                                <option selected value=""></option>
                                 @foreach($listSubject as $subject)
                                     <option value="{{ $subject->id }}">{{ $subject->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group m-10">
+                        <div class="form-group my-5 mx-10">
+                            <label for="" class="form-label">Phòng thi</label>
                             <input type="text" class="form-control" placeholder="Phòng thi" name="room" id="room">
                         </div>
-                        <div class="form-group m-10">
-                            <select class="form-select" name="subject" id="campus_id">
+                        <div class="form-group my-5 mx-10">
+                            <label for="" class="form-label">Cơ sở</label>
+                            <select class="form-select select2-hidden-accessible" name="subject"
+                                    id="campus_id" data-placeholder="Cơ sở">
                                 <option selected value="{{ $campus->id }}">Cơ sở {{ $campus->name }}</option>
                                 {{--                                @foreach($listcampus as $campus)--}}
                                 {{--                                    <option value="{{ $campus->id }}">{{ $campus->name }}</option>--}}
                                 {{--                                @endforeach--}}
                             </select>
                         </div>
-                        <div class="form-group m-10">
-                            <select class="form-select" name="start_examination_id" id="start_examination_id">
-                                <option selected value="">--Chọn ca bắt đầu thi--</option>
+                        <div class="form-group my-5 mx-10">
+                            <label for="" class="form-label">Ca bắt đầu</label>
+                            <select class="form-select select2-hidden-accessible"
+                                    name="start_examination_id" id="start_examination_id"
+                                    data-placeholder="Chọn ca bắt đầu thi">
+                                <option selected value=""></option>
                                 @foreach($listExamination as $exam)
                                     <option value="{{ $exam->id }}">{{ $exam->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group m-10">
-                            <select class="form-select" name="finish_examination_id" id="finish_examination_id">
-                                <option selected value="">--Chọn ca kết thúc thi--</option>
+                        <div class="form-group my-5 mx-10">
+                            <label for="" class="form-label">Ca kết thúc</label>
+                            <select class="form-select select2-hidden-accessible"
+                                    name="finish_examination_id" id="finish_examination_id"
+                                    data-placeholder="Chọn ca kết thúc thi">
+                                <option selected value=""></option>
                                 @foreach($listExamination as $exam)
                                     <option value="{{ $exam->id }}">{{ $exam->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group m-10">
-                            <select class="form-select" name="class_id" id="class_id">
-                                <option selected value="">--Chọn lớp thi--</option>
+                        <div class="form-group my-5 mx-10">
+                            <label for="" class="form-label">Lớp thi</label>
+                            <select class="form-select select2-hidden-accessible" name="class_id"
+                                    id="class_id" data-placeholder="Chọn lớp thi">
+                                <option selected value=""></option>
                                 @foreach($listClass as $exam)
                                     <option value="{{ $exam->id }}">{{ $exam->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group m-10">
-                            <select class="form-select" name="assigned_user" id="assigned_user">
-                                <option selected value="">--Giảng viên--</option>
+                        <div class="form-group my-5 mx-10">
+                            <label for="" class="form-label">Giảng viên</label>
+                            <select class="form-select select2-hidden-accessible"
+                                    name="assigned_user" id="assigned_user" data-placeholder="Chọn giảng viên">
+                                <option selected value=""></option>
                                 @foreach($teachers as $teacher)
                                     <option
                                         value="{{ $teacher->id }}|{{ $teacher->campus_id }}">{{ $teacher->name }} - Cơ
@@ -415,14 +432,16 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group m-10">
-                            <select class="form-select" name="status" id="status_add">
-                                <option selected value="">Trạng thái</option>
+                        <div class="form-group my-5 mx-10">
+                            <label for="" class="form-label">Trạng thái</label>
+                            <select class="form-select select2-hidden-accessible" data-control="select2" name="status"
+                                    id="status_add" data-placeholder="Trạng thái">
+                                <option selected value=""></option>
                                 <option value="1">Kích hoạt</option>
                                 <option value="0">Chưa kích hoạt</option>
                             </select>
                         </div>
-                        <div class="form-group m-10">
+                        <div class="form-group my-5 mx-10">
                             <label for="" class="form-label">Ngày thi</label>
                             <input type="date" name="exam_date" id="exam_date" class=" form-control"
                             >
@@ -528,6 +547,7 @@
     @endif
 @endsection
 @section('page-script')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
     <script>
         function notify(message) {
             new Notify({
@@ -608,12 +628,20 @@
         let btnUpdate = document.querySelector('#btn-update');
         const _token = "{{ csrf_token() }}";
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="{{ asset('assets/js/system/poetry/poetry.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
     {{--    Thêm --}}
     <script>
+
+        const renderSelect2 = function (selectors, parentModal) {
+            selectors.forEach(selector => {
+                $(selector).select2({
+                    dropdownParent: $(parentModal)
+                });
+            });
+        }
+
         $('#upload-basis').click(function (e) {
             e.preventDefault();
             console.log($('#campus_id').val());
@@ -679,6 +707,18 @@
             isChangeSubject = newSubject != subject;
         })
 
+        const editModal = $('#edit_modal');
+
+        const editSelectors = [
+            "#block_subject_id_update",
+            "#campus_id_update",
+            "#start_examination_id_update",
+            "#finish_examination_id_update",
+            "#class_id_update",
+            "#assigned_user_update",
+            "#status_update",
+        ];
+
         function update(btns) {
             for (const btnupdate of btns) {
                 btnupdate.addEventListener('click', () => {
@@ -705,8 +745,11 @@
 
                             $('#id_update').val(response.data.poetry.id);
 
+                            renderSelect2(editSelectors, editModal);
+
                             // Gán các giá trị dữ liệu lấy được vào các trường tương ứng trong modal
-                            $('#edit_modal').modal('show');
+                            editModal.modal('show');
+
                         },
                         error: function (response) {
                             console.log(response);
@@ -855,9 +898,9 @@
         }
 
     </script>
-    {{--    <script src="assets/js/system/formatlist/formatlis.js"></script>--}}
+
     <script src="assets/js/system/capacity/main.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
+
     <script>
         $(document).ready(function () {
             $('.up-file').on("change", function () {
@@ -901,6 +944,25 @@
                 }
             });
         })
+
+        const modalAddPoetry = $("#kt_modal_1");
+        const select2DropdownModalAddPoetry = [
+            "#block_subject_id",
+            "#campus_id",
+            "#start_examination_id",
+            "#finish_examination_id",
+            "#class_id",
+            "#assigned_user"
+        ];
+
+        renderSelect2(select2DropdownModalAddPoetry, modalAddPoetry);
+
+        // select2DropdownModalAddPoetry.forEach(function (dropdown) {
+        //     $(dropdown).select2({
+        //         dropdownParent: modalAddPoetry,
+        //     });
+        // });
+
     </script>
     {{--    Cập nhật trang thái nhanh--}}
 

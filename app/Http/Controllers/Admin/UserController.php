@@ -18,6 +18,7 @@ use Google\Service\Script\Content;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -276,6 +277,7 @@ class UserController extends Controller
                 'result_capacity.scores',
                 'result_capacity.created_at',
                 'result_capacity.updated_at',
+                'result_capacity.status as result_status',
                 'student_poetry.id_student',
                 'users.name',
                 'users.email'
@@ -305,6 +307,13 @@ class UserController extends Controller
         $i = 0;
 
         foreach ($point as $key => $value) {
+            if (!$value->scores) {
+                $result_status = 'Chưa thi';
+            } elseif ($value->result_status == 1) {
+                $result_status = 'Đã thi';
+            } elseif ($value->result_status == 0) {
+                $result_status = 'Đang thi';
+            }
             $data[] = [
                 ++$i,
                 $value->name,
@@ -313,6 +322,7 @@ class UserController extends Controller
                 $subjectIdToSubjectCode[$value->id_subject],
                 $semesterIdToSemesterName[$value->id_semeter],
                 $classIdToClassName[$value->id_class],
+                $result_status,
                 $value->scores ?? 'Chưa thi',
                 $value->scores && $value->scores > 5 ? 'Đạt' : 'Không đạt'
             ];
@@ -328,8 +338,9 @@ class UserController extends Controller
         $sheet->setCellValue('E1', 'Mã Môn');
         $sheet->setCellValue('F1', 'Kỳ Học');
         $sheet->setCellValue('G1', 'Lớp');
-        $sheet->setCellValue('H1', 'Điểm');
-        $sheet->setCellValue('I1', 'Trạng Thái');
+        $sheet->setCellValue('H1', 'Trạng thái thi');
+        $sheet->setCellValue('I1', 'Điểm');
+        $sheet->setCellValue('J1', 'Trạng Thái');
         $borderStyle = [
             'borders' => [
                 'allBorders' => [
@@ -359,9 +370,10 @@ class UserController extends Controller
         $sheet->getColumnDimension('G')->setWidth(10);
         $sheet->getColumnDimension('H')->setWidth(10);
         $sheet->getColumnDimension('I')->setWidth(10);
+        $sheet->getColumnDimension('J')->setWidth(10);
         // Định dạng căn giữa và màu nền cho hàng tiêu đề
-        $sheet->getStyle('A1:I1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:I1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
+        $sheet->getStyle('A1:J1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:J1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
 
         $writer = new Xlsx($spreadsheet);
         $outputFileName = 'diem_thi';
@@ -629,7 +641,7 @@ class UserController extends Controller
     {
         if (!$users = $this->getUser()) return abort(404);
 //        $branches = $this->branches::all();
-        $rolesModel = $this->role->query()->where('name', '<>', 'student');
+        $rolesModel = $this->role->query()->select('id', 'name');
         $CampusModel = $this->campus->query();
         if (!auth()->user()->hasRole('super admin')) {
             $rolesModel->where('id', '<>', config('util.SUPER_ADMIN_ROLE'));
@@ -1011,5 +1023,189 @@ class UserController extends Controller
             'status' => true,
             'payload' => $user,
         ]);
+    }
+
+    public function import(Request $request)
+    {
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'ex_file' => 'required|file|mimes:xlsx,xls',
+                'roles_id_add_excel' => 'required|numeric|min:1|exists:roles,id',
+            ],
+            [
+                'ex_file.required' => 'Không có file nào được chọn',
+                'ex_file.file' => 'File không hợp lệ',
+                'ex_file.mimes' => 'File không hợp lệ',
+                'roles_id_add_excel.required' => 'Vui lòng chọn chức vụ cho tài khoản',
+                'roles_id_add_excel.min' => 'Vui lòng chọn chức vụ',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return $this->responseApi(false, $validator->errors(), 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $file = $request->file('ex_file');
+
+            $spreadsheet = IOFactory::load($file);
+
+            $sheetCount = $spreadsheet->getSheetCount();
+
+            $emails = $this->user->getModelQuery()->select('email')->pluck('email')->map(function ($email) {
+                return Str::lower($email);
+            });
+
+            $campuseQuery = Campus::query()->select('id', 'code');
+
+            $isAdmin = auth()->user()->hasRole(config('util.ADMIN_ROLE'));
+
+            if ($isAdmin) {
+                $campuseQuery->where('id', auth()->user()->campus_id);
+            }
+
+            $campuses = $campuseQuery->pluck('id', 'code');
+
+//        $userQueryInsert = "INSERT INTO `users` (`id`, `name`, `email`, `mssv`, `status`, `campus_id`) VALUES ";
+//        $roleQueryInsert = "INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES ";
+//        $maxId = $this->user->getModelQuery()->max('id');
+
+//        $userQueryArr = [];
+
+            $userInsertArr = [];
+
+//        $roleInsertArr = [];
+
+//        $roleQueryArr = [];
+
+            $emailsWillImport = [];
+
+            $notFoundCampus = [];
+
+            $role_id = $request->input('roles_id_add_excel') ?? config('util.STUDENT_ROLE');
+
+//        $campus_code_col = (int)($request->input('campus_code_col') ?? 0);
+
+            $mssv_col = config('util.EXCEL_ACCOUNT.KEY_COLUMNS.MSSV');
+
+            $name_col = config('util.EXCEL_ACCOUNT.KEY_COLUMNS.NAME');
+
+            $email_col = config('util.EXCEL_ACCOUNT.KEY_COLUMNS.EMAIL');
+
+            $email_contains = [];
+
+            for ($i = 0; $i < $sheetCount; $i++) {
+                $sheetObj = $spreadsheet->getSheet($i);
+
+                $campus_code = Str::lower($sheetObj->getTitle());
+
+                $sheet = $sheetObj->toArray();
+
+                $emailContains = [];
+
+                if (!$isAdmin && empty($campuses[$campus_code])) {
+
+                    $campusCodeUpper = Str::upper($campus_code);
+
+                    $notFoundCampus[$campusCodeUpper] = ($notFoundCampus[$campusCodeUpper] ?? 0) + 1;
+
+                    continue;
+                }
+
+                $campus_id = $isAdmin ? auth()->user()->hasRole(config('util.ADMIN_ROLE')) : $campuses[$campus_code];
+
+                for ($j = 1, $jMax = count($sheet); $j < $jMax; $j++) {
+                    $name = $sheet[$j][$name_col];
+
+                    $email = Str::lower($sheet[$j][$email_col]);
+
+                    $mssv = $role_id == config('util.STUDENT_ROLE') ? $sheet[$j][$mssv_col] : Str::replace(config('util.END_EMAIL_FPT'), '', $email);
+
+                    if (empty($name)) {
+                        continue;
+                    }
+
+                    if ($emails->contains($email)) {
+                        $email_contains[] = $email;
+                        continue;
+                    }
+
+                    if (in_array($email, $emailsWillImport)) {
+                        continue;
+                    }
+
+                    $emailsWillImport[] = $email;
+
+//                $msv = $mssv ? "'{$mssv}'" : 'NULL';
+
+                    $userInsertArr[] = [
+                        'name' => $name,
+                        'email' => $email,
+                        'mssv' => $mssv ?? 'default',
+                        'status' => 1,
+                        'campus_id' => $campus_id,
+                    ];
+
+                }
+
+            }
+
+            $chunkSize = 1000;
+
+            $chunksUserInsertArr = array_chunk($userInsertArr, $chunkSize);
+
+            foreach ($chunksUserInsertArr as $chunkUserInsertArr) {
+                $this->user->getModelQuery()->getQuery()->insert($chunkUserInsertArr); // Chèn phần nhỏ người dùng
+            }
+
+//            $this->user->getModelQuery()->insert($userInsertArr);
+
+            $userIdsImported = $this->user->getModelQuery()->whereIn('email', $emailsWillImport)->pluck('id');
+
+            $role = Role::findById($role_id);
+
+            $userIdsImported->chunk($chunkSize, function ($chunkedUserIds) use ($role) {
+//                $role = Role::findById($role_id);
+                $role->users()->attach($chunkedUserIds);
+            });
+
+//            $role->users()->attach($userIdsImported);
+
+            $insertCount = count($userInsertArr);
+
+            $contain = count($email_contains);
+
+            if ($insertCount == 0) {
+                $msg = "Các tài khoản có trong file excel tải lên đã nằm trong hệ thống";
+                if (!empty($notFoundCampus)) {
+                    $msg .= ", và có " . count($notFoundCampus) . " cơ sở không tồn tại";
+                    $msg .= ", cụ thể: " . implode(', ', array_keys($notFoundCampus));
+                }
+                return $this->responseApi(false, $msg, 400);
+            }
+
+            return $this->responseApi(true, [
+                'insert_count' => $insertCount,
+                'contain_count' => $contain,
+                'not_found_campus' => array_keys($notFoundCampus),
+            ]);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            $msg = [
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ];
+
+            Log::error('Error import user: ' . json_encode($msg));
+
+            return $this->responseApi(false, "Có lỗi xảy ra khi thêm người dùng", 500);
+        }
     }
 }

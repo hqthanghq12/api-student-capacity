@@ -11,17 +11,21 @@ use App\Services\Modules\MSemeter\Semeter;
 use App\Models\block;
 use App\Models\Campus;
 use App\Services\Modules\poetry\poetry;
+
 class chartController extends Controller
 {
     use TUploadImage, TCheckUserDrugTeam, TResponse;
+
     public function __construct(
-        private poetry        $poetry,
-        private Semeter           $interfaceSemeter,
+        private poetry  $poetry,
+        private Semeter $interfaceSemeter,
 
     )
     {
     }
-    public function index(){
+
+    public function index()
+    {
         if (auth()->user()->hasRole('teacher')) {
             return redirect()->route('admin.semeter.index');
         }
@@ -31,21 +35,24 @@ class chartController extends Controller
         }
         $listCampus = $listCampusQuery->get();
         $dataResult = $this->poetry->ListPoetryChart();
-        return view('pages.chart.index',['listcampus' => $listCampus,'data' => $dataResult]);
+        return view('pages.chart.index', ['listcampus' => $listCampus, 'data' => $dataResult]);
     }
 
-    public function detail(){
+    public function detail()
+    {
         return view('pages.chart.chart');
     }
 
-    public function semeter($id_campus){
+    public function semeter($id_campus)
+    {
         $listSemeter = $this->interfaceSemeter->getListByCampus($id_campus);
 
-        return response()->json(['data' => $listSemeter],200);
+        return response()->json(['data' => $listSemeter], 200);
     }
 
-    public function block($id_semeter){
-        $listBlock = block::where('id_semeter',$id_semeter)->get();
-        return response()->json(['data' => $listBlock],200);
+    public function block($id_semeter)
+    {
+        $listBlock = block::query()->where('id_semeter', $id_semeter)->where('name', 'Block 1')->get();
+        return response()->json(['data' => $listBlock], 200);
     }
 }

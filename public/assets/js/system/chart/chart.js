@@ -1,8 +1,8 @@
-let selectSemeter= document.getElementById("semeter");
-let selectBlocks = document.getElementById("block");
+let selectSemeter= $("#semeter");
+// let selectBlocks = $("#block");
 let DataResult = {};
 function eventSubject(btn,htmlimport){
-    btn.addEventListener("change", function() {
+    $(document.body).on("change", '#campus', function() {
         var idCampus = btn.value;
         DataResult.idcampus = idCampus;
         if(idCampus != ""){
@@ -15,15 +15,16 @@ function eventSubject(btn,htmlimport){
                     // console.log(response.data)
                     //insert data vào
                     if(response.data != ""){
-                        document.getElementById("block").innerHTML = '<option value="">-- Chọn Block --</option>';
+                        // selectBlocks.html('<option value="">Chọn Block</option>');
                         html += response.data.map((value)=>{
                             return `<option value="${value.id}">${value.name}</option>`
                         }).join(' ')
                     }else  {
                         html += '<option value="">Không có dữ liệu</option>'
                     }
-                    selectSemeter = document.getElementById("blocks");
-                    htmlimport.innerHTML = html;
+                    // selectSemeter = document.getElementById("blocks");
+                    htmlimport.html(html);
+                    htmlimport.select2();
 
                 },
                 error: function(response) {
@@ -39,8 +40,8 @@ function eventSubject(btn,htmlimport){
     });
 }
 eventSubject(selectCampus,selectSemeter);
-selectSemeter.addEventListener("change", function(e) {
-    var idSemeter = e.target.value;
+$(document.body).on("change", '#semeter', function(e) {
+    var idSemeter = selectSemeter.val();
     DataResult.idsemeter = idSemeter;
     if(idSemeter != ""){
         $.ajax({
@@ -48,7 +49,8 @@ selectSemeter.addEventListener("change", function(e) {
             type: 'GET',
             success: function(response) {
                 console.log( response.data);
-                let html = '<option value="">-- Chọn Block --</option>';
+                DataResult.idblock = response.data[0].id;
+                let html = '<option value="">Chọn Block</option>';
                 // console.log(response.data)
                 //insert data vào
                 if(response.data != ""){
@@ -59,8 +61,8 @@ selectSemeter.addEventListener("change", function(e) {
                     html += '<option value="">Không có dữ liệu</option>'
                 }
 
-                selectBlocks.innerHTML = html;
-                selectBlocks = document.getElementById("block");
+                // selectBlocks.html(html);
+                // selectBlocks = document.getElementById("block");
             },
             error: function(response) {
 
@@ -69,15 +71,15 @@ selectSemeter.addEventListener("change", function(e) {
             }
         });
     }else  {
-        selectBlocks.innerHTML = '<option value="">-- Chọn Block --</option><option value="">Không có dữ liệu</option>'
+        // selectBlocks.html('<option value="">-- Chọn Block --</option><option value="">Không có dữ liệu</option>');
         notify('Tải dữ liệu không thành công !')
     }
 
 });
-selectBlocks.addEventListener("change", function() {
-    var idblock = selectBlocks.value;
-    DataResult.idblock = idblock;
-});
+// $(document.body).on("change", '#block', function() {
+//     var idblock = selectBlocks.val();
+//     DataResult.idblock = idblock;
+// });
 // var chart1 = null; // Biến lưu trữ đối tượng biểu đồ
 // function chartRender(category,data){
 //     var element1 = document.getElementById('kt_apexcharts_2');

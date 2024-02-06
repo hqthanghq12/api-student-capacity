@@ -35,9 +35,6 @@
         }
     </style>
     <!-- CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css"/>
-    <!-- JS -->
-    <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <!--begin::Container-->
         <div id="kt_content_container" class="container-xxl">
@@ -48,6 +45,10 @@
             {{--            <div class="card card-flush p-4">--}}
             {{--            </div>--}}
             <div class="card card-flush p-4">
+                <select name="" id="" class="form-control" data-control="select2" data-placeholder="123">
+                    <option value=""></option>
+                    <option value="1">2</option>
+                </select>
                 <form action="" class="my-5 p-3">
                     <label for="email">Tìm kiếm theo email</label>
                     <div class="row">
@@ -116,9 +117,74 @@
                                             <!--end::Close-->
                                         </div>
                                         <div class="modal-body">
-                                            <div class="p-3">
-                                                <input type="text" class="form-control" placeholder="Ghi chú chung"
-                                                       id="note">
+                                            <div class="p-3 row align-items-center justify-content-center">
+                                                <div class="col-9">
+                                                    <input type="text" class="form-control" placeholder="Ghi chú chung"
+                                                           id="note">
+                                                </div>
+                                                <div class="col-3">
+                                                    <button
+                                                        class="btn btn-primary"
+                                                        type="button"
+                                                        id="btn_select_student_note"
+                                                    >
+                                                        Áp dụng cho
+                                                    </button>
+                                                    <div class="modal fade" tabindex="-1" id="apply_note_modal"
+                                                         style="display: none;" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">
+                                                                        Chọn sinh viên áp dụng ghi chú
+                                                                    </h5>
+
+                                                                    <button class="btn btn-sm btn-primary ms-2"
+                                                                            id="btn_apply_note">
+                                                                        Áp dụng
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <table id="table-data"
+                                                                           class="table table-row-bordered table-row-gray-300 gy-7 table-hover">
+                                                                        <thead>
+                                                                        <tr>
+                                                                            <th></th>
+                                                                            <th>Tên</th>
+                                                                            <th>Email</th>
+                                                                            <th>Mã sinh viên</th>
+                                                                        </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        @foreach($student as $value)
+                                                                            @if($value->status == 0)
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        <input type="checkbox" checked
+                                                                                               class="form-check-input checkbox-note"
+                                                                                               data-id="{{ $value->id }}"
+                                                                                               name="" id="">
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        {{ $value->nameStudent }}
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        {{ $value->emailStudent }}
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        {{ $value->mssv }}
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endif
+                                                                        @endforeach
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <table id="table-data"
                                                    class="table table-row-bordered table-row-gray-300 gy-7 table-hover">
@@ -150,6 +216,7 @@
                                                             </td>
                                                             <td>
                                                                 <input type="text" class="form-control student-note"
+                                                                       id="note-{{ $value->id }}"
                                                                        placeholder="Ghi chú riêng">
                                                             </td>
                                                         </tr>
@@ -270,10 +337,13 @@
 
                                     @if($value->has_received_exam == 1 && (auth()->user()->hasAnyRole(config('util.ROLE_ADMINS'))))
                                         <td class="text-end">
-                                            <button href="#"
-                                                    class="btn-rejoin menu-link border border-0 bg-transparent px-3 btn btn-sm btn-outline-primary"
-                                                    data-id="{{ $value->id }}"
-                                                    data-kt-users-table-filter="delete_row">Thi lại
+                                            <button
+                                                href="#"
+                                                class="btn-rejoin menu-link border border-0 bg-transparent px-3 btn btn-sm btn-outline-primary {{ $is_in_date ? '' : 'disabled' }}"
+                                                data-id="{{ $value->id }}"
+                                                data-kt-users-table-filter="delete_row"
+                                            >
+                                                Thi lại
                                             </button>
                                         </td>
                                     @endif
@@ -379,7 +449,7 @@
                         </select>
                     </div>
                     <div class="form-group m-10" id="specific_exam_form" style="display: none;">
-                        <select class="form-select" name="exam_id" id="exam_id">
+                        <select class="form-select" name="exam_id" id="exam_id" data-placeholder="--Chọn đề--">
                             <option value="">--Chọn đề--</option>
                             @foreach($exams_list as $exam)
                                 <option value="{{ $exam->id }}">{{ $exam->name }}</option>
@@ -524,7 +594,7 @@
         const _token = "{{ csrf_token() }}";
 
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+{{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>--}}
     <script src="{{ asset('assets/js/system/poetry/student.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
@@ -648,8 +718,7 @@
 
                                 },
                                 error: function (response) {
-                                    // console.log(response.responseText)
-                                    errors(response.responseText);
+                                    errors(response.responseJSON.message);
                                     // $('#ajax-form').find(".print-error-msg").find("ul").html('');
                                     // $('#ajax-form').find(".print-error-msg").css('display','block');
                                     // $.each( response.responseJSON.errors, function( key, value ) {
@@ -743,25 +812,82 @@
 
         let btnSendRequest = $('#btn_send_request');
 
-        if (btnSendRequest) {
-            btnSendRequest.click(function (e) {
-                e.preventDefault();
-                let note = $('#note').val();
-                let url = "{{ route('admin.status-requests.create') }}";
-                let statusRequestDetail = $('.checkbox-student-request:checked').map(function () {
-                    return {
-                        student_poetry_id: $(this).attr('data-id'),
-                        note: $(this).parent().parent().find('.student-note').val()
-                    };
-                }).get();
+        const btnSelectStudentNote = $('#btn_select_student_note');
 
-                if (statusRequestDetail.length === 0) {
+        const btnApplyNote = $('#btn_apply_note');
+
+        const applyNoteModal = $('#apply_note_modal');
+
+        const noteElement = $('#note');
+
+        if (btnSelectStudentNote) {
+            btnSelectStudentNote.click(function (e) {
+                e.preventDefault();
+
+                if (noteElement.val().trim() === "") {
+                    errors("Vui lòng nhập ghi chú chung");
+                    return;
+                }
+
+                applyNoteModal.modal('show');
+            });
+
+            btnApplyNote.click(function (e) {
+                e.preventDefault();
+
+                const checkboxNote = $('.checkbox-note:checked');
+
+                if (checkboxNote.length === 0) {
                     errors("Vui lòng chọn sinh viên");
                     return;
                 }
 
-                if (note === "") {
-                    errors("Vui lòng nhập ghi chú chung");
+                $('.checkbox-note:not(:checked)').map(function () {
+                    this.checked = true;
+                });
+
+                checkboxNote.map(function () {
+                    let id = $(this).attr('data-id');
+                    $(`#note-${id}`).val(noteElement.val().trim());
+                    this.checked = false;
+                });
+
+                noteElement.val("");
+
+                applyNoteModal.modal('hide');
+            });
+        }
+
+
+        if (btnSendRequest) {
+            btnSendRequest.click(function (e) {
+                e.preventDefault();
+
+                let url = "{{ route('admin.status-requests.create') }}";
+
+                let hasEmptyNote = false;
+
+                let statusRequestDetail = $('.checkbox-student-request:checked').map(function () {
+
+                    let note = $(this).parent().parent().find('.student-note').val().trim();
+
+                    if (note === "") {
+                        hasEmptyNote = true;
+                    }
+
+                    return {
+                        student_poetry_id: $(this).attr('data-id'),
+                        note: note,
+                    };
+                }).get();
+
+                if (hasEmptyNote) {
+                    errors("Vui lòng nhập đầy đủ ghi chú riêng cho các sinh viên được chọn");
+                    return;
+                }
+
+                if (statusRequestDetail.length === 0) {
+                    errors("Vui lòng chọn sinh viên");
                     return;
                 }
 
@@ -771,7 +897,7 @@
                     'semester_id': {{ $poetry->id_semeter }},
                     'campus_id': {{ $poetry->id_campus }},
                     'poetry_id': {{ $poetry->id }},
-                    'note': note,
+                    // 'note': note,
                     'created_by': {{ auth()->user()->id }},
                 }
                 // console.log(dataAll);

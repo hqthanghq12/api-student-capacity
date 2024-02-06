@@ -54,7 +54,9 @@
                         <div class="col-5">
                             <label for="" class="form-label">Lọc theo cơ sở</label>
                             <select name="campus_id" id="form-campus"
-                                    class="form-select form-select-solid form-select-lg">
+                                    class="form-select form-select-solid form-select-lg"
+                                    data-control="select2"
+                                    data-placeholder="Chọn cơ sở">
                                 <option value="">Chọn cơ sở</option>
                                 @foreach($campuses as $campus)
                                     <option
@@ -70,7 +72,11 @@
                         <div class="col-5">
                             <label for="" class="form-label">Lọc theo học kỳ</label>
                             <select name="semester_id" id="form-semester"
-                                    class="form-select form-select-solid form-select-lg">
+                                    class="form-select form-select-solid form-select-lg"
+                                    @if(auth()->user()->hasRole('admin'))
+                                        data-control="select2"
+                                    @endif
+                                    data-placeholder="Chọn học kỳ">
                                 <option value="semester_id">Chọn học kỳ</option>
                                 @foreach($semesters as $semester)
                                     <option
@@ -295,7 +301,6 @@
         const _token = "{{ csrf_token() }}";
 
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
     <script>
@@ -318,6 +323,8 @@
             });
 
             semesterSelect.append(semestersHtml);
+
+            semesterSelect.select2();
         }
 
         campusSelect.on('change', function () {

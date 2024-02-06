@@ -54,11 +54,11 @@ class StatusRequestController extends Controller
 
         if (auth()->user()->hasRole('admin')) {
             $statusRequestsQuery->where('campus_id', auth()->user()->campus_id);
-        } elseif (request()->has('campus_id')) {
+        } elseif (request()->has('campus_id') && !empty(request()->campus_id)) {
             $statusRequestsQuery->where('campus_id', request()->campus_id);
         }
 
-        if (request()->has('semester_id')) {
+        if (request()->has('semester_id') && !empty(request()->semester_id)) {
             $statusRequestsQuery->where('semester_id', request()->semester_id);
         }
 
@@ -93,7 +93,7 @@ class StatusRequestController extends Controller
             'semester_id' => 'required|integer|exists:semester,id',
             'campus_id' => 'required|integer|exists:campuses,id',
             'poetry_id' => 'required|integer|exists:poetry,id',
-            'note' => 'required|string',
+//            'note' => 'required|string',
             'statusRequestDetail' => 'required|array',
             'created_by' => 'required|integer|exists:users,id',
         ]);
@@ -148,7 +148,7 @@ class StatusRequestController extends Controller
             }
 
             $statusRequestNote = $statusRequest->notes()->create([
-                'note' => $request->note,
+//                'note' => $request->note,
             ]);
 
             $statusRequestNote->details()->createMany($statusRequestDetail);

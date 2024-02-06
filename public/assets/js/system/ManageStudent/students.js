@@ -1,15 +1,16 @@
 // let selectBlocks = document.getElementById("blocks");
-let selectSubject = document.getElementById("subjects");
-let classSubjectSelect = document.getElementById("classSubject");
+let selectSubject = $('#subjects');
+let classSubjectSelect = $('#classSubject');
 let blockId;
 let DataResult = {};
 
 const btnEx = document.querySelector('#btnExport');
 
 function eventSubject(btn, htmlimport = undefined) {
-    btn.addEventListener("change", function () {
+    $(document.body).on("change", '#semeters', function () {
         var idSemeter = btn.value;
         DataResult.semeter = idSemeter;
+        // console.log(DataResult);
         // wanrning('Đang Tải dữ liệu ... !');
         if (idSemeter) {
             $.ajax({
@@ -31,7 +32,11 @@ function eventSubject(btn, htmlimport = undefined) {
                         html += '<option value="">Không có dữ liệu</option>'
                     }
 
-                    selectSubject.innerHTML = html;
+                    selectSubject.html(html);
+
+                    // console.log(selectSubject);
+
+                    selectSubject.select2();
                 },
                 error: function (response) {
                     console.log(response);
@@ -39,8 +44,8 @@ function eventSubject(btn, htmlimport = undefined) {
                 }
             });
         } else {
-            selectSubject.value = '';
-            classSubjectSelect.value = '';
+            selectSubject.val('');
+            classSubjectSelect.val('');
             btnEx.innerHTML = ``;
             // notify('Tải dữ liệu không thành công !')
         }
@@ -49,9 +54,10 @@ function eventSubject(btn, htmlimport = undefined) {
 }
 
 eventSubject(selectSemeter);
-selectSubject.addEventListener("change", function () {
-    var idSubject = selectSubject.value;
+$(document.body).on("change", '#subjects', function () {
+    var idSubject = selectSubject.val();
     DataResult.subject = idSubject;
+    // console.log(DataResult);
     if (idSubject != "") {
         $.ajax({
             url: `/admin/accountStudent/GetPoetry/${idSubject}`,
@@ -75,8 +81,9 @@ selectSubject.addEventListener("change", function () {
                     html += '<option value="">Không có dữ liệu</option>'
                 }
 
-                classSubjectSelect.innerHTML = html;
-                classSubjectSelect = document.getElementById("classSubject");
+                classSubjectSelect.html(html);
+
+                classSubjectSelect.select2();
             },
             error: function (response) {
 
@@ -85,19 +92,19 @@ selectSubject.addEventListener("change", function () {
             }
         });
     } else {
-        classSubjectSelect.innerHTML = '<option value="">-- Lớp học --</option><option value="">Không có dữ liệu</option>'
+        classSubjectSelect.html('<option value="">-- Lớp học --</option><option value="">Không có dữ liệu</option>')
         // notify('Tải dữ liệu không thành công !')
     }
 
-    const url = `admin/accountStudent/exportClass/${selectSemeter.value}/${blockId}/${selectSubject.value}/`;
-    if (selectSemeter.value && selectSubject.value) {
+    const url = `admin/accountStudent/exportClass/${selectSemeter.value}/${blockId}/${selectSubject.val()}/`;
+    if (selectSemeter.value && selectSubject.val()) {
         btnEx.innerHTML = `<button type="button" class="btn btn-primary er fs-6 px-8 py-4" onclick="location.href='${url}'">Xuất Điểm</button>`
     } else {
         btnEx.innerHTML = ``
     }
 });
-classSubjectSelect.addEventListener("change", function () {
-    var idClass = classSubjectSelect.value;
+$(document.body).on("change", '#classSubject', function () {
+    var idClass = classSubjectSelect.val();
     DataResult.class = idClass;
     // console.log(DataResult);
     const url = `admin/accountStudent/exportClass/${DataResult.semeter}/${DataResult.block}/${DataResult.subject}/${DataResult.class}`;

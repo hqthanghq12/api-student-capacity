@@ -17,8 +17,8 @@
 
             <div class="row">
                 <div class="col-4">
-                    <select class="form-select"  id="semeters">
-                        <option value="">--Chọn Kỳ--</option>
+                    <select class="form-select"  id="semeters" data-control="select2" data-placeholder="Chọn kỳ">
+                        <option value=""></option>
                         @foreach($semeters as $value)
                         <option value="{{ $value->id }}">{{ $value->name }}</option>
                         @endforeach
@@ -30,13 +30,13 @@
 {{--                    </select>--}}
 {{--                </div>--}}
                 <div class="col-4">
-                    <select class="form-select" id="subjects">
-                        <option>-- Chọn Môn --</option>
+                    <select class="form-select" id="subjects" data-placeholder="Chọn môn">
+                        <option value="">Chọn Môn</option>
                     </select>
                 </div>
                 <div class="col-4">
-                    <select class="form-select" id="classSubject">
-                        <option>Lớp học</option>
+                    <select class="form-select" id="classSubject" data-placeholder="Lớp học">
+                        <option value="">Lớp học</option>
                     </select>
                 </div>
             </div>

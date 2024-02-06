@@ -19,7 +19,7 @@
                     <div class="row align-items-end">
                         <div class="form-group col-3">
                             <label for="t" class="form-label">Tìm kiếm theo</label>
-                            <select name="t" id="t" class="form-select">
+                            <select name="t" id="t" class="form-select" data-control="select2">
                                 <option value="code">Mã môn</option>
                                 <option value="name" @selected(request('t') == 'name')>Tên môn</option>
                             </select>
@@ -155,7 +155,7 @@
                     {{--                               placeholder="Nhập tên môn học...">--}}
                     {{--                    </div>--}}
                     <div class="form-group m-10">
-                        <select class="form-select" name="subject" id="subject_id">
+                        <select class="form-select" name="subject" id="subject_id" data-placeholder="Môn học">
                             <option selected value="">Môn học</option>
                             @foreach($listSubject as $value)
                                 <option value="{{ $value->id }}">{{ $value->name }}</option>
@@ -290,7 +290,7 @@
         const end_time =
             '{{ request()->has('end_time') ? \Carbon\Carbon::parse(request('end_time'))->format('m/d/Y h:i:s A') : \Carbon\Carbon::now()->format('m/d/Y h:i:s A') }}'
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+{{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>--}}
     {{--    <script src="{{ asset('assets/js/system/question/index.js') }}"></script>--}}
     <script src="{{ asset('assets/js/system/semeter/subject.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -302,6 +302,9 @@
     {{--    </button>--}}
     {{--    Thêm --}}
     <script>
+        $('#subject_id').select2({
+            dropdownParent: $('#kt_modal_1')
+        })
         $('#upload-basis').click(function (e) {
             e.preventDefault();
             var url = $('#form-submit').attr("action");

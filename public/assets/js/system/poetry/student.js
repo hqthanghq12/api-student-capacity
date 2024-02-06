@@ -7,6 +7,9 @@ const receiveExamEvent = () => {
     const examIdInput = $('#exam_id');
     const timeInput = $('#time');
     const examNameInput = $('#exam_name');
+    examIdInput.select2({
+        dropdownParent: $('#kt_modal_2'),
+    });
     receiveModeInput.change(e => {
         let mode = receiveModeInput.val();
         switch (mode) {
@@ -33,7 +36,7 @@ const receiveExamEvent = () => {
 
         }
     });
-    examIdInput.change(e => {
+    $(document.body).on("change", "#exam_id", function () {
         let exam_id = examIdInput.val();
         if (exam_id.trim() === "") {
             timeInput.val('');

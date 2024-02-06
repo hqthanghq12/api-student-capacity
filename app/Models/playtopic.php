@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class playtopic extends Model
 {
     use HasFactory;
+
     protected $table = 'playtopic';
     protected $fillable = [
         'has_received_exam',
@@ -19,6 +20,7 @@ class playtopic extends Model
         'created_at',
         'updated_at',
     ];
+
     public function userStudent()
     {
         return $this->belongsTo(User::class, 'id_user', 'id');
@@ -46,6 +48,11 @@ class playtopic extends Model
 
     public function resultCapacity()
     {
-        return $this->hasMany(ResultCapacity::class, 'playtopic_id','id');
+        return $this->hasMany(ResultCapacity::class, 'playtopic_id', 'id');
+    }
+
+    public function studentPoetry()
+    {
+        return $this->belongsTo(StudentPoetry::class, 'student_poetry_id', 'id');
     }
 }
