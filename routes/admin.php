@@ -232,6 +232,9 @@ Route::group([
     Route::get('dowload-frm-excel-poetry', function () {
         return response()->download(public_path('assets/media/excel/file-mau-kh-thi.xlsx'));
     })->name("admin.download.execel.poetry");
+    Route::get('dowload-frm-excel-account', function () {
+        return response()->download(public_path('assets/media/excel/file-mau-nhap-tai-khoan.xlsx'));
+    })->name("admin.download.excel.account");
     Route::post('upload-image', [CkeditorController::class, 'updoadFile'])->name('admin.ckeditor.upfile');
     Route::prefix('questions')->group(function () {
         Route::get('', [QuestionController::class, 'index'])->name('admin.question.index');

@@ -410,6 +410,7 @@
                     </div>
 
                     <div class="modal-footer">
+                        <a href="{{ route('admin.download.excel.account') }}" class="btn btn-light-success me-2">Tải xuống mẫu file nhập</a>
                         <button type="submit"
                                 class="upload-file btn btn-primary">Tải
                             lên
