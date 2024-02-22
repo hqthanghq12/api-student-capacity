@@ -2,6 +2,9 @@
 @section('title', "Ca {$poetry->start_examination_id} - {$poetry->block_subject->subject->name} - {$poetry->classsubject->name}")
 @section('page-title', 'Quản lý ca thi số ' .$id)
 @section('content')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.css"/>
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.5/dist/simple-notify.min.js"></script>
     <style>
         .tag-container {
             display: flex;
@@ -45,10 +48,6 @@
             {{--            <div class="card card-flush p-4">--}}
             {{--            </div>--}}
             <div class="card card-flush p-4">
-                <select name="" id="" class="form-control" data-control="select2" data-placeholder="123">
-                    <option value=""></option>
-                    <option value="1">2</option>
-                </select>
                 <form action="" class="my-5 p-3">
                     <label for="email">Tìm kiếm theo email</label>
                     <div class="row">

@@ -232,15 +232,15 @@ class AuthController extends Controller
         $campus_id = $request->campus_code;
         if (!$flagRoleAdmin) {
 //            foreach (config('util.MS_SV') as $ks) {
-                $username = \Str::of($googleUser['email'])
-                    ->before(config('util.END_EMAIL_FPT'))
-                    ->toString();
-                $regexMSSV = "/^(\D*)(\D{2}\d*)$/";
-                $MSSV = null;
-                preg_match($regexMSSV, $username, $matches);
-                if ($matches) {
-                    $MSSV = $matches[2];
-                }
+            $username = \Str::of($googleUser['email'])
+                ->before(config('util.END_EMAIL_FPT'))
+                ->toString();
+            $regexMSSV = "/^(\D*)(\D{2}\d*)$/";
+            $MSSV = null;
+            preg_match($regexMSSV, $username, $matches);
+            if ($matches) {
+                $MSSV = $matches[2];
+            }
 //            $MSSV = \Str::lower($campus_code) . \Str::afterLast(
 //                    \Str::of($googleUser->email)
 //                        ->before(config('util.END_EMAIL_FPT'))
@@ -294,6 +294,7 @@ class AuthController extends Controller
                 'status' => true,
                 'payload' => [
                     'token' => $token,
+                    'token_type' => 'Bearer',
                     'user' => $user->toArray(),
                 ],
             ]);
