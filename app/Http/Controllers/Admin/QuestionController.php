@@ -871,7 +871,10 @@ class QuestionController extends Controller
             // Duyệt qua các đối tượng Drawing
             foreach ($drawings as $index => $drawing) {
                 // Kiểm tra xem đối tượng Drawing có phải là MemoryDrawing hay không
-                $code = $sheetData[$index + 1][0];
+                $code = $sheetData[$index + 1][0] ?? null;
+                if (!$code) {
+                    continue;
+                }
                 if ($drawing instanceof \PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing) {
                     // Lấy ảnh từ phương thức getImageResource
                     $image = $drawing->getImageResource();
