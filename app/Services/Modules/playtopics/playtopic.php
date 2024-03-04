@@ -72,7 +72,7 @@ class playtopic
             if ($rejoinFifteen) $rejoinFifteen->addMinutes(15);
 
             $records->is_in_time = (
-                ($rejoin && now()->isBetween($rejoin, $rejoinFifteen))
+                ($rejoin && $start_time->isPast() && now()->isBetween($rejoin, $rejoinFifteen))
                 || (now()->isBetween($start_time, $finish_time) && now()->isBefore($startTen->addMinutes(10)))
             );
 

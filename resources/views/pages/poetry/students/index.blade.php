@@ -338,7 +338,7 @@
                                         <td class="text-end">
                                             <button
                                                 href="#"
-                                                class="btn-rejoin menu-link border border-0 bg-transparent px-3 btn btn-sm btn-outline-primary {{ $is_in_date ? '' : 'disabled' }}"
+                                                class="btn-rejoin menu-link border border-0 bg-transparent px-3 btn btn-sm btn-outline-primary {{ $is_in_date && $has_started ? '' : 'disabled' }}"
                                                 data-id="{{ $value->id }}"
                                                 data-kt-users-table-filter="delete_row"
                                             >

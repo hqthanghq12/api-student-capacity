@@ -1001,6 +1001,18 @@ class QuestionController extends Controller
 
         $examinations = examination::query()->select('id', 'started_at', 'finished_at')->get();
 
+        $numberOfExaminations = $examinations->count();
+
+        $finishExaminationStep = 5;
+
+        $finishExaminationConditions = [];
+
+        for ($i = 0; $i <= $numberOfExaminations; $i += $finishExaminationStep) {
+            $finishExaminationConditions[$i] = $i + $finishExaminationStep;
+        }
+
+        $finishExaminationConditions[array_key_last($finishExaminationConditions)] = $numberOfExaminations;
+
         $line = 1;
 
         foreach ($infoSubject as $value) {
@@ -1251,12 +1263,28 @@ class QuestionController extends Controller
 //            })->toArray();
 //        dd($poetryByDay);
         $poetryDataArr = [];
+
         foreach ($arrItem as $key => $item) {
             $id_block_subject = $subjectCodeToBlockSubjectId[$item['subject_code']];
             $id_class = $classNameToClassId[$item['class']];
 //            $examination_count = $item['examination_count'];
             $start_examination_id = $item['start_examination_id'];
-            $finish_examination_id = ($item['parent_poetry_examination'] == 0) ? ($start_examination_id > 5 ? 10 : 5) : null;
+
+            $finish_examination_id = null;
+
+            if ($item['parent_poetry_examination'] == 0) {
+
+                $finish_examination_id = $numberOfExaminations;
+
+                foreach ($finishExaminationConditions as $condition => $value) {
+                    if ($start_examination_id >= $condition && $start_examination_id < $value) {
+                        $finish_examination_id = $value;
+                        break;
+                    }
+                }
+            }
+
+//            $finish_examination_id = ($item['parent_poetry_examination'] == 0) ? ($start_examination_id > 5 ? 10 : 5) : null;
 
 //            $finish_examination_id = $start_examination_id + $examination_count - 1 >= 5 ? 10 : 5;
             $room = $item['room'];
