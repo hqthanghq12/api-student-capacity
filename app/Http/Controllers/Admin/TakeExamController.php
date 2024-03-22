@@ -323,7 +323,14 @@ class TakeExamController extends Controller
 //            $arrayOrder = explode(',',trim($string, '[]'));
 //            $exam->test = $arrayOrder;
 //        return $string;
-            $questions = $this->question->findInId($arrayOrder, ['answers', 'images']);
+            $questions = $this->question->findInId(
+                $arrayOrder,
+                [
+                    'answers' => function ($q) {
+                        return $q->select(['id', 'content', 'question_id']);
+                    },
+                    'images'
+                ]);
 //        $questions = \App\Models\Question::whereIn('id', $arrayOrder)->get();
 //            $exam->load(['questions' => function ($q) use ($arrayOrder) {
 //                $q->orderByRaw("FIELD(questions.id, " . implode(",", $arrayOrder) . ")");
@@ -353,7 +360,18 @@ class TakeExamController extends Controller
 //            $exam = $this->exam->whereGet(['id' => $request->id])->pluck('id');
         } catch (\Throwable $th) {
             $dB::rollBack();
-//            dd($th);
+            Log::info("===================================");
+            Log::info("===================================");
+            Log::info("Lỗi lấy đề bài:");
+            Log::info("Lỗi: " . json_encode([
+                    'msg' => "{$th->getMessage()}",
+                    'line' => $th->getLine(),
+                    'file' => $th->getFile(),
+                    'user_id' => auth('sanctum')->user()->id,
+                    'data' => $request->all(),
+                ]));
+            Log::info("===================================");
+            Log::info("===================================");
             return $this->responseApi(false, "Lỗi hệ thống");
         }
     }
@@ -462,6 +480,10 @@ class TakeExamController extends Controller
             $resultCapacity = $this->resultCapacity->findByUserPlaytopic($user_id, $request->playtopic_id);
 //        return $score;
 
+            if (!$resultCapacity) {
+                return $this->responseApi(false, 'Lỗi hệ thống !!');
+            }
+
             $resultCapacity->update([
                 'scores' => $score,
                 'status' => config('util.STATUS_RESULT_CAPACITY_DONE'),
@@ -498,6 +520,19 @@ class TakeExamController extends Controller
             }
             $this->resultCapacityDetail->insert($dataInsert);
             $db::commit();
+
+            $data = "Data" . json_encode([
+                    'user_id' => auth('sanctum')->user()->id,
+                    'data' => $request->all(),
+                ]);
+
+            Log::info('=====================');
+            Log::info('=====================');
+            Log::info('Nộp bài thành công:');
+            Log::info($data);
+            Log::info('=====================');
+            Log::info('=====================');
+
             return $this->responseApi(
                 true,
                 $resultCapacity,
@@ -512,15 +547,20 @@ class TakeExamController extends Controller
             );
         } catch (\Throwable $th) {
             $db::rollBack();
-            $err = "Lỗi nộp bài: " . json_encode([
+            $data = "Data" . json_encode([
                     'msg' => "{$th->getMessage()}",
                     'line' => $th->getLine(),
                     'file' => $th->getFile(),
                     'user_id' => auth('sanctum')->user()->id,
                     'data' => $request->all(),
                 ]);
-            Log::error($err);
-            return $th->getMessage();
+            Log::info('=====================');
+            Log::info('=====================');
+            Log::error("Lỗi nộp bài:");
+            Log::error($data);
+            Log::info('=====================');
+            Log::info('=====================');
+            return $this->responseApi(false, 'Lỗi hệ thống !!');
         }
     }
 

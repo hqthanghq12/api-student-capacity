@@ -88,10 +88,11 @@ class CampusController extends Controller
             $request->all(),
             [
                 'namebasis' => 'required|min:3|unique:campuses,name',
-                'code' => 'required'
+                'code' => 'required|unique:campuses,code'
             ],
             [
-                'namebasis.unique' => 'Trường dữ liệu đã tồn tại',
+                'namebasis.unique' => 'Tên cơ sở đã tồn tại',
+                'code.unique' => 'Mã cơ sở đã tồn tại',
                 'namebasis.required' => 'Không để trống tên cơ sở !',
                 'namebasis.min' => 'Tối thiếu 3 ký tự',
                 'code.required' => 'Không để trống mã cơ sở'
