@@ -523,15 +523,22 @@ class TakeExamController extends Controller
 
             $data = "Data" . json_encode([
                     'user_id' => auth('sanctum')->user()->id,
-                    'data' => $request->all(),
+                    'data' => $request->except('logs'),
                 ]);
 
-            Log::info('=====================');
-            Log::info('=====================');
-            Log::info('Nộp bài thành công:');
-            Log::info($data);
-            Log::info('=====================');
-            Log::info('=====================');
+            Log::channel('examchange')->info('=====================');
+            Log::channel('examchange')->info('=====================');
+            Log::channel('examchange')->info('Thay đổi của bài thi: ' . $request->playtopic_id);
+            Log::channel('examchange')->info(json_encode($request->logs));
+            Log::channel('examchange')->info('=====================');
+            Log::channel('examchange')->info('=====================');
+
+            Log::channel('successlog')->info('=====================');
+            Log::channel('successlog')->info('=====================');
+            Log::channel('successlog')->info('Nộp bài thành công:');
+            Log::channel('successlog')->info($data);
+            Log::channel('successlog')->info('=====================');
+            Log::channel('successlog')->info('=====================');
 
             return $this->responseApi(
                 true,
@@ -552,7 +559,7 @@ class TakeExamController extends Controller
                     'line' => $th->getLine(),
                     'file' => $th->getFile(),
                     'user_id' => auth('sanctum')->user()->id,
-                    'data' => $request->all(),
+                    'data' => $request->except('logs'),
                 ]);
             Log::info('=====================');
             Log::info('=====================');
