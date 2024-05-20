@@ -1188,6 +1188,8 @@ class UserController extends Controller
                 return $this->responseApi(false, $msg, 400);
             }
 
+            DB::commit();
+
             return $this->responseApi(true, [
                 'insert_count' => $insertCount,
                 'contain_count' => $contain,
