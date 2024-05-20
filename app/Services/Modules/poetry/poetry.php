@@ -349,7 +349,9 @@ class poetry implements MPoetryInterface
 
                 $is_in_time = (
                     ($rejoin && $start_time->isPast() && now()->isBetween($rejoin, $rejoinFifteen))
-                    || (now()->isBetween($start_time, $finish_time) && now()->isBefore($startTen->addMinutes(10)))
+                    || (now()->isBetween($start_time, $finish_time)
+//                        && now()->isBefore($startTen->addMinutes(10))
+                    )
                 );
 
                 $have_done = (!empty($value->created_at) && $value->status == 1);
