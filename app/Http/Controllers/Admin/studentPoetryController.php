@@ -324,9 +324,9 @@ class studentPoetryController extends Controller
             ->with('poetry_student')
             ->select(['id', 'email'])
             ->whereIn('email', $request->emailStudent)
-//            ->whereHas('roles', function ($query) {
-//                $query->where('id', config('util.STUDENT_ROLE'));
-//            })
+            ->whereHas('roles', function ($query) {
+                $query->where('id', config('util.STUDENT_ROLE'));
+            })
             ->whereDoesntHave('poetry_student', function ($query) use ($id_poetry) {
                 $query->where('id_poetry', $id_poetry);
             });

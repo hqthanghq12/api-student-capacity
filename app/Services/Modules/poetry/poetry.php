@@ -3,12 +3,9 @@
 namespace App\Services\Modules\poetry;
 
 use App\Models\blockSubject;
-use App\Models\ClassModel;
 use App\Models\examination;
 use App\Models\poetry as modelPoetry;
-use App\Models\semeter;
 use App\Models\studentPoetry;
-use App\Models\subject;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -350,7 +347,7 @@ class poetry implements MPoetryInterface
                 $is_in_time = (
                     ($rejoin && $start_time->isPast() && now()->isBetween($rejoin, $rejoinFifteen))
                     || (now()->isBetween($start_time, $finish_time)
-//                        && now()->isBefore($startTen->addMinutes(10))
+                        && now()->isBefore($startTen->addMinutes(10))
                     )
                 );
 
