@@ -267,8 +267,10 @@
                         <select class="form-select" data-control="select2" id="roles_id">
                             <option selected value="0">--Chức vụ--</option>
                             @foreach($roles as $value)
-                                @if(auth()->user()->roles[0]->id != $value->id && $value->name != 'student')
-                                    <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                @if(auth()->user()->email === config('util.SUPER_HO_EMAIL') || auth()->user()->roles[0]->id != $value->id)
+                                    <option value="{{ $value->id }}">
+                                        {{ \Str::ucfirst($value->name == 'super admin' ? 'Admin HO' : $value->name)  }}
+                                    </option>
                                 @endif
                             @endforeach
                         </select>
@@ -322,8 +324,10 @@
                         <select class="form-select" id="roles_id_update">
                             <option selected value="0">--Chức vụ--</option>
                             @foreach($roles as $value)
-                                @if(auth()->user()->roles[0]->id != $value->id && $value->name != 'student')
-                                    <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                @if(auth()->user()->email === config('util.SUPER_HO_EMAIL') || auth()->user()->roles[0]->id != $value->id)
+                                    <option value="{{ $value->id }}">
+                                        {{ \Str::ucfirst($value->name == 'super admin' ? 'Admin HO' : $value->name)  }}
+                                    </option>
                                 @endif
                             @endforeach
                         </select>
@@ -374,8 +378,10 @@
                                         data-placeholder="Chọn chức vụ">
                                     <option selected value=""></option>
                                     @foreach($roles as $value)
-                                        @if(auth()->user()->roles[0]->id != $value->id)
-                                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                        @if(auth()->user()->email === config('util.SUPER_HO_EMAIL') || auth()->user()->roles[0]->id != $value->id)
+                                            <option value="{{ $value->id }}">
+                                                {{ \Str::ucfirst($value->name == 'super admin' ? 'Admin HO' : $value->name)  }}
+                                            </option>
                                         @endif
                                     @endforeach
                                 </select>

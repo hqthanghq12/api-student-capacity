@@ -421,10 +421,10 @@ class UserController extends Controller
                 })
                 ->search(request('q') ?? null, ['name', 'email'])
                 ->has_role(request('role') ?? null)
-                ->where('id', '<>', auth()->user()->id)
-                ->whereDoesntHave('roles', function ($query) {
-                    $query->where('name', 'student');
-                });
+                ->where('id', '<>', auth()->user()->id);
+//                ->whereDoesntHave('roles', function ($query) {
+//                    $query->where('name', 'student');
+//                });
             if (!auth()->user()->hasRole('super admin')) {
                 $usersQuery
                     ->where('campus_id', auth()->user()->campus_id)
