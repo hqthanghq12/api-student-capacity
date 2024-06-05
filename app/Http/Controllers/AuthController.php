@@ -233,7 +233,8 @@ class AuthController extends Controller
         if (!$flagRoleAdmin) {
 //            foreach (config('util.MS_SV') as $ks) {
             $username = \Str::of($googleUser['email'])
-                ->before(config('util.END_EMAIL_FPT'))
+//                ->before(config('util.END_EMAIL_FPT'))
+                ->before('@')
                 ->toString();
             $regexMSSV = "/^(\D*)(\D{2}\d*)$/";
             $MSSV = null;
