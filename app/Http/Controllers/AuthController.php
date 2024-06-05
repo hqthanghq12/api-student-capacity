@@ -240,7 +240,7 @@ class AuthController extends Controller
             $MSSV = null;
             preg_match($regexMSSV, $username, $matches);
             if ($matches) {
-                $MSSV = $matches[2];
+                $MSSV = strlen($matches[2]) <= 2 ? $username : $matches[2];
             }
 //            $MSSV = \Str::lower($campus_code) . \Str::afterLast(
 //                    \Str::of($googleUser->email)
