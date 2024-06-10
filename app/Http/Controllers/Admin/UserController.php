@@ -1116,7 +1116,7 @@ class UserController extends Controller
                     continue;
                 }
 
-                $campus_id = $isAdmin ? auth()->user()->hasRole(config('util.ADMIN_ROLE')) : $campuses[$campus_code];
+                $campus_id = $isAdmin ? auth()->user()->campus_id : $campuses[$campus_code];
 
                 for ($j = 1, $jMax = count($sheet); $j < $jMax; $j++) {
                     $name = $sheet[$j][$name_col];
