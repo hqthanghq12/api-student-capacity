@@ -484,6 +484,10 @@ class TakeExamController extends Controller
                 return $this->responseApi(false, 'Lỗi hệ thống !!');
             }
 
+            if ($resultCapacity->status == config('util.STATUS_RESULT_CAPACITY_DONE')) {
+                return $this->responseApi(false, 'Bài thi đã được nộp');
+            }
+
             $resultCapacity->update([
                 'scores' => $score,
                 'status' => config('util.STATUS_RESULT_CAPACITY_DONE'),
