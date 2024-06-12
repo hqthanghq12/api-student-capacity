@@ -3,6 +3,7 @@
 namespace App\Exports\Sheets\QuestionDetailExport;
 
 use App\Models\QuestionImage;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
@@ -71,7 +72,8 @@ class ImageSheet implements WithTitle, WithHeadings, WithStyles, WithColumnWidth
         $images = $this->query()->get();
         foreach ($images as $key => $image) {
             if (!$imageResource = @imagecreatefromstring(file_get_contents($image->path))) {
-                throw new \Exception('The image URL cannot be converted into an image resource.');
+                Log::error('Error loading image: ' . $image->path);
+                continue;
             }
             $drawing = new MemoryDrawing();
             $drawing->setName($image->img_code);
