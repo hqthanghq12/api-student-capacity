@@ -404,7 +404,7 @@ class TakeExamController extends Controller
      *     @OA\Response(response="404", description="{ status: false , message : 'Not found' }")
      * )
      */
-    public function takeExamStudentCapacitySubmit(Request $request, DB $db)
+    public function     takeExamStudentCapacitySubmit(Request $request, DB $db)
     {
         $db::beginTransaction();
         try {
@@ -476,6 +476,11 @@ class TakeExamController extends Controller
                 }
 
             }
+
+            if ($donotAnswer == $questions_count) {
+                return $this->responseApi(false, 'Không được nộp bài thi không trả lời câu hỏi nào');
+            }
+
 //        $resultCapacity = $this->resultCapacity->findByUserExam($user_id, $request->exam_id);
             $resultCapacity = $this->resultCapacity->findByUserPlaytopic($user_id, $request->playtopic_id);
 //        return $score;
@@ -484,8 +489,8 @@ class TakeExamController extends Controller
                 return $this->responseApi(false, 'Lỗi hệ thống !!');
             }
 
-            if ($resultCapacity->status == config('util.STATUS_RESULT_CAPACITY_DONE')) {
-                return $this->responseApi(false, 'Bài thi đã được nộp');
+            if ($resultCapacity->scores > 0 || $resultCapacity->status == config('util.STATUS_RESULT_CAPACITY_DONE')) {
+                return $this->responseApi(false, 'Bài thi đã được nộp trước đó');
             }
 
             $resultCapacity->update([
