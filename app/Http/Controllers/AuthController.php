@@ -173,7 +173,7 @@ class AuthController extends Controller
     {
         try {
 
-            $client = new \Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+            $client = new \Google_Client(['client_id' => config('util.GOOGLE_CLIENT_ID')]);
 
             $googleUser = $client->verifyIdToken($request->token);
 

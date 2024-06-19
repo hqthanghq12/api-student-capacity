@@ -220,6 +220,7 @@ class poetry implements MPoetryInterface
     {
         try {
             $records = $this->modelPoetry->with(['student_poetry', 'student_poetry.playtopic.resultCapacity', 'semeter', 'campus', 'block_subject.block'])
+                ->select([])
                 ->withCount(['student_poetry AS total_student_poetry',
                         'student_poetry as total_playtopic' => function ($query) {
                             $query->whereDoesntHave('playtopic');
@@ -229,9 +230,9 @@ class poetry implements MPoetryInterface
                         }]
                 )
                 ->groupBy('id_semeter', 'id_block_subject', 'id_class', 'room', 'assigned_user_id', 'id_campus', 'exam_date')
+                ->addSelect('id_semeter', 'id_campus', 'id_block_subject', 'id_class')
                 ->get();
 
-//            T
 
 //            $result = $records->map(function ($record) use ($totalPoetry) {
 //                return [
@@ -256,10 +257,14 @@ class poetry implements MPoetryInterface
 
 //            $records->idblock =  $records->pluck('block_subject');
 //            số ca thi
-            $totalPoetry = $records->groupBy('id_semeter')->map(function ($group) {
-                return $group->count();
-            });
-            $totalPoetry = $totalPoetry->sum();
+//        dd($records->count());
+//        $totalPoetry = $records->groupBy('id_semeter')->map(function ($group) {
+//            dd($group);
+//            return $group->count();
+//        });
+//        $totalPoetry = $totalPoetry->sum();
+
+            $totalPoetry = $records->count();
 
 
             $data = [
