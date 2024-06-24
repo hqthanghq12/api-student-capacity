@@ -17,3 +17,6 @@ yarn-error.log
 dump.rdb
 laravel-echo-server.json
 laravel-echo-server.lock
+bun.lockb
+composer.lock
+package-lock.json

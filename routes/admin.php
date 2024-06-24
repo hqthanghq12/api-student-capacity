@@ -202,8 +202,11 @@ Route::group([
         Route::post('un-status/{id}', [UserController::class, 'un_status'])->name('admin.acount.un.status');
         Route::post('re-status/{id}', [UserController::class, 're_status'])->name('admin.acount.re.status');
         Route::post('change-role', [UserController::class, 'changeRole'])->name('admin.acount.change.role');
+
+        Route::post('change-password', [UserController::class, 'changePassword'])->name('admin.acount.change.password');
+
         Route::prefix('excel')->group(function () {
-            Route::post('import', [UserController::class, 'import'])->name('admin.acount.excel.import');
+            Route::post('import', [UserController::class, 'importExcel'])->name('admin.acount.excel.import');
 //            Route::get('export', [UserController::class, 'export'])->name('admin.acount.excel.export');
         });
     });
