@@ -538,6 +538,7 @@ class UserController extends Controller
                 return response('Bạn không có quyền thêm tài khoản với chức vụ ngang hoặc lớn hơn mình', 404);
             }
         }
+        $password = Str::random(10);
         $data = [
             'name' => $request->name_add,
             'email' => $request->email_add,
@@ -545,9 +546,13 @@ class UserController extends Controller
             'status' => $request->status,
             'mssv' => NULL,
 //            'branch_id' => $request->branches_id,
-            'campus_id' => $request->campus_id
+            'campus_id' => $request->campus_id,
+            'password' => Hash::make($password),
         ];
         DB::table('users')->insert($data);
+
+        dispatch(new NotificationChangePassword($request->email_add, $password ));
+
         $id = DB::getPdo()->lastInsertId();
         DB::table('model_has_roles')->insert(
             [
@@ -1296,7 +1301,6 @@ class UserController extends Controller
             $account_import = new AccountMultiImport($request);
             Excel::import($account_import, $request->file('ex_file'));
             $results = $account_import->getValuesFromImports();
-            dd($results);
             dispatch(new SendEmailImportAccount($results['results']));
             return $this->responseApi(true, [
                 'insert_count' => $results['total'],
@@ -1310,23 +1314,21 @@ class UserController extends Controller
         }
     }
 
-    public function changePasswordAccount(Request $request){
+    public function changePassword(Request $request){
         try {
             $userId = $request->user_id;
             $user = User::find($userId);
             if(!$user){
-                return $this->responseApi(false, 'Tài khoản không tồn tại', 404);
+                return redirect(route('admin.acount.list'))->with('error', 'Tài khoản không tồn tại');
             }
             $password = Str::random(20);
             $user->password = Hash::make($password);
             $user->save();
             dispatch(new NotificationChangePassword($user, $password));
-            return $this->responseApi(true, [
-                'status' => true,
-                'payload' => 'Mật khẩu đã được thay đổi và gửi qua email !',
-            ], 200);
+            return redirect(route('admin.acount.list'))->with('success', 'Đổi mật khẩu thành công');
         } catch (\Exception $e) {
-            return $this->responseApi(false, $e->getMessage(), 500);
+            Log::error($e->getMessage());
+            return redirect(route('admin.acount.list'))->with('error', 'Đổi mật khẩu thất bại');
         }
     }
 }

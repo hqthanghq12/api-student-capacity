@@ -43,8 +43,10 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            if ($user->hasRole([config('util.STUDENT_ROLE')])) {
+            // if ($user->hasRole([config('util.STUDENT_ROLE')])) {
                 $token = $user->createToken('auth_token')->plainTextToken;
+                $user = User::where('email', $request->email)->first();
+                $user->campus = Campus::find($user->campus_id);
                 return response()->json([
                     'status' => true,
                     'payload' => [
@@ -53,11 +55,11 @@ class AuthController extends Controller
                         'user' => $user->toArray(),
                     ],
                 ]);
-            }
-            return response()->json([
-                'status' => false,
-                'payload' => "Tài khoản không tồn tại hoặc không có quyền truy cập",
-            ]);
+            // }
+            // return response()->json([
+            //     'status' => false,
+            //     'payload' => "Tài khoản không có quyền truy cập",
+            // ]);
         } else {
             return response()->json([
                 'status' => false,
