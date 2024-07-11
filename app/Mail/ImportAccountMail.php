@@ -13,9 +13,9 @@ class ImportAccountMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private $email;
-    private $password;
-    private $subject;
+    public $email;
+    public $password;
+    public $subject;
 
     public function __construct($email, $password, $subject = 'Import Account Mail')
     {
