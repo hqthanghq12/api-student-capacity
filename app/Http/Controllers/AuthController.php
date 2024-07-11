@@ -16,6 +16,58 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
+
+    public function studentLogin(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'email' => ['required', 'email'],
+                'password' => ['required', 'min:6'],
+            ],
+            [
+                'email.required' => 'Vui lòng nhập email',
+                'email.email' => 'Email không đúng định dạng',
+                'password.required' => 'Vui lòng nhập mật khẩu',
+                'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'payload' => $validator->errors(),
+            ]);
+        }
+
+        $credentials = $request->only('email', 'password');
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            // if ($user->hasRole([config('util.STUDENT_ROLE')])) {
+                $token = $user->createToken('auth_token')->plainTextToken;
+                $user = User::where('email', $request->email)->first();
+                $user->campus = Campus::find($user->campus_id);
+                return response()->json([
+                    'status' => true,
+                    'payload' => [
+                        'token' => $token,
+                        'token_type' => 'Bearer',
+                        'user' => $user->toArray(),
+                    ],
+                ]);
+            // }
+            // return response()->json([
+            //     'status' => false,
+            //     'payload' => "Tài khoản không có quyền truy cập",
+            // ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'payload' => "Tài khoản không tồn tại hoặc mật khẩu không đúng",
+            ]);
+        }
+    }
+
     public function adminLogin()
     {
         $campuses = Campus::all();
@@ -158,6 +210,8 @@ class AuthController extends Controller
         }
         return redirect()->route($route);
     }
+
+
 
     private function loginUser($user)
     {

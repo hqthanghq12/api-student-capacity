@@ -207,13 +207,20 @@
 
 
                         </td>
-                        <td>
+                        <td class="d-flex">
                             @if (count($user->roles) == 0 || (auth()->user()->roles[0]->id != $user->roles[0]->id))
                                 <div class="menu-item px-3">
                                     <button class="btn-edit btn btn-info" data-id="{{ $user->id }}">
                                         Chỉnh sửa
                                     </button>
                                 </div>
+                            @endif
+                            @if($user->hasRole(config('util.STUDENT_ROLE')))
+                                <form action="{{route('admin.acount.change.password')}}" method="post">
+                                    @csrf
+                                    <input type="hidden" name="user_id" value="{{$user->id}}">
+                                    <button type="submit" class="btn btn-warning">Đổi mật khẩu</button>
+                                </form>
                             @endif
                         </td>
                         {{-- @else --}}

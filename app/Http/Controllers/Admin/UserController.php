@@ -3,6 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Imports\AccountImport;
+use App\Imports\AccountMultiImport;
+use App\Jobs\NotificationChangePassword;
+use App\Jobs\SendEmailImportAccount;
+use App\Mail\ImportAccountMail;
 use App\Models\Contest;
 use App\Models\User;
 use App\Models\modelroles;
@@ -31,6 +36,9 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use App\Models\branches;
 use App\Models\Campus;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -530,6 +538,7 @@ class UserController extends Controller
                 return response('Bạn không có quyền thêm tài khoản với chức vụ ngang hoặc lớn hơn mình', 404);
             }
         }
+        $password = Str::random(10);
         $data = [
             'name' => $request->name_add,
             'email' => $request->email_add,
@@ -537,9 +546,13 @@ class UserController extends Controller
             'status' => $request->status,
             'mssv' => NULL,
 //            'branch_id' => $request->branches_id,
-            'campus_id' => $request->campus_id
+            'campus_id' => $request->campus_id,
+            'password' => Hash::make($password),
         ];
         DB::table('users')->insert($data);
+
+        dispatch(new NotificationChangePassword($request->email_add, $password ));
+
         $id = DB::getPdo()->lastInsertId();
         DB::table('model_has_roles')->insert(
             [
@@ -735,7 +748,8 @@ class UserController extends Controller
         ]);
         if (auth()->user()->roles[0]->name == 'super admin') {
             $user->syncRoles($role);
-        } else {
+        } 
+        else {
             if ($role->name == 'super admin') return response()->json([
                 'status' => false,
                 'payload' => 'Không thể câp nhật quyền cao hơn mình cho người khác  !',
@@ -1156,6 +1170,7 @@ class UserController extends Controller
 
             $chunkSize = 1000;
 
+            
             $chunksUserInsertArr = array_chunk($userInsertArr, $chunkSize);
 
             foreach ($chunksUserInsertArr as $chunkUserInsertArr) {
@@ -1208,6 +1223,112 @@ class UserController extends Controller
             Log::error('Error import user: ' . json_encode($msg));
 
             return $this->responseApi(false, "Có lỗi xảy ra khi thêm người dùng", 500);
+        }
+    }
+
+    public function importExcel(Request $request){
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'ex_file' => 'required|file|mimes:xlsx,xls',
+                'roles_id_add_excel' => 'required|numeric|min:1|exists:roles,id',
+            ],
+            [
+                'ex_file.required' => 'Không có file nào được chọn',
+                'ex_file.file' => 'File không hợp lệ',
+                'ex_file.mimes' => 'File không hợp lệ',
+                'roles_id_add_excel.required' => 'Vui lòng chọn chức vụ cho tài khoản',
+                'roles_id_add_excel.min' => 'Vui lòng chọn chức vụ',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return $this->responseApi(false, $validator->errors(), 400);
+        }
+        try {
+            DB::beginTransaction();
+            $campuseQuery = Campus::query()->select('id', 'code');
+
+            $isAdmin = auth()->user()->hasRole(config('util.ADMIN_ROLE'));
+
+            if ($isAdmin) {
+                $campuseQuery->where('id', auth()->user()->campus_id);
+            }
+
+            $campuses = $campuseQuery->pluck('id', 'code');
+            $account_import = new AccountImport($request, $campuses);
+            Excel::import($account_import, $request->file('ex_file'));
+            $results = $account_import->getResults();
+            dispatch(new SendEmailImportAccount($results['results']));
+            DB::commit();
+            return $this->responseApi(true, [
+                'insert_count' => $results['total'],
+                'contain_count' => count($results['existedEmail']),
+                'not_found_campus' => count($results['errorCampus']),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error($e);
+            return $this->responseApi(false, $e->getMessage(), 500);
+        }
+    }
+
+    public function importMultiSheet(Request $request){
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'ex_file' => 'required|file|mimes:xlsx,xls',
+                'roles_id_add_excel' => 'required|numeric|min:1|exists:roles,id',
+            ],
+            [
+                'ex_file.required' => 'Không có file nào được chọn',
+                'ex_file.file' => 'File không hợp lệ',
+                'ex_file.mimes' => 'File không hợp lệ',
+                'roles_id_add_excel.required' => 'Vui lòng chọn chức vụ cho tài khoản',
+                'roles_id_add_excel.min' => 'Vui lòng chọn chức vụ',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return $this->responseApi(false, $validator->errors(), 400);
+        }
+        try {
+            DB::beginTransaction();
+            $campus = Campus::query()->select('id', 'code')->get();
+            $campusCode = $campus->pluck('code')->toArray();
+            $campusIds = $campus->pluck('id')->toArray();
+            // $account_import = new AccountImport($request, $campusCode, $campusIds);
+            $account_import = new AccountMultiImport($request);
+            Excel::import($account_import, $request->file('ex_file'));
+            $results = $account_import->getValuesFromImports();
+            dispatch(new SendEmailImportAccount($results['results']));
+            return $this->responseApi(true, [
+                'insert_count' => $results['total'],
+                'contain_count' => count($results['existedEmail']),
+                'not_found_campus' => count($results['errorCampus']),
+            ]);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->responseApi(false, $e->getMessage(), 500);
+        }
+    }
+
+    public function changePassword(Request $request){
+        try {
+            $userId = $request->user_id;
+            $user = User::find($userId);
+            if(!$user){
+                return redirect(route('admin.acount.list'))->with('error', 'Tài khoản không tồn tại');
+            }
+            $password = Str::random(20);
+            $user->password = Hash::make($password);
+            $user->save();
+            dispatch(new NotificationChangePassword($user->email, $password));
+            return redirect(route('admin.acount.list'))->with('success', 'Đổi mật khẩu thành công');
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect(route('admin.acount.list'))->with('error', 'Đổi mật khẩu thất bại');
         }
     }
 }
