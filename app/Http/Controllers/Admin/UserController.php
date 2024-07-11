@@ -1322,8 +1322,8 @@ class UserController extends Controller
             if(!$user){
                 return redirect(route('admin.acount.list'))->with('error', 'Tài khoản không tồn tại');
             }
-//            $password = Str::random(20);
-            $user->password = Hash::make("123@123");
+            $password = "123@123";
+            $user->password = Hash::make($password);
             $user->save();
             dispatch(new NotificationChangePassword($user->email, $password));
             return redirect(route('admin.acount.list'))->with('success', 'Đổi mật khẩu thành công');
