@@ -1324,7 +1324,7 @@ class UserController extends Controller
             $password = Str::random(20);
             $user->password = Hash::make($password);
             $user->save();
-            dispatch(new NotificationChangePassword($user, $password));
+            dispatch(new NotificationChangePassword($user->email, $password));
             return redirect(route('admin.acount.list'))->with('success', 'Đổi mật khẩu thành công');
         } catch (\Exception $e) {
             Log::error($e->getMessage());
