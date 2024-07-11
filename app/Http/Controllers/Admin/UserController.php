@@ -429,7 +429,8 @@ class UserController extends Controller
                 })
                 ->search(request('q') ?? null, ['name', 'email'])
                 ->has_role(request('role') ?? null)
-                ->where('id', '<>', auth()->user()->id);
+                ->where('id', '<>', auth()->user()->id)
+            ->where('status', 1);
 //                ->whereDoesntHave('roles', function ($query) {
 //                    $query->where('name', 'student');
 //                });
@@ -748,7 +749,7 @@ class UserController extends Controller
         ]);
         if (auth()->user()->roles[0]->name == 'super admin') {
             $user->syncRoles($role);
-        } 
+        }
         else {
             if ($role->name == 'super admin') return response()->json([
                 'status' => false,
@@ -1170,7 +1171,7 @@ class UserController extends Controller
 
             $chunkSize = 1000;
 
-            
+
             $chunksUserInsertArr = array_chunk($userInsertArr, $chunkSize);
 
             foreach ($chunksUserInsertArr as $chunkUserInsertArr) {
