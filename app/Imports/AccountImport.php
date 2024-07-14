@@ -56,7 +56,7 @@ class AccountImport implements ToModel, WithHeadingRow, WithBatchInserts, WithUp
     public function model(array $row)
     {
         $role_id = $this->request->input('roles_id_add_excel') ?? config('util.STUDENT_ROLE');
-        $password = Str::random(20);
+        $password = "123@123";
         if(isset($this->campuses[$this->getSheetNames()])){
             $campuse_id = $this->campuses[$this->getSheetNames()];
             $checkUser = User::where('email', $row['email'])->where('status', 0)->whereNotIn('email', $this->errorCampus)->first();
@@ -67,11 +67,11 @@ class AccountImport implements ToModel, WithHeadingRow, WithBatchInserts, WithUp
                 ];
                 $checkUser->status = 1;
                 $checkUser->mssv = $row['ma_sinh_vien'];
-                $checkUser->name = $row['name'];
+                $checkUser->name = $row['ho_va_ten'];
                 $checkUser->password = Hash::make($password);
                 $checkUser->save();
                 $this->existedEmail[] = $row['email'];
-            } 
+            }
             else {
                 if($row['email'] == null || $row['ma_sinh_vien'] == null || $row['ho_va_ten'] == null){
                     $this->errorImport[] = $row['email'];
@@ -121,7 +121,7 @@ class AccountImport implements ToModel, WithHeadingRow, WithBatchInserts, WithUp
     {
         return 1000;
     }
-    
+
     public function getResults(): mixed
     {
         return [
