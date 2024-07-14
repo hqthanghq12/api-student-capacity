@@ -61,6 +61,10 @@ class AccountImport implements ToModel, WithHeadingRow, WithBatchInserts, WithUp
             $campuse_id = $this->campuses[$this->getSheetNames()];
             $checkUser = User::where('email', $row['email'])->where('status', 0)->whereNotIn('email', $this->errorCampus)->first();
             if($checkUser){
+                $this->results[] = [
+                    'email' => $row['email'],
+                    'password' => $password,
+                ];
                 $checkUser->status = 1;
                 $checkUser->mssv = $row['ma_sinh_vien'];
                 $checkUser->name = $row['name'];
