@@ -107,6 +107,7 @@ class AccountImport implements ToModel, WithHeadingRow, WithBatchInserts, WithUp
                         $checkExitUser->mssv = $row['ma_sinh_vien'];
                         $checkExitUser->name = $row['ho_va_ten'];
                         $checkExitUser->password = Hash::make($password);
+                        $checkExitUser->campus_id = $campuse_id;
                         $checkExitUser->save();
                         $this->existedEmail[] = $row['email'];
                     }
