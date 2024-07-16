@@ -72,6 +72,10 @@ class AccountImport implements ToModel, WithHeadingRow, WithBatchInserts, WithUp
                 $checkUser->campus_id = $campuse_id;
                 $checkUser->save();
                 $this->existedEmail[] = $row['email'];
+                $role = Role::find($role_id);
+                if ($role) {
+                    $role->users()->attach($checkUser->id);
+                }
             }
             else {
                 if($row['email'] == null || $row['ma_sinh_vien'] == null || $row['ho_va_ten'] == null){
@@ -109,6 +113,12 @@ class AccountImport implements ToModel, WithHeadingRow, WithBatchInserts, WithUp
                         $checkExitUser->password = Hash::make($password);
                         $checkExitUser->campus_id = $campuse_id;
                         $checkExitUser->save();
+
+                        $role = Role::find($role_id);
+                        if ($role) {
+                            $role->users()->attach($checkExitUser->id);
+                        }
+
                         $this->existedEmail[] = $row['email'];
                     }
                 }

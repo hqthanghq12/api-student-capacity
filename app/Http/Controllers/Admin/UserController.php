@@ -539,7 +539,7 @@ class UserController extends Controller
                 return response('Bạn không có quyền thêm tài khoản với chức vụ ngang hoặc lớn hơn mình', 404);
             }
         }
-        $password = Str::random(10);
+        $password = '123@123';
         $data = [
             'name' => $request->name_add,
             'email' => $request->email_add,
