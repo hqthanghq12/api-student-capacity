@@ -155,6 +155,8 @@ class studentPoetryController extends Controller
             $data[] = [
                 ++$key,
                 $value->emailStudent,
+                $value->mssv,
+                $value->nameStudent,
                 $result_status,
                 $value->scores ?? "Chưa thi",
                 !$value->scores ? "Chưa thi" : $end->longAbsoluteDiffForHumans($start, 3),
@@ -167,10 +169,12 @@ class studentPoetryController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', 'TT');
         $sheet->setCellValue('B1', 'Email');
-        $sheet->setCellValue('C1', 'Trạng thái');
-        $sheet->setCellValue('D1', 'Điểm');
-        $sheet->setCellValue('E1', 'Thời gian làm bài');
-        $sheet->setCellValue('F1', 'Thời gian nôp bài');
+        $sheet->setCellValue('C1', 'Mã sinh viên');
+        $sheet->setCellValue('D1', 'Tên sinh viên');
+        $sheet->setCellValue('E1', 'Trạng thái');
+        $sheet->setCellValue('F1', 'Điểm');
+        $sheet->setCellValue('G1', 'Thời gian làm bài');
+        $sheet->setCellValue('H1', 'Thời gian nôp bài');
         $borderStyle = [
             'borders' => [
                 'allBorders' => [
@@ -197,6 +201,8 @@ class studentPoetryController extends Controller
         $sheet->getColumnDimension('D')->setWidth(15);
         $sheet->getColumnDimension('E')->setWidth(10);
         $sheet->getColumnDimension('F')->setWidth(10);
+        $sheet->getColumnDimension('G')->setWidth(20);
+        $sheet->getColumnDimension('H')->setWidth(20);
         // Định dạng căn giữa và màu nền cho hàng tiêu đề
         $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A1:F1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('DDDDDD');
