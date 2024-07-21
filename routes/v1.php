@@ -47,4 +47,5 @@ Route::prefix('users')->group(function () {
     Route::get('contest-joined-and-not-joined', [UserController::class, 'contestJoinedAndNotJoined']);
     Route::get('contest-joined', [UserController::class, 'contestJoined']);
     Route::post('edit', [UserController::class, 'updateDetailUser']);
+    Route::post('/updatePassword', [UserController::class, 'updatePassword']);
 });
