@@ -30,7 +30,7 @@ class ImportQuestion extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
-        return throw new HttpResponseException(response()->json([
+        throw new HttpResponseException(response()->json([
             'errors' => $validator->errors(),
             'status' => false
         ], 404));

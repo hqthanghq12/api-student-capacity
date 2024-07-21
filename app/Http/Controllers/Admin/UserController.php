@@ -1332,4 +1332,58 @@ class UserController extends Controller
             return redirect(route('admin.acount.list'))->with('error', 'Đổi mật khẩu thất bại');
         }
     }
+
+    public function updatePassword(Request $request){
+        try {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'oldPassword' => ['bail','required', 'string', 'min:6'],
+                    'newPassword' => ['bail','required', 'string', 'min:8', 'different:oldPassword'],
+                    'confirmPassword' => ['bail','required', 'string', 'min:8', 'same:newPassword'],
+                ],
+                [
+                    'oldPassword.required' => 'Vui lòng nhập mật khẩu cũ !',
+                    'oldPassword.min' => 'Mật khẩu cũ phải có ít nhất 6 ký tự !',
+
+                    'newPassword.required' => 'Vui lòng nhập mật khẩu mới !',
+                    'newPassword.min' => 'Mật khẩu mới phải có ít nhất 8 ký tự !',
+                    'newPassword.different' => 'Mật khẩu mới phải khác mật khẩu cũ',
+
+                    'confirmPassword.required' => 'Vui lòng nhập lại mật khẩu mới !',
+                    'confirmPassword.min' => 'Nhập lại mật khẩu mới phải có ít nhất 8 ký tự !',
+                    'confirmPassword.same' => 'Nhập lại mật khẩu mới trùng với mật khẩu mới !',
+                ]
+            );
+    
+            if ($validator->fails()) {
+                return $this->responseApi(true, [
+                    'type' => 'validate',
+                    'message' => $validator->errors()->first()
+                ]);
+            }
+            $user = User::find($request->user()->id);
+            if(!$user){
+                return $this->responseApi(true, [
+                    'type' => 'validate',
+                    'message' => 'Tài khoản không hợp lệ !'
+                ]);
+            }
+            if(!Hash::check($request->oldPassword, $user->password)){
+                return $this->responseApi(true, [
+                    'type' => 'validate',
+                    'message' => 'Mật khẩu cũ không đúng !'
+                ]);
+            }
+            $user->password = Hash::make($request->newPassword);
+            $user->save();
+            return $this->responseApi(true, [
+                'type' => 'updated',
+                'message' => 'Cập nhật mật khẩu thành công !'
+            ]);
+        } catch (Exception $e) {
+            Log::error($e);
+            return $this->responseApi(false, $e->getMessage(), 500);
+        }
+    }
 }
