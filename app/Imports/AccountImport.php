@@ -74,7 +74,19 @@ class AccountImport implements ToModel, WithHeadingRow, WithBatchInserts, WithUp
                 $this->existedEmail[] = $row['email'];
                 $role = Role::find($role_id);
                 if ($role) {
-                    $role->users()->attach($checkUser->id);
+//                    $role->users()->attach($checkUser->id);
+                    DB::table('model_has_roles')
+                        ->where('model_id', $checkUser->id)
+                        ->where('model_type', get_class($checkUser))
+                        ->where('role_id', $role_id)  // Thêm điều kiện này để chỉ xóa role cụ thể
+                        ->delete();
+
+                    // Thêm mối quan hệ mới
+                    DB::table('model_has_roles')->insert([
+                        'role_id' => $role_id,
+                        'model_type' => get_class($checkUser),
+                        'model_id' => $checkUser->id
+                    ]);
                 }
             }
             else {
@@ -116,7 +128,19 @@ class AccountImport implements ToModel, WithHeadingRow, WithBatchInserts, WithUp
 
                         $role = Role::find($role_id);
                         if ($role) {
-                            $role->users()->attach($checkExitUser->id);
+//                            $role->users()->attach($checkExitUser->id);
+                            DB::table('model_has_roles')
+                                ->where('model_id', $checkExitUser->id)
+                                ->where('model_type', get_class($checkExitUser))
+                                ->where('role_id', $role_id)  // Thêm điều kiện này để chỉ xóa role cụ thể
+                                ->delete();
+
+                            // Thêm mối quan hệ mới
+                            DB::table('model_has_roles')->insert([
+                                'role_id' => $role_id,
+                                'model_type' => get_class($checkExitUser),
+                                'model_id' => $checkExitUser->id
+                            ]);
                         }
 
                         $this->existedEmail[] = $row['email'];
