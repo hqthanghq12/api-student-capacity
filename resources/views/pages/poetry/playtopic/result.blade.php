@@ -195,9 +195,10 @@
                                                 $index = $key + 1;
                                                 $correctAnswer = $question->answers->where('is_correct', 1)->first();
                                                     $resultDetail = $resultCapacityDetail->where('question_id', $question->id)->first();
+                                                    $color = 'text-success';
                                                     if (empty($resultDetail->answer_id)) {
                                                         $color = 'text-warning';
-                                                    } elseif ($resultDetail->answer_id == $correctAnswer->id) {
+                                                    } elseif (is_object($correctAnswer) && $resultDetail->answer_id == $correctAnswer->id) {
                                                         $color = 'text-success';
                                                     } else {
                                                         $color = 'text-danger';

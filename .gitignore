@@ -20,3 +20,4 @@ laravel-echo-server.lock
 bun.lockb
 composer.lock
 package-lock.json
+docker/data
