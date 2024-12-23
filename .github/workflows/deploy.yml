@@ -1,0 +1,27 @@
+name: CI/CD pipeline
+
+on:
+  push:
+    branches: ['develop']
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /var/www/html/${{ secrets.APP_NAME }}
+            echo ${{ secrets.PASSWORD }} | sudo -S git pull origin develop
+            echo ${{ secrets.PASSWORD }} | sudo -S ./scripts/stop.sh
+            echo ${{ secrets.PASSWORD }} | sudo -S ./scripts/build.sh
+            echo ${{ secrets.PASSWORD }} | sudo -S ./scripts/start.sh
