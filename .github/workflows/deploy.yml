@@ -22,6 +22,7 @@ jobs:
           script: |
             cd /var/www/html/${{ secrets.APP_NAME }}
             echo ${{ secrets.PASSWORD }} | sudo -S git pull origin develop
-            echo ${{ secrets.PASSWORD }} | sudo -S sh ./scripts/stop.sh
-            echo ${{ secrets.PASSWORD }} | sudo -S sh ./scripts/build.sh
+            echo ${{ secrets.PASSWORD }} | sudo -S docker stop $(docker ps -f "name=ptcd" -a -q)
+            echo ${{ secrets.PASSWORD }} | sudo -S rm $(docker ps -f "name=ptcd" -a -q)
+            echo ${{ secrets.PASSWORD }} | sudo -S docker rmi -f $(docker images "ptcd*" -a -q)
             echo ${{ secrets.PASSWORD }} | sudo -S sh ./scripts/start.sh
