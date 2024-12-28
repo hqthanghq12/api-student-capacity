@@ -21,7 +21,8 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd /var/www/html/${{ secrets.APP_NAME }}
-            echo ${{ secrets.PASSWORD }} | sudo -S git pull origin develop
-            echo ${{ secrets.PASSWORD }} | sudo -S sh ./scripts/stop.sh
-            echo ${{ secrets.PASSWORD }} | sudo -S sh ./scripts/build.sh
+            echo ${{ secrets.PASSWORD }} | sudo -S git pull origin develop --force --rebase
+            echo ${{ secrets.PASSWORD }} | sudo -S docker stop $(echo ${{ secrets.PASSWORD }} | sudo -S docker ps -f "name=ptcd" -a -q)
+            echo ${{ secrets.PASSWORD }} | sudo -S docker rm $(echo ${{ secrets.PASSWORD }} | sudo -S docker ps -f "name=ptcd" -a -q)
+            echo ${{ secrets.PASSWORD }} | sudo -S docker rmi -f $(echo ${{ secrets.PASSWORD }} | sudo -S docker images "ptcd*" -a -q)
             echo ${{ secrets.PASSWORD }} | sudo -S sh ./scripts/start.sh

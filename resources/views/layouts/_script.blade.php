@@ -17,7 +17,7 @@
 {{-- Set up plugin global --}}
 <script src="assets/js/system/configplugins/configplugins.js"></script>
 @if((!auth()->user()->hasRole('teacher')))
-    <script src="{{ mix('js/echo.js') }}"></script>
+    <script src="{{ mix('dist/js/echo.js') }}"></script>
     <script>
 
         // console.log(window.Echo);
