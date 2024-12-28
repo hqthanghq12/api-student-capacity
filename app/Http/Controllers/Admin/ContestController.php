@@ -33,16 +33,17 @@ class ContestController extends Controller
     use TUploadImage, TResponse, TTeamContest, TStatus;
 
     public function __construct(
-        private MContestInterface $contest,
-        private MMajorInterface $majorRepo,
+        private MContestInterface     $contest,
+        private MMajorInterface       $majorRepo,
         // private Major $major,
-        private MTeamInterface $teamRepo,
+        private MTeamInterface        $teamRepo,
         // private Team $team,
-        private DB $db,
-        private Storage $storage,
-        private MSkillInterface $skill,
+        private DB                    $db,
+        private Storage               $storage,
+        private MSkillInterface       $skill,
         private MContestUserInterface $contestUser,
-    ) {
+    )
+    {
     }
 
     public function getConTestCapacity()
@@ -70,7 +71,7 @@ class ContestController extends Controller
         return view('pages.contest.index', [
             'contests' => $data,
             'majors' => $this->majorRepo->getAllMajor(['where' => ['parent_id' => 0]], ['majorChils']),
-            'contest_type_text' =>  request('type') == 1 ? 'đánh giá năng lực' : 'cuộc thi'
+            'contest_type_text' => request('type') == 1 ? 'đánh giá năng lực' : 'cuộc thi'
         ]);
     }
 
@@ -270,7 +271,7 @@ class ContestController extends Controller
 
                 if ($request->has('img')) {
                     $img = $this->uploadFile($request->file('img'), $contest->img);
-                    if (!$img)  return redirect()->back()->with('error', 'Cập nhật thất bại !');
+                    if (!$img) return redirect()->back()->with('error', 'Cập nhật thất bại !');
                     $dataSave = array_merge($request->except(['_method', '_token', 'img']), [
                         'reward_rank_point' => $rewardRankPoint,
                         'img' => $img
@@ -316,8 +317,9 @@ class ContestController extends Controller
     public function apiShow($id)
     {
         try {
-            if (!($contest = $this->contest->apiShow($id, config('util.TYPE_CONTEST'))))
+            if (!($contest = $this->contest->apiShow($id, config('util.TYPE_TEST')))) {
                 return $this->responseApi(false, 'Không thể lấy thông tin cuộc thi  !');
+            }
             return $this->responseApi(true, $contest);
         } catch (\Throwable $th) {
             return $this->responseApi(false);
@@ -345,6 +347,7 @@ class ContestController extends Controller
             $capacity = $this->contest->apiShow($id, config('util.TYPE_TEST'));
             if (is_null($capacity))
                 return $this->responseApi(false, 'Không tìm thấy bài đánh giá năng lực !');
+//            return $capacity;
             return $this->responseApi(true, $capacity);
         } catch (\Throwable $th) {
             return $this->responseApi(false);
@@ -361,10 +364,25 @@ class ContestController extends Controller
     public function show_test_capacity(Request $request, Skill $skillModel, $id)
     {
         $capacity = $this->contest->getContestByIdUpdate($id, config('util.TYPE_TEST'));
+//        dd($capacity);
         if (!$capacity) abort(404);
         $skills = $skillModel::all(['name', 'id']);
         // dd($capacity->toArray());
         return view('pages.contest.detail-capacity.detail', [
+            'test_capacity' => $capacity,
+            'skills' => $skills
+        ]);
+    }
+
+    public function show_capacity( Skill $skillModel)
+    {
+        $capacity = $this->contest->getListContest( config('util.TYPE_TEST'));
+//        dd($capacity);
+        if (!$capacity) abort(404);
+        $skills = $skillModel::all(['name', 'id']);
+//        dd($skills);
+//         dd($capacity->toArray());
+        return view('pages.contest.detail-capacity.detail2', [
             'test_capacity' => $capacity,
             'skills' => $skills
         ]);
@@ -377,7 +395,7 @@ class ContestController extends Controller
         return view('pages.contest.detail.team.contest-team', compact('contest', 'teams'));
     }
 
-    public function contestDetailTeamAddSelect(Request  $request, Redirect $redirect, $id)
+    public function contestDetailTeamAddSelect(Request $request, Redirect $redirect, $id)
     {
         try {
             $this->teamRepo->updateTeam($request->team_id, ['contest_id' => $id]);
@@ -419,11 +437,12 @@ class ContestController extends Controller
 
     public function contestDetailEnterprise($id, Enterprise $enterpriseModel)
     {
-        $contest =  $this->contest->find($id);
+        $contest = $this->contest->find($id);
         if (!($contestEnterprise = $contest->load('enterprise')->enterprise()->paginate(5))) return abort(404);
         $enterprise = $enterpriseModel::all();
         return view('pages.contest.detail.enterprise', ['contest' => $contest, 'contestEnterprise' => $contestEnterprise, 'enterprise' => $enterprise]);
     }
+
     public function attachEnterprise(Request $request, $id)
     {
         try {
@@ -446,7 +465,7 @@ class ContestController extends Controller
 
     public function addFormTeamContest($id)
     {
-        $contest =  $this->contest->find($id);
+        $contest = $this->contest->find($id);
         return view('pages.contest.detail.team.form-add-team-contest', compact('contest'));
     }
 
@@ -470,8 +489,8 @@ class ContestController extends Controller
                 return $q->with('members')->whereId($id_team)->first();
             }]);
 
-            foreach ($contest->teams as  $team) {
-                foreach ($team->members as  $me) {
+            foreach ($contest->teams as $team) {
+                foreach ($team->members as $me) {
                     array_push($userArray, [
                         'id_user' => $me->id,
                         'email_user' => $me->email,

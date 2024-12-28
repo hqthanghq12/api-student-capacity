@@ -19,7 +19,7 @@ class ContestResource extends JsonResource
 
             'id' => $this->id,
             'name' => $this->name,
-            // 'img' => $this->img,
+             'img' => $this->img,
             'date_start' => $this->date_start,
             'register_deadline' => $this->register_deadline,
             // 'description' => $this->description,

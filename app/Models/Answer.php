@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Services\Builder\Builder;
+use App\Services\Traits\UsesExamConnection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Answer extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, UsesExamConnection;
     protected $table = 'answers';
     protected $primaryKey = "id";
     public $fillable = [

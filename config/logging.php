@@ -113,5 +113,25 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'errorlog' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/errors/error.log'),
+            'level' => 'error',
+        ],
+
+        'successlog' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/successes/success.log'),
+            'level' => 'info',
+            'days' => 14,
+        ],
+
+        'examchange' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/info/examchange.log'),
+            'level' => 'info',
+            'days' => 14,
+        ],
     ],
 ];

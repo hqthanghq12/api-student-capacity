@@ -14,6 +14,7 @@ use App\Services\Modules\MUser\MUserInterface;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Session;
 
 class DashboardController extends Controller
 {
@@ -30,13 +31,9 @@ class DashboardController extends Controller
     {
         $totalContestGoingOn = $this->contest->getCountContestGoingOn();
 
-        $totalTeamActive = $this->team->getTotalTeamActive();
-
         $totalStudentAccount = $this->user->getTotalStudentAcount();
 
         $listRankCapacity = $this->getRankCapacity($request);
-
-        $listRankContest = $this->getRankContest($request);
 
         $listTopCapacity = $this->getTopCapcity($request);
 
@@ -54,9 +51,7 @@ class DashboardController extends Controller
 
         return view('dashboard.index', compact(
             'listRankCapacity',
-            'listRankContest',
             'totalContestGoingOn',
-            'totalTeamActive',
             'totalStudentAccount',
             'contests',
             'period',

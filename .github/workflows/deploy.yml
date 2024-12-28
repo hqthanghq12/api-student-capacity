@@ -1,0 +1,28 @@
+name: CI/CD pipeline
+
+on:
+  push:
+    branches: ['develop']
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /var/www/html/${{ secrets.APP_NAME }}
+            echo ${{ secrets.PASSWORD }} | sudo -S git pull origin develop --force --rebase
+            echo ${{ secrets.PASSWORD }} | sudo -S docker stop $(echo ${{ secrets.PASSWORD }} | sudo -S docker ps -f "name=ptcd" -a -q)
+            echo ${{ secrets.PASSWORD }} | sudo -S docker rm $(echo ${{ secrets.PASSWORD }} | sudo -S docker ps -f "name=ptcd" -a -q)
+            echo ${{ secrets.PASSWORD }} | sudo -S docker rmi -f $(echo ${{ secrets.PASSWORD }} | sudo -S docker images "ptcd*" -a -q)
+            echo ${{ secrets.PASSWORD }} | sudo -S sh ./scripts/start.sh

@@ -2,9 +2,9 @@
 @section('title', 'Quản lý bộ câu hỏi')
 @section('page-title', 'Quản lý bộ câu hỏi')
 @section('content')
-
-
-
+    <div class="mb-5">
+        {{ Breadcrumbs::render('ManagementQuestion' ) }}
+    </div>
     <div class="card card-flush p-4">
         <div class="row mb-4">
             <div class=" col-lg-6">
@@ -215,11 +215,7 @@
                     <thead>
                         <tr>
                             <th scope="col">Nội dung câu hỏi
-                                <a
-                                    href="{{ route('admin.teams', [
-                                        'sort_by' => request()->has('sort_by') ? (request('sort_by') == 'desc' ? 'asc' : 'desc') : 'asc',
-                                        'orderBy' => 'name',
-                                    ]) }}">
+                                <a>
                                     <span role="button" data-key="name" data-bs-toggle="tooltip"
                                         title="Lọc theo nội dung câu hỏi "
                                         class=" svg-icon svg-icon-primary  svg-icon-2x format-database">
@@ -303,6 +299,7 @@
                         @forelse ($questions as $key => $question)
                             @php
                                 $token = uniqid(15);
+                                $images = $question->images->toArray();
                             @endphp
                             <tr>
 
@@ -313,7 +310,7 @@
                                                 <h6 class="panel-title">
                                                     <div role="button" data-toggle="collapse" data-parent="#accordion"
                                                         aria-expanded="true" aria-controls="collapse{{ $token }}">
-                                                        {!! $question->content !!}
+                                                        {!! renderQuesAndAns($question->content, $images) !!}
                                                     </div>
                                                 </h6>
                                             </div>
@@ -325,7 +322,8 @@
                                                             @foreach ($question->answers as $answer)
                                                                 <li
                                                                     class="list-group-item {{ $answer->is_correct == config('util.ANSWER_TRUE') ? 'active' : '' }}">
-                                                                    {{ $answer->content }}</li>
+                                                                    {!! renderQuesAndAns($answer->content, $images) !!}
+                                                                </li>
                                                             @endforeach
                                                         @endif
 
@@ -520,7 +518,13 @@
 
 @section('page-script')
 
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
         let url = "/admin/questions?";
         const _token = "{{ csrf_token() }}";
         const sort = '{{ request()->has('sort') ? (request('sort') == 'desc' ? 'asc' : 'desc') : 'asc' }}';

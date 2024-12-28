@@ -15,6 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
+
     protected $table = 'users';
 
     protected $fillable = [
@@ -22,7 +23,9 @@ class User extends Authenticatable
         'email',
         'status',
         'avatar',
-        'mssv'
+        'mssv',
+        'campus_id',
+        'password'
     ];
 
     protected $hidden = [
@@ -50,6 +53,11 @@ class User extends Authenticatable
         return new Builder($query);
     }
 
+    public function resultCapacity()
+    {
+        return $this->hasMany(ResultCapacity::class, 'user_id');
+    }
+
     public function teams()
     {
         return $this->belongsToMany(Team::class, 'members', 'user_id', 'team_id')->with('contest');
@@ -58,6 +66,11 @@ class User extends Authenticatable
     public function contest_user()
     {
         return $this->hasMany(ContestUser::class, 'user_id');
+    }
+
+    public function campus()
+    {
+        return $this->belongsTo(Campus::class, 'campus_id', 'id');
     }
 
     // public function wishlistContests()
@@ -73,5 +86,15 @@ class User extends Authenticatable
     public function wishlistContests()
     {
         return $this->hasMany(Wishlist::class, 'user_id');
+    }
+
+    public function poetry_student()
+    {
+        return $this->hasMany(studentPoetry::class, 'id_student', 'id');
+    }
+
+    public function getUserName()
+    {
+        return rtrim($this->email, config('util.END_EMAIL_FPT'));
     }
 }

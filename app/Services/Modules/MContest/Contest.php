@@ -373,6 +373,25 @@ class Contest implements MContestInterface
             ->first();
     }
 
+
+    public function getListContest($type = 0){
+        return $this->contest::with(
+            [
+                'skills' => function ($q) {
+                    return $q->select(["name"]);
+                },
+                'rounds' => function ($q) use ($type) {
+                    return $q
+                        ->with([
+                            'exams' => function ($q) use ($type) {
+                                return $q->where('type', $type);
+                            }
+                        ]);
+                    // ->withCount('exams');
+                }
+            ]
+        )->paginate(5);
+    }
     public function getContestDeadlineEnd($with = [])
     {
         return $this->contest::where("register_deadline", "<", date("Y-m-d H:i:s"))

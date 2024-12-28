@@ -416,7 +416,6 @@
                                             role="switch">
                                     </div>
                                 @endhasrole
-
                             </td>
                             @contest
                                 <td>

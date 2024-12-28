@@ -1,5 +1,8 @@
 <?php
 return [
+    'GOOGLE_CLIENT_ID' => env('GOOGLE_CLIENT_ID'),
+    'SUPER_HO_EMAIL' => env('SUPER_HO_EMAIL'),
+    'EXAM_CONNECTION' => 'exam',
     'TAKE_EXAM_STATUS_CANCEL' => 0, //TRẠNG THÁI HỦY BÀI THI
     'TAKE_EXAM_STATUS_UNFINISHED' => 1, // TRẠNG THÁI CHƯA HOÀN THÀNH BÀI THI
     'TAKE_EXAM_STATUS_COMPLETE' => 2, // TRẠNG THái đã HOÀN THÀNH BÀI THI
@@ -13,7 +16,7 @@ return [
     'SUPER_ADMIN_ROLE' => 1,
     'ADMIN_ROLE' => 2,
     'STUDENT_ROLE' => 3,
-    'JUDGE_ROLE' => 4,
+//    'JUDGE_ROLE' => 4,
     'TEACHER_ROLE' => 5,
     "CONTEST_STATUS_REGISTERING" => 0,
     "CONTEST_STATUS_GOING_ON" => 1,
@@ -23,11 +26,18 @@ return [
     "CONTEST_STATUS_2" => "Cuộc thi đã kết thúc",
     "END_EMAIL_FPT" => "@fpt.edu.vn",
     "MS_SV" => [
-        "ph"
+        "ps",
+        "pc",
+        "ph",
+        "pp",
+        "pd",
+        "pk",
+        "ht"
     ],
     "TYPE_CONTEST" => 0,
     "TYPE_TEST" => 1,
 
+    "MAX_POINT" => 10,
     "RANK_QUESTION_EASY" => 0,
     "RANK_QUESTION_MEDIUM" => 1,
     "RANK_QUESTION_DIFFICULT" => 2,
@@ -69,9 +79,29 @@ return [
             "ANSWER" => 2,
             "IS_CORRECT" => 3,
             "RANK" => 4,
-            "SKILL" => 5
+            "SKILL" => 5,
+            'IMAGE_CODE' => 0,
         ],
         "IS_CORRECT" => "Đáp án đúng"
+    ],
+    "EXCEL_ACCOUNT" => [
+        "KEY_COLUMNS" => [
+            "MSSV" => 1,
+            "NAME" => 2,
+            "EMAIL" => 3,
+        ],
+    ],
+    "STATUS_REQUEST" => [
+        "HISTORY" => [
+            "TYPE_KEYS" => [
+                "CREATE" => "create",
+                "APPROVE" => "approve"
+            ],
+            "TYPES" => [
+                "create" => "Tạo yêu cầu",
+                "approve" => "Xác nhận"
+            ],
+        ]
     ],
     "post-contest" => "post-contest",
     "post-capacity" => "post-capacity",

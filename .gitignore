@@ -15,3 +15,16 @@ yarn-error.log
 /.idea
 /.vscode
 dump.rdb
+laravel-echo-server.json
+laravel-echo-server.lock
+bun.lockb
+composer.lock
+package-lock.json
+docker/data
+public/js/*
+storage/*
+/supervisord.log
+/supervisord.pid
+/horizon.log
+public/dist
+public/mix-manifest.json
