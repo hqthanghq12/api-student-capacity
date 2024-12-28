@@ -8,6 +8,7 @@ use Google\Service\ServiceControl\Auth;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Menu;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +33,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        if(!$this->app->environment('local')) {
+            URL::forceScheme('https');
+        }
         Arr::macro('listColumnOfTable', function (string $table) {
             return Schema::getColumnListing($table);
         });

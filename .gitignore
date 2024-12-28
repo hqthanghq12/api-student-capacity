@@ -21,3 +21,8 @@ bun.lockb
 composer.lock
 package-lock.json
 docker/data
+public/js/*
+storage/*
+/supervisord.log
+/supervisord.pid
+/horizon.log
