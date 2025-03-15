@@ -2202,7 +2202,9 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Channel": () => (/* binding */ Channel),
+/* harmony export */   Channel: () => (/* binding */ Channel),
+/* harmony export */   Connector: () => (/* binding */ Connector),
+/* harmony export */   EventFormatter: () => (/* binding */ EventFormatter),
 /* harmony export */   "default": () => (/* binding */ Echo)
 /* harmony export */ });
 function _typeof(obj) {
@@ -2392,7 +2394,7 @@ var EventFormatter = /*#__PURE__*/function () {
   function EventFormatter(namespace) {
     _classCallCheck(this, EventFormatter);
 
-    this.setNamespace(namespace);
+    this.namespace = namespace; //
   }
   /**
    * Format the given event name.
@@ -2402,8 +2404,8 @@ var EventFormatter = /*#__PURE__*/function () {
   _createClass(EventFormatter, [{
     key: "format",
     value: function format(event) {
-      if (event.charAt(0) === '.' || event.charAt(0) === '\\') {
-        return event.substr(1);
+      if (['.', '\\'].includes(event.charAt(0))) {
+        return event.substring(1);
       } else if (this.namespace) {
         event = this.namespace + '.' + event;
       }
@@ -2589,7 +2591,7 @@ var PusherPrivateChannel = /*#__PURE__*/function (_PusherChannel) {
     key: "whisper",
     value:
     /**
-     * Trigger client event on the channel.
+     * Send a whisper event to other clients in the channel.
      */
     function whisper(eventName, data) {
       this.pusher.channels.channels[this.name].trigger("client-".concat(eventName), data);
@@ -2619,7 +2621,7 @@ var PusherEncryptedPrivateChannel = /*#__PURE__*/function (_PusherChannel) {
     key: "whisper",
     value:
     /**
-     * Trigger client event on the channel.
+     * Send a whisper event to other clients in the channel.
      */
     function whisper(eventName, data) {
       this.pusher.channels.channels[this.name].trigger("client-".concat(eventName), data);
@@ -2634,8 +2636,8 @@ var PusherEncryptedPrivateChannel = /*#__PURE__*/function (_PusherChannel) {
  * This class represents a Pusher presence channel.
  */
 
-var PusherPresenceChannel = /*#__PURE__*/function (_PusherChannel) {
-  _inherits(PusherPresenceChannel, _PusherChannel);
+var PusherPresenceChannel = /*#__PURE__*/function (_PusherPrivateChannel) {
+  _inherits(PusherPresenceChannel, _PusherPrivateChannel);
 
   var _super = _createSuper(PusherPresenceChannel);
 
@@ -2672,6 +2674,16 @@ var PusherPresenceChannel = /*#__PURE__*/function (_PusherChannel) {
       return this;
     }
     /**
+     * Send a whisper event to other clients in the channel.
+     */
+
+  }, {
+    key: "whisper",
+    value: function whisper(eventName, data) {
+      this.pusher.channels.channels[this.name].trigger("client-".concat(eventName), data);
+      return this;
+    }
+    /**
      * Listen for someone leaving the channel.
      */
 
@@ -2683,20 +2695,10 @@ var PusherPresenceChannel = /*#__PURE__*/function (_PusherChannel) {
       });
       return this;
     }
-    /**
-     * Trigger client event on the channel.
-     */
-
-  }, {
-    key: "whisper",
-    value: function whisper(eventName, data) {
-      this.pusher.channels.channels[this.name].trigger("client-".concat(eventName), data);
-      return this;
-    }
   }]);
 
   return PusherPresenceChannel;
-}(PusherChannel);
+}(PusherPrivateChannel);
 
 /**
  * This class represents a Socket.io channel.
@@ -2889,7 +2891,7 @@ var SocketIoPrivateChannel = /*#__PURE__*/function (_SocketIoChannel) {
     key: "whisper",
     value:
     /**
-     * Trigger client event on the channel.
+     * Send a whisper event to other clients in the channel.
      */
     function whisper(eventName, data) {
       this.socket.emit('client event', {
@@ -2942,6 +2944,20 @@ var SocketIoPresenceChannel = /*#__PURE__*/function (_SocketIoPrivateChann) {
     value: function joining(callback) {
       this.on('presence:joining', function (member) {
         return callback(member.user_info);
+      });
+      return this;
+    }
+    /**
+     * Send a whisper event to other clients in the channel.
+     */
+
+  }, {
+    key: "whisper",
+    value: function whisper(eventName, data) {
+      this.socket.emit('client event', {
+        channel: this.name,
+        event: "client-".concat(eventName),
+        data: data
       });
       return this;
     }
@@ -3000,6 +3016,15 @@ var NullChannel = /*#__PURE__*/function (_Channel) {
   }, {
     key: "listen",
     value: function listen(event, callback) {
+      return this;
+    }
+    /**
+     * Listen for all events on the channel instance.
+     */
+
+  }, {
+    key: "listenToAll",
+    value: function listenToAll(callback) {
       return this;
     }
     /**
@@ -3062,7 +3087,7 @@ var NullPrivateChannel = /*#__PURE__*/function (_NullChannel) {
     key: "whisper",
     value:
     /**
-     * Trigger client event on the channel.
+     * Send a whisper event to other clients in the channel.
      */
     function whisper(eventName, data) {
       return this;
@@ -3073,11 +3098,40 @@ var NullPrivateChannel = /*#__PURE__*/function (_NullChannel) {
 }(NullChannel);
 
 /**
+ * This class represents a null private channel.
+ */
+
+var NullEncryptedPrivateChannel = /*#__PURE__*/function (_NullChannel) {
+  _inherits(NullEncryptedPrivateChannel, _NullChannel);
+
+  var _super = _createSuper(NullEncryptedPrivateChannel);
+
+  function NullEncryptedPrivateChannel() {
+    _classCallCheck(this, NullEncryptedPrivateChannel);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(NullEncryptedPrivateChannel, [{
+    key: "whisper",
+    value:
+    /**
+     * Send a whisper event to other clients in the channel.
+     */
+    function whisper(eventName, data) {
+      return this;
+    }
+  }]);
+
+  return NullEncryptedPrivateChannel;
+}(NullChannel);
+
+/**
  * This class represents a null presence channel.
  */
 
-var NullPresenceChannel = /*#__PURE__*/function (_NullChannel) {
-  _inherits(NullPresenceChannel, _NullChannel);
+var NullPresenceChannel = /*#__PURE__*/function (_NullPrivateChannel) {
+  _inherits(NullPresenceChannel, _NullPrivateChannel);
 
   var _super = _createSuper(NullPresenceChannel);
 
@@ -3106,6 +3160,15 @@ var NullPresenceChannel = /*#__PURE__*/function (_NullChannel) {
       return this;
     }
     /**
+     * Send a whisper event to other clients in the channel.
+     */
+
+  }, {
+    key: "whisper",
+    value: function whisper(eventName, data) {
+      return this;
+    }
+    /**
      * Listen for someone leaving the channel.
      */
 
@@ -3114,19 +3177,10 @@ var NullPresenceChannel = /*#__PURE__*/function (_NullChannel) {
     value: function leaving(callback) {
       return this;
     }
-    /**
-     * Trigger client event on the channel.
-     */
-
-  }, {
-    key: "whisper",
-    value: function whisper(eventName, data) {
-      return this;
-    }
   }]);
 
   return NullPresenceChannel;
-}(NullChannel);
+}(NullPrivateChannel);
 
 var Connector = /*#__PURE__*/function () {
   /**
@@ -3238,6 +3292,8 @@ var PusherConnector = /*#__PURE__*/function (_Connector) {
     value: function connect() {
       if (typeof this.options.client !== 'undefined') {
         this.pusher = this.options.client;
+      } else if (this.options.Pusher) {
+        this.pusher = new this.options.Pusher(this.options.key, this.options);
       } else {
         this.pusher = new Pusher(this.options.key, this.options);
       }
@@ -3575,6 +3631,15 @@ var NullConnector = /*#__PURE__*/function (_Connector) {
       return new NullPrivateChannel();
     }
     /**
+     * Get a private encrypted channel instance by name.
+     */
+
+  }, {
+    key: "encryptedPrivateChannel",
+    value: function encryptedPrivateChannel(name) {
+      return new NullEncryptedPrivateChannel();
+    }
+    /**
      * Get a presence channel instance by name.
      */
 
@@ -3656,14 +3721,20 @@ var Echo = /*#__PURE__*/function () {
   }, {
     key: "connect",
     value: function connect() {
-      if (this.options.broadcaster == 'pusher') {
+      if (this.options.broadcaster == 'reverb') {
+        this.connector = new PusherConnector(_extends(_extends({}, this.options), {
+          cluster: ''
+        }));
+      } else if (this.options.broadcaster == 'pusher') {
         this.connector = new PusherConnector(this.options);
       } else if (this.options.broadcaster == 'socket.io') {
         this.connector = new SocketIoConnector(this.options);
       } else if (this.options.broadcaster == 'null') {
         this.connector = new NullConnector(this.options);
       } else if (typeof this.options.broadcaster == 'function') {
-        this.connector = new this.options.broadcaster(this.options);
+        this.connector = this.options.broadcaster(this.options);
+      } else {
+        throw new Error("Broadcaster ".concat(_typeof(this.options.broadcaster), " ").concat(this.options.broadcaster, " is not supported."));
       }
     }
     /**
@@ -3703,6 +3774,17 @@ var Echo = /*#__PURE__*/function () {
       this.connector.leaveChannel(channel);
     }
     /**
+     * Leave all channels.
+     */
+
+  }, {
+    key: "leaveAllChannels",
+    value: function leaveAllChannels() {
+      for (var channel in this.connector.channels) {
+        this.leaveChannel(channel);
+      }
+    }
+    /**
      * Listen for an event on a channel instance.
      */
 
@@ -3727,6 +3809,10 @@ var Echo = /*#__PURE__*/function () {
   }, {
     key: "encryptedPrivate",
     value: function encryptedPrivate(channel) {
+      if (this.connector instanceof SocketIoConnector) {
+        throw new Error("Broadcaster ".concat(_typeof(this.options.broadcaster), " ").concat(this.options.broadcaster, " does not support encrypted private channels."));
+      }
+
       return this.connector.encryptedPrivateChannel(channel);
     }
     /**

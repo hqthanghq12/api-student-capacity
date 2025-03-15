@@ -9,8 +9,10 @@ class ResultCapacity implements MResultCapacityInterface
 
     public function __construct(
         private ModelsResultCapacity $model
-    ) {
+    )
+    {
     }
+
     public function findByUserExam($user_id, $exam_id)
     {
         $data = $this->model::where('user_id', $user_id)
@@ -18,10 +20,23 @@ class ResultCapacity implements MResultCapacityInterface
         return $data;
     }
 
+    public function findByUserPlaytopic($user_id, $playtopic_id)
+    {
+        $data = $this->model::where('user_id', $user_id)
+            ->where('playtopic_id', $playtopic_id)->first();
+        return $data;
+    }
+
     public function whereInExamUser($examArr = [], $user_id)
     {
         return $this->model::where('user_id', $user_id)
             ->whereIn('exam_id', $examArr)->first();
+    }
+
+    public function whereInPlaytopicUser($playtopic, $user_id)
+    {
+        return $this->model::where('user_id', $user_id)
+            ->where('playtopic_id', $playtopic)->first();
     }
 
     public function create($data = [])

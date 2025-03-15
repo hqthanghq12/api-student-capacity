@@ -162,7 +162,6 @@ function fetchHistoryExam(id) {
 
 function checkUrlOut(key, value, urlParams, urlHasFetch) {
     let searchParams = new URLSearchParams(urlHasFetch);
-
     if (urlHasFetch.indexOf("?")) {
         tags.map(function (data) {
             if (data == key) {
@@ -204,7 +203,6 @@ function fecthQuestionByExams(id, param = [], url = null) {
                 html = `<h2>Không có câu hỏi câu trả lời nào </h2>`;
             } else {
                 listSave = res.questionsSave;
-
                 html = res.payload.data
                     .map(function (data, index) {
                         var skillChill = data.skills
@@ -237,6 +235,7 @@ function fecthQuestionByExams(id, param = [], url = null) {
                         return /*html*/ `
                             <tr>
                             <td>${index + 1}</td>
+                            <td>Test</td>
                                 <td>
                                     <a  data-bs-toggle="collapse" href="#multiCollapseExample${index}"
                                     role="button"
@@ -253,15 +252,12 @@ function fecthQuestionByExams(id, param = [], url = null) {
                                     </div>
 
                                     </td>
-                                <td>${
-                                    data.rank == 0
-                                        ? "Dễ"
-                                        : data.rank == 1
-                                        ? "Trung bình "
-                                        : data.rank == 2
-                                        ? "Khó"
-                                        : "No "
-                                }</td>
+
+                                <td>❌</td>
+                                <td>❌</td>
+                                <td>❌</td>
+                                <td>✅</td>
+
                                 <td>${
                                     data.type == 0
                                         ? "Một đáp án"
@@ -281,6 +277,15 @@ function fecthQuestionByExams(id, param = [], url = null) {
                                 </td>
                             </tr>
                         `;
+                        // <td>${
+                        //     data.rank == 0
+                        //         ? "Dễ"
+                        //         : data.rank == 1
+                        //             ? "Trung bình "
+                        //             : data.rank == 2
+                        //                 ? "Khó"
+                        //                 : "No "
+                        // }</td>
                         // return `
                         //     <tr>
                         //     <td>${index + 1}</td>

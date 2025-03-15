@@ -10,13 +10,13 @@ class RoleHasAdmins
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next, $role = null)
     {
-        if (!$role)  $role = config('util.ROLE_ADMINS');
+        if (!$role) $role = config('util.ROLE_ADMINS');
         if (auth()->user()->hasAnyRole($role)) {
             return $next($request);
         } else {

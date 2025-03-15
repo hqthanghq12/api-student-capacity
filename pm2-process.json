@@ -1,0 +1,17 @@
+[
+    {
+        "name": "queue-listen",
+        "script": "php",
+        "args": [
+            "artisan",
+            "queue:listen"
+        ]
+    },
+    {
+        "name": "echo-server",
+        "script": "laravel-echo-server",
+        "args": [
+            "start"
+        ]
+    }
+]

@@ -9,9 +9,10 @@ class Exam implements MExamInterface
 {
 
     public function __construct(
-        private ModelsExam $model,
+        private ModelsExam     $model,
         private ResultCapacity $resultCapacity
-    ) {
+    )
+    {
     }
 
     public function findById($id, $with = [], $select = [], $countWith = true)
@@ -36,6 +37,18 @@ class Exam implements MExamInterface
     public function find($id)
     {
         return $this->model::find($id);
+    }
+
+    public function getItemApi($id)
+    {
+        try {
+            $records = $this->model::find($id);
+//            $data = [] ;
+            $records['name_subject'] = $records->subject->name;
+            return $records;
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
 
     public function whereGet($param = [], $with = [])
@@ -108,6 +121,16 @@ class Exam implements MExamInterface
         return $this->model::where('status', 1)
             ->whereNull('round_id')
             ->whereNull('room_token')
+            ->get();
+    }
+
+    public function getListExam($idsubject)
+    {
+        return $this->model::query()
+            ->select(['id', 'name', 'time'])
+            ->where('subject_id', $idsubject)
+            ->where('total_questions', '>', 0)
+            ->where('status', 1)
             ->get();
     }
 }

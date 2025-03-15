@@ -77,17 +77,19 @@ const exam = {
             toastr.info('Đang chạy')
             let id = $(this).data("id");
             var that = this;
+            // ${url}/${id}/un-status
             if ($(this).val() == 1) {
                 $.ajax({
-                    url: `${url}/${id}/un-status`,
+                    url: `admin/subject/exam/${id}/un-status`,
                     method: "POST",
                     data: {
                         _token: _token,
                     },
                     success: function (data) {
                         if (!data.status) return alert(data.payload);
-                        if(flagReLoad) window.location.reload();
-                        $(that).val(0);
+                        window.location.reload();
+                        // $(that).val(0);
+                        console.log('thành công')
                         toastr.success('Thành công !');
                     },
                     error: function (request, status, error) {
@@ -95,16 +97,18 @@ const exam = {
                     },
                 });
             } else {
+                // ${url}/${id}/re-status
                 $.ajax({
-                    url: `${url}/${id}/re-status`,
+                    url: `admin/subject/exam/${id}/re-status`,
                     method: "POST",
                     data: {
                         _token: _token,
                     },
                     success: function (data) {
                         if (!data.status) return alert(data.payload);
-                        if(flagReLoad) window.location.reload();
-                        $(that).val(1);
+                        window.location.reload();
+                        // if(flagReLoad) window.location.reload();
+                        // $(that).val(1);
                         toastr.success('Thành công !');
                     },
                     error: function (request, status, error) {

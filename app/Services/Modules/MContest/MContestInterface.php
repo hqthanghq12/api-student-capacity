@@ -40,6 +40,8 @@ interface MContestInterface
 
     public function getContestByIdUpdate($id, $type = 0);
 
+    public function getListContest($type = 0);
+
     public function getContestDeadlineEnd($with = []);
 
     public function getContestDone();

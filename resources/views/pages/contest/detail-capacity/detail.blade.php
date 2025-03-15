@@ -1008,9 +1008,123 @@
                                     <thead>
                                         <tr>
                                             <th>STT </th>
+                                            <th>
+                                                <div class="d-flex align-items-center">
+                                                    Đề
+                                                    <label data-bs-toggle="modal" data-bs-target="#add_topics" type="button"
+                                                           class="btn btn-light-primary p-0 ps-1" id="kt_file_manager_new_folder">
+                                                        <!--begin::Svg Icon | path: icons/duotune/files/fil013.svg-->
+                                                        <span class="svg-icon svg-icon-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                             fill="none">
+                                                            <path opacity="0.3" d="M10 4H21C21.6 4 22 4.4 22 5V7H10V4Z" fill="black">
+                                                            </path>
+                                                            <path
+                                                                d="M10.4 3.60001L12 6H21C21.6 6 22 6.4 22 7V19C22 19.6 21.6 20 21 20H3C2.4 20 2 19.6 2 19V4C2 3.4 2.4 3 3 3H9.2C9.7 3 10.2 3.20001 10.4 3.60001ZM16 12H13V9C13 8.4 12.6 8 12 8C11.4 8 11 8.4 11 9V12H8C7.4 12 7 12.4 7 13C7 13.6 7.4 14 8 14H11V17C11 17.6 11.4 18 12 18C12.6 18 13 17.6 13 17V14H16C16.6 14 17 13.6 17 13C17 12.4 16.6 12 16 12Z"
+                                                                fill="black"></path>
+                                                            <path opacity="0.3"
+                                                                  d="M11 14H8C7.4 14 7 13.6 7 13C7 12.4 7.4 12 8 12H11V14ZM16 12H13V14H16C16.6 14 17 13.6 17 13C17 12.4 16.6 12 16 12Z"
+                                                                  fill="black"></path>
+                                                        </svg>
+                                                    </span>
+
+                                                    </label>
+                                                </div>
+                                            </th>
                                             <th>Câu hỏi </th>
+                                            <th>
+                                                <div class="d-flex align-items-center">
+                                                    ĐA1
+                                                    <label data-bs-toggle="modal" data-bs-target="#add_answer" type="button"
+                                                           class="btn btn-light-primary p-0 ps-1" id="kt_file_manager_new_folder">
+                                                        <!--begin::Svg Icon | path: icons/duotune/files/fil013.svg-->
+                                                        <span class="svg-icon svg-icon-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                             fill="none">
+                                                            <path opacity="0.3" d="M10 4H21C21.6 4 22 4.4 22 5V7H10V4Z" fill="black">
+                                                            </path>
+                                                            <path
+                                                                d="M10.4 3.60001L12 6H21C21.6 6 22 6.4 22 7V19C22 19.6 21.6 20 21 20H3C2.4 20 2 19.6 2 19V4C2 3.4 2.4 3 3 3H9.2C9.7 3 10.2 3.20001 10.4 3.60001ZM16 12H13V9C13 8.4 12.6 8 12 8C11.4 8 11 8.4 11 9V12H8C7.4 12 7 12.4 7 13C7 13.6 7.4 14 8 14H11V17C11 17.6 11.4 18 12 18C12.6 18 13 17.6 13 17V14H16C16.6 14 17 13.6 17 13C17 12.4 16.6 12 16 12Z"
+                                                                fill="black"></path>
+                                                            <path opacity="0.3"
+                                                                  d="M11 14H8C7.4 14 7 13.6 7 13C7 12.4 7.4 12 8 12H11V14ZM16 12H13V14H16C16.6 14 17 13.6 17 13C17 12.4 16.6 12 16 12Z"
+                                                                  fill="black"></path>
+                                                        </svg>
+                                                    </span>
+
+                                                    </label>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <div class="d-flex align-items-center">
+                                                    ĐA2
+                                                    <label data-bs-toggle="modal" data-bs-target="#add_answer" type="button"
+                                                           class="btn btn-light-primary p-0 ps-1" id="kt_file_manager_new_folder">
+                                                        <!--begin::Svg Icon | path: icons/duotune/files/fil013.svg-->
+                                                        <span class="svg-icon svg-icon-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                             fill="none">
+                                                            <path opacity="0.3" d="M10 4H21C21.6 4 22 4.4 22 5V7H10V4Z" fill="black">
+                                                            </path>
+                                                            <path
+                                                                d="M10.4 3.60001L12 6H21C21.6 6 22 6.4 22 7V19C22 19.6 21.6 20 21 20H3C2.4 20 2 19.6 2 19V4C2 3.4 2.4 3 3 3H9.2C9.7 3 10.2 3.20001 10.4 3.60001ZM16 12H13V9C13 8.4 12.6 8 12 8C11.4 8 11 8.4 11 9V12H8C7.4 12 7 12.4 7 13C7 13.6 7.4 14 8 14H11V17C11 17.6 11.4 18 12 18C12.6 18 13 17.6 13 17V14H16C16.6 14 17 13.6 17 13C17 12.4 16.6 12 16 12Z"
+                                                                fill="black"></path>
+                                                            <path opacity="0.3"
+                                                                  d="M11 14H8C7.4 14 7 13.6 7 13C7 12.4 7.4 12 8 12H11V14ZM16 12H13V14H16C16.6 14 17 13.6 17 13C17 12.4 16.6 12 16 12Z"
+                                                                  fill="black"></path>
+                                                        </svg>
+                                                    </span>
+
+                                                    </label>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <div class="d-flex align-items-center">
+                                                    ĐA3
+                                                    <label data-bs-toggle="modal" data-bs-target="#add_answer" type="button"
+                                                           class="btn btn-light-primary p-0 ps-1" id="kt_file_manager_new_folder">
+                                                        <!--begin::Svg Icon | path: icons/duotune/files/fil013.svg-->
+                                                        <span class="svg-icon svg-icon-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                             fill="none">
+                                                            <path opacity="0.3" d="M10 4H21C21.6 4 22 4.4 22 5V7H10V4Z" fill="black">
+                                                            </path>
+                                                            <path
+                                                                d="M10.4 3.60001L12 6H21C21.6 6 22 6.4 22 7V19C22 19.6 21.6 20 21 20H3C2.4 20 2 19.6 2 19V4C2 3.4 2.4 3 3 3H9.2C9.7 3 10.2 3.20001 10.4 3.60001ZM16 12H13V9C13 8.4 12.6 8 12 8C11.4 8 11 8.4 11 9V12H8C7.4 12 7 12.4 7 13C7 13.6 7.4 14 8 14H11V17C11 17.6 11.4 18 12 18C12.6 18 13 17.6 13 17V14H16C16.6 14 17 13.6 17 13C17 12.4 16.6 12 16 12Z"
+                                                                fill="black"></path>
+                                                            <path opacity="0.3"
+                                                                  d="M11 14H8C7.4 14 7 13.6 7 13C7 12.4 7.4 12 8 12H11V14ZM16 12H13V14H16C16.6 14 17 13.6 17 13C17 12.4 16.6 12 16 12Z"
+                                                                  fill="black"></path>
+                                                        </svg>
+                                                    </span>
+
+                                                    </label>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <div class="d-flex align-items-center">
+                                                    ĐA4
+                                                    <label data-bs-toggle="modal" data-bs-target="#add_answer" type="button"
+                                                           class="btn btn-light-primary p-0 ps-1" id="kt_file_manager_new_folder">
+                                                        <!--begin::Svg Icon | path: icons/duotune/files/fil013.svg-->
+                                                        <span class="svg-icon svg-icon-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                             fill="none">
+                                                            <path opacity="0.3" d="M10 4H21C21.6 4 22 4.4 22 5V7H10V4Z" fill="black">
+                                                            </path>
+                                                            <path
+                                                                d="M10.4 3.60001L12 6H21C21.6 6 22 6.4 22 7V19C22 19.6 21.6 20 21 20H3C2.4 20 2 19.6 2 19V4C2 3.4 2.4 3 3 3H9.2C9.7 3 10.2 3.20001 10.4 3.60001ZM16 12H13V9C13 8.4 12.6 8 12 8C11.4 8 11 8.4 11 9V12H8C7.4 12 7 12.4 7 13C7 13.6 7.4 14 8 14H11V17C11 17.6 11.4 18 12 18C12.6 18 13 17.6 13 17V14H16C16.6 14 17 13.6 17 13C17 12.4 16.6 12 16 12Z"
+                                                                fill="black"></path>
+                                                            <path opacity="0.3"
+                                                                  d="M11 14H8C7.4 14 7 13.6 7 13C7 12.4 7.4 12 8 12H11V14ZM16 12H13V14H16C16.6 14 17 13.6 17 13C17 12.4 16.6 12 16 12Z"
+                                                                  fill="black"></path>
+                                                        </svg>
+                                                    </span>
+
+                                                    </label>
+                                                </div>
+                                            </th>
                                             <th>Độ khó </th>
-                                            <th>Đáp án </th>
                                             <th>Tình trạng</th>
                                             <th> <i role="button" data-bs-toggle="tooltip"
                                                     title="Thêm câu hỏi câu trả lời "
@@ -1036,7 +1150,86 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" tabindex="-1" id="add_answer">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title-answer">Tải lên đáp án</h5>
 
+                        <!--begin::Close-->
+                        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                             aria-label="Close">
+                            <span class="svg-icon svg-icon-2x">Thoát</span>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <form class="form-submit" action="{{ route('admin.question.excel.import') }}" method="POST"
+                          enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body text-center">
+                            <div class="HDSD">
+                            </div>
+                            <label for="up-file" class="">
+                                <i data-bs-toggle="tooltip" title="Click để upload file" style="font-size: 100px;"
+                                   role="button" class="bi bi-cloud-plus-fill"></i>
+                            </label>
+                            <input style="display: none" type="file" name="ex_file" id="up-file">
+                            <div style="display: none" class="progress show-p mt-3 h-25px w-100">
+                                <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated"
+                                     role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0"
+                                     aria-valuemax="100"></div>
+                            </div>
+                            <p class="show-name"></p>
+                            <p class="text-danger error_ex_file"></p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="upload-file btn btn-primary">Tải lên </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" tabindex="-1" id="add_topics">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title-topics">Tải lên đề </h5>
+
+                        <!--begin::Close-->
+                        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                             aria-label="Close">
+                            <span class="svg-icon svg-icon-2x">Thoát</span>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <form class="form-submit" action="{{ route('admin.question.excel.import') }}" method="POST"
+                          enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body text-center">
+                            <div class="HDSD">
+                            </div>
+                            <label for="up-file" class="">
+                                <i data-bs-toggle="tooltip" title="Click để upload file" style="font-size: 100px;"
+                                   role="button" class="bi bi-cloud-plus-fill"></i>
+                            </label>
+                            <input style="display: none" type="file" name="ex_file" id="up-file">
+                            <div style="display: none" class="progress show-p mt-3 h-25px w-100">
+                                <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated"
+                                     role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0"
+                                     aria-valuemax="100"></div>
+                            </div>
+                            <p class="show-name"></p>
+                            <p class="text-danger error_ex_file"></p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="upload-file btn btn-primary">Tải lên </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <div class="modal fade" tabindex="-1" id="kt_modal_1">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">

@@ -36,8 +36,8 @@ class Round extends Model
         'time_type_exam',
     ];
     protected $casts = [
-        'created_at' => FormatDate::class,
-        'updated_at' =>  FormatDate::class,
+//        'created_at' => FormatDate::class,
+//        'updated_at' =>  FormatDate::class,
         'image' => FormatImageGet::class,
     ];
 

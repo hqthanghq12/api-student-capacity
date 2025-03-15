@@ -33,7 +33,7 @@ class DetailContestResource extends JsonResource
             'slug_name' => $this->slug_name,
             'status_user_has_join_contest' => $this->status_user_has_join_contest,
             'user_wishlist' => $this->user_wishlist,
-            'slug_name' => $this->slug_name,
+//            'slug_name' => $this->slug_name,
             'rounds_count' => $this->whenCounted('rounds'),
             'user_capacity_done_count' => $this->whenCounted('userCapacityDone'),
             'teams' =>  TeamResource::collection($this->whenLoaded('teams')),

@@ -25,7 +25,7 @@ class DetailCapacityApiResource extends JsonResource
             'description' => $this->description,
             'status' => $this->status,
             'type' => $this->type,
-            'status' => $this->status,
+//            'status' => $this->status,
             'user_capacity_done_count' => $this->whenCounted('userCapacityDone'),
             'rounds_count' => $this->whenCounted('rounds'),
             'slug_name' => $this->slug_name,

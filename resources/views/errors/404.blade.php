@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 Not found</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
-        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+          integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
     </script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
-        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous">
+            integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous">
     </script>
     <style>
         body {
@@ -36,28 +36,35 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="error-template">
-                    <h1>
-                        Oops!</h1>
-                    <h2>
-                        404 Not Found</h2>
-                    <div class="error-details">
-                        Xin lỗi, đã xảy ra lỗi, không tìm thấy trang được yêu cầu!
-                    </div>
-                    <div class="error-actions">
-                        <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg"><span
-                                class="glyphicon glyphicon-home"></span>
-                            Quay trở lại trang chính </a><a href="https://ap.poly.edu.vn"
-                            class="btn btn-default btn-lg"><span class="glyphicon glyphicon-envelope"></span> Liên hệ hỗ
-                            trợ </a>
-                    </div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <h1>
+                    Oops!</h1>
+                <h2>
+                    404 Not Found</h2>
+                <div class="error-details">
+                    Xin lỗi, đã xảy ra lỗi, không tìm thấy trang được yêu cầu!
+                </div>
+                <div class="error-actions">
+                    <a href="
+                        @if(!empty(auth()->user()) && auth()->user()->hasRole('teacher'))
+                            {{ route('admin.semeter.index') }}
+                            @else
+                            {{ route('admin.chart') }}
+                            @endif
+                        " class="btn btn-primary btn-lg"><span
+                            class="glyphicon glyphicon-home"></span>
+                        Quay trở lại trang chính </a><a href="https://ap.poly.edu.vn"
+                                                        class="btn btn-default btn-lg"><span
+                            class="glyphicon glyphicon-envelope"></span> Liên hệ hỗ
+                        trợ </a>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 
 </html>
